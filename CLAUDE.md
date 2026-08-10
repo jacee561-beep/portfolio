@@ -17,10 +17,15 @@ The repo is the source of truth. Clone it, edit, push — the host redeploys aut
 (see `GO-LIVE.md`).
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/jacee561-beep/portfolio.git
 cd portfolio
-python -m http.server 8901      # then open http://localhost:8901
+python -m http.server 8901 --directory public   # then open http://localhost:8901
 ```
+
+**Layout note:** everything that gets published lives in **`public/`**. The repo root holds only
+docs and host config. This is deliberate — Cloudflare's deploy treats the assets directory as the
+web root, and when that was the repo root it tried to upload the 416 MB `.git` folder as a static
+asset and failed. `wrangler.jsonc` pins the assets directory to `./public`; don't point it at `.`.
 
 Everything needed to add work is described below, so a fresh session doesn't need the original
 conversation.
@@ -31,17 +36,17 @@ conversation.
 
 | Path | Purpose |
 |---|---|
-| `index.html` | Homepage — hero, filterable work grid, about, personal, contact |
-| `podcasts.html` + `podcasts.js` | Podcast catalogue, grouped by show |
-| `photography.html` + `photos.js` | Photo sessions, grouped by client |
-| `styles.css` | Entire design system (CSS custom properties at the top) |
-| `script.js` | Homepage behaviour |
-| `assets/manifest.js` | **Video catalogue — `REELS` + `CATEGORIES` arrays** |
-| `assets/photos-manifest.js` | **Photo catalogue — `PHOTOS` array** |
-| `assets/video/<id>.mp4` | One file per entry, filename = `id` |
-| `assets/posters/<id>.jpg` | Thumbnail per video, filename = `id` |
-| `assets/photos/<id>.jpg` | Photos |
-| `assets/jacob-headshot.jpg` | About-section portrait |
+| `public/index.html` | Homepage — hero, filterable work grid, about, personal, contact |
+| `public/podcasts.html` + `podcasts.js` | Podcast catalogue, grouped by show |
+| `public/photography.html` + `photos.js` | Photo sessions, grouped by client |
+| `public/styles.css` | Entire design system (CSS custom properties at the top) |
+| `public/script.js` | Homepage behaviour |
+| `public/assets/manifest.js` | **Video catalogue — `REELS` + `CATEGORIES` arrays** |
+| `public/assets/photos-manifest.js` | **Photo catalogue — `PHOTOS` array** |
+| `public/assets/video/<id>.mp4` | One file per entry, filename = `id` |
+| `public/assets/posters/<id>.jpg` | Thumbnail per video, filename = `id` |
+| `public/assets/photos/<id>.jpg` | Photos |
+| `public/assets/jacob-headshot.jpg` | About-section portrait |
 
 Current scale: **151 videos across 6 categories, 34 photos across 7 sessions.**
 
@@ -49,9 +54,9 @@ Current scale: **151 videos across 6 categories, 34 photos across 7 sessions.**
 
 ## Adding video work
 
-1. Compress the source (see recipe below) to `assets/video/<id>.mp4`.
-2. Grab a poster frame to `assets/posters/<id>.jpg`.
-3. Add an entry to the `REELS` array in `assets/manifest.js`:
+1. Compress the source (see recipe below) to `public/assets/video/<id>.mp4`.
+2. Grab a poster frame to `public/assets/posters/<id>.jpg`.
+3. Add an entry to the `REELS` array in `public/assets/manifest.js`:
 
 ```js
 {
@@ -77,10 +82,10 @@ ffmpeg -y -i "SOURCE.mp4" \
   -vf "scale='if(gt(iw,ih),-2,720)':'if(gt(iw,ih),720,-2)'" \
   -c:v libx264 -preset slow -crf 30 -profile:v main -pix_fmt yuv420p \
   -c:a aac -b:a 96k -ac 1 -movflags +faststart \
-  "assets/video/<id>.mp4"
+  "public/assets/video/<id>.mp4"
 
 # poster frame (pick a timestamp inside the clip's length)
-ffmpeg -y -ss 2 -i "assets/video/<id>.mp4" -frames:v 1 -q:v 3 "assets/posters/<id>.jpg"
+ffmpeg -y -ss 2 -i "public/assets/video/<id>.mp4" -frames:v 1 -q:v 3 "public/assets/posters/<id>.jpg"
 ```
 
 The `scale` expression keeps portrait clips 720 wide and landscape clips 720 tall, so both
@@ -119,7 +124,7 @@ Source archives live on his external drives (`F:` ~22 TB, `K:` ~3.7 TB) and his 
 
 ## Design system
 
-Defined as CSS custom properties at the top of `styles.css`.
+Defined as CSS custom properties at the top of `public/styles.css`.
 
 - Background `#08080a`, panels `#131317`, accent `#ff5436`
 - Display type: weight 900, tight negative letter-spacing, `clamp()` for fluid sizing
@@ -136,14 +141,14 @@ The homepage grid paginates 18 at a time — rendering all 151 cards at once was
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=2`. If you edit `styles.css` or any `.js`,
+- **Cache busting.** CSS/JS are referenced with `?v=2`. If you edit `public/styles.css` or any `.js`,
   bump it to `?v=3` in every HTML file that references it, or browsers serve a stale copy.
 - **Local preview caching.** Python's `http.server` plus most browsers cache the HTML *document*
   itself, so `?v=` on sub-resources won't help you see edits. Hard-reload, or load
   `index.html?bust=N` with a new N.
 - **File locks on Windows.** If a video is playing in a browser tab, you can't delete or replace
   that file — stop the preview server first. This bit us during a bulk re-encode.
-- Every `REELS` entry needs **both** `assets/video/<id>.mp4` and `assets/posters/<id>.jpg`, or
+- Every `REELS` entry needs **both** `public/assets/video/<id>.mp4` and `public/assets/posters/<id>.jpg`, or
   the card renders with a broken thumbnail.
 
 ---
@@ -154,7 +159,7 @@ The homepage grid paginates 18 at a time — rendering all 151 cards at once was
   editable `.psd` / `.ai` (e.g. `TITHING TREE/logos/wild earth allies.psd`). They can't be
   rendered to web images without Photoshop/Illustrator. Also unclear which are Jacob's own
   designs versus client-supplied logos — **ask him** rather than guessing at authorship.
-- **Music production.** He produces music; `index.html` has a styled placeholder card for it.
+- **Music production.** He produces music; `public/index.html` has a styled placeholder card for it.
   No confirmed tracks sourced yet.
 - **More footage.** He has said repeatedly there's a lot left unreviewed, including on a second
   PC at home.

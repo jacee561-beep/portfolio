@@ -1,0 +1,11 @@
+{
+  // Static site — the deployable files live in public/.
+  // Pinning this stops Cloudflare auto-detecting the repo root as the assets
+  // directory, which made it try to upload the 416 MB .git folder.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "compatibility_date": "2026-08-10",
+  "assets": {
+    "directory": "./public"
+  }
+}

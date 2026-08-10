@@ -10,7 +10,7 @@ it's live.
 **Netlify Drop.** No account needed to start.
 
 1. Go to **https://app.netlify.com/drop**
-2. Drag this **entire folder** onto the page.
+2. Drag the **`public` folder** onto the page.
 3. Wait for the upload (~400 MB, so give it a few minutes on a slow connection).
 
 You get a live URL immediately, something like `https://cheerful-otter-1a2b3c.netlify.app`.
@@ -44,7 +44,7 @@ This folder is **already a git repository** with everything committed, so most o
 1. **https://dash.cloudflare.com** → **Workers & Pages** → **Create** → **Pages** →
    **Connect to Git**.
 2. Pick the `portfolio` repo.
-3. Build settings: leave the build command **empty**, set output directory to **`/`**.
+3. Build settings: leave the build command **empty**, set output directory to **`public`**.
 4. **Save and Deploy.**
 
 Done. From then on, any change that gets pushed makes the live site rebuild in about a minute.
@@ -71,21 +71,21 @@ Netlify's cap.
 
 | Path | What it is |
 |---|---|
-| `index.html` | Homepage — hero, work grid, about, contact |
-| `podcasts.html` | Every podcast/talk-show reel, grouped by show |
-| `photography.html` | Photo sessions |
-| `styles.css` | All styling |
-| `script.js`, `podcasts.js`, `photos.js` | Page behaviour |
-| `assets/manifest.js` | **The video list — edit this to add/remove/reorder work** |
-| `assets/photos-manifest.js` | The photo list |
-| `assets/video/` · `assets/posters/` · `assets/photos/` | The media |
+| `public/index.html` | Homepage — hero, work grid, about, contact |
+| `public/podcasts.html` | Every podcast/talk-show reel, grouped by show |
+| `public/photography.html` | Photo sessions |
+| `public/styles.css` | All styling |
+| `public/script.js`, `podcasts.js`, `photos.js` | Page behaviour |
+| `public/assets/manifest.js` | **The video list — edit this to add/remove/reorder work** |
+| `public/assets/photos-manifest.js` | The photo list |
+| `public/assets/video/` · `posters/` · `photos/` | The media |
 | `_headers`, `netlify.toml`, `robots.txt`, `.gitignore` | Config — leave alone |
 
 ---
 
 ## ➕ Adding new work later
 
-Open `assets/manifest.js` and copy an existing block:
+Open `public/assets/manifest.js` and copy an existing block:
 
 ```js
 {
@@ -98,11 +98,11 @@ Open `assets/manifest.js` and copy an existing block:
 },
 ```
 
-Then drop `my-new-clip.mp4` into `assets/video/` and a matching `my-new-clip.jpg` thumbnail into
+Then drop `my-new-clip.mp4` into `public/assets/video/` and a matching `my-new-clip.jpg` thumbnail into
 `assets/posters/`.
 
 **Keep each video under ~20 MB.** Cloudflare Pages rejects anything over 25 MB per file. The
 current largest is 18.5 MB.
 
-If you edit `styles.css` or any `.js`, bump the `?v=2` on that file's tag in the HTML to `?v=3`
+If you edit `public/styles.css` or any `.js`, bump the `?v=2` on that file's tag in the HTML to `?v=3`
 so browsers pick up the change instead of serving a cached copy.
