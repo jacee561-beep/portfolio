@@ -1,0 +1,26 @@
+# Caching rules — read by both Cloudflare Pages and Netlify.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# HTML: always revalidate so edits go live immediately
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Media never changes once published (filenames are stable)
+/assets/video/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/posters/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/photos/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Code: short cache, versioned via ?v= query string
+/styles.css
+  Cache-Control: public, max-age=3600
+
+/*.js
+  Cache-Control: public, max-age=3600

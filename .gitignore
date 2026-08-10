@@ -1,0 +1,20 @@
+# OS / editor junk
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# Python scratch (build scripts are removed after use)
+__pycache__/
+*.py[cod]
+_*.py
+
+# Local scratch
+*.tmp
+*.log
+assets/video_web/
+
+# NOTE: assets/video, assets/posters and assets/photos ARE committed on purpose —
+# the host builds the live site straight from this repo, so it needs the media.
