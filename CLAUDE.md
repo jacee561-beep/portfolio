@@ -2,6 +2,27 @@
 
 Context for any Claude Code session, on any machine. Read this first.
 
+---
+
+## 🟢 STATUS — the site is LIVE
+
+**https://newportfoilio.jacee561.workers.dev**
+
+Deployed on Cloudflare Workers (static assets) from this repo. Verified working in production:
+all three pages render, posters and the headshot load, video streams and plays (720x1280),
+no console errors.
+
+**Deployment is automatic.** Push to `main` and Cloudflare rebuilds in about a minute. You do
+not drag folders or touch the dashboard.
+
+```bash
+git add -A
+git commit -m "what changed"
+git push
+```
+
+Repo: **https://github.com/jacee561-beep/portfolio** (private, branch `main`)
+
 **Owner:** Jacob Gonzales (Khanna House Studios) — videographer, photographer, editor, motion
 designer. **He is not a developer.** Keep explanations plain, prefer things that just work, and
 verify changes by actually running them rather than assuming.
@@ -155,11 +176,34 @@ The homepage grid paginates 18 at a time — rendering all 151 cards at once was
 
 ## Still open
 
-- **Flyers / graphic design.** Real design files exist on the archive drives but only as
+- **More footage — this is the active task.** Jacob is picking this up on his **home PC**. He has
+  said repeatedly there is a lot left unreviewed. Scan that machine's drives using the curation
+  rules above, compress with the recipe above, add to `public/assets/manifest.js`, push.
+- **Flyers / graphic design.** Real design files exist on the work-PC archive drives but only as
   editable `.psd` / `.ai` (e.g. `TITHING TREE/logos/wild earth allies.psd`). They can't be
   rendered to web images without Photoshop/Illustrator. Also unclear which are Jacob's own
   designs versus client-supplied logos — **ask him** rather than guessing at authorship.
 - **Music production.** He produces music; `public/index.html` has a styled placeholder card for it.
-  No confirmed tracks sourced yet.
-- **More footage.** He has said repeatedly there's a lot left unreviewed, including on a second
-  PC at home.
+  No confirmed tracks sourced yet. A folder called `KIANA` on the work PC had Version 1-5 mp3/wav
+  files but he was not sure they were his own productions — confirm before publishing anything.
+- **Contact email** is his personal `jacee561@gmail.com`. If he ever wants a business address,
+  it's in `public/index.html` (contact section) and the footer.
+
+---
+
+## Picking this up on the home PC — first session checklist
+
+1. `git clone https://github.com/jacee561-beep/portfolio.git && cd portfolio`
+2. Check ffmpeg exists: `ffmpeg -version`. If missing: `winget install ffmpeg`
+   (on the work PC it was borrowed from the Toat Studio venv at
+   `Jerry the opus clone/.venv/Lib/site-packages/imageio_ffmpeg/binaries/`).
+3. Preview locally: `python -m http.server 8901 --directory public`
+4. Find candidate work on that machine's drives — see **Curation rules** above. The search that
+   worked well was: video files whose path matches
+   `/(export|exports|final|reel|reels|highlight|promo|recap|render|rendered)/i`,
+   minus the exclusions listed.
+5. Compress → poster → add manifest entry → verify locally → commit → push. Live in ~1 minute.
+
+**Jacob is not a developer.** Don't hand him terminal steps unless there's no alternative, don't
+assume he'll interpret an error log, and verify changes by actually loading the page rather than
+asserting they work.
