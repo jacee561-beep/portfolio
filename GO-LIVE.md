@@ -1,50 +1,73 @@
 # Putting the site online
 
-Everything here is a plain static website — no build step, no server. You drag the folder
-somewhere and it's live.
+This is a plain static website — no build step, no server. You drag the folder somewhere and
+it's live.
 
 ---
 
-## Recommended: Cloudflare Pages (free, unlimited bandwidth)
+## ⚡ Fastest way — live in about 2 minutes
 
-Best fit because the site is video-heavy and Cloudflare doesn't meter bandwidth on the free plan.
-
-1. Go to **https://dash.cloudflare.com** → sign up / log in (free account).
-2. Left sidebar → **Workers & Pages** → **Create** → **Pages** → **Upload assets**.
-3. Give it a project name, e.g. `jacob-gonzales`.
-4. Drag this **entire folder** onto the upload box. Wait for it to finish.
-5. Click **Deploy site**.
-
-You get a live URL like `https://jacob-gonzales.pages.dev`.
-
-**To update later:** same screen → **Create new deployment** → drag the folder again.
-
----
-
-## Alternative: Netlify Drop (easiest, 30 seconds)
-
-Simplest possible, but the free plan caps bandwidth at 100 GB/month. Fine for a portfolio
-unless it gets heavy traffic.
+**Netlify Drop.** No account needed to start.
 
 1. Go to **https://app.netlify.com/drop**
 2. Drag this **entire folder** onto the page.
-3. Done — you get a live URL immediately.
+3. Wait for the upload (~400 MB, so give it a few minutes on a slow connection).
 
-Make a free account afterwards to keep the URL and rename the site.
+You get a live URL immediately, something like `https://cheerful-otter-1a2b3c.netlify.app`.
+
+Make a free account right after so you keep the URL and can rename the site to something
+like `jacobgonzales.netlify.app`.
+
+**To update later:** drag the folder onto the same page again.
+
+> Free plan gives 100 GB of bandwidth a month. That sounds tight for a video site, but the
+> videos only download when someone hovers or clicks a card — a normal visit is a few MB.
+> You'd need serious traffic to hit the cap.
 
 ---
 
-## Custom domain (e.g. jacobgonzales.com)
+## 🔁 Better long-term — auto-updating site
 
-1. Buy the domain (Namecheap, Cloudflare Registrar, Porkbun — ~$10–15/year).
-2. In Cloudflare Pages: your project → **Custom domains** → **Set up a domain** → follow the
-   DNS steps it gives you.
-   In Netlify: **Domain settings** → **Add custom domain** → same idea.
+Set this up once and the live site updates itself whenever the files change here. No more
+dragging.
+
+This folder is **already a git repository** with everything committed, so most of the work is done.
+
+**Step 1 — put it on GitHub**
+1. Go to **https://github.com/new**, make a **private** repo called `portfolio`.
+   Do *not* tick "Add a README".
+2. GitHub shows you a "push an existing repository" box. Copy the two `git remote add` /
+   `git push` lines and run them in this folder — or just tell Claude Code the repo URL and
+   it'll run them for you.
+
+**Step 2 — connect Cloudflare Pages**
+1. **https://dash.cloudflare.com** → **Workers & Pages** → **Create** → **Pages** →
+   **Connect to Git**.
+2. Pick the `portfolio` repo.
+3. Build settings: leave the build command **empty**, set output directory to **`/`**.
+4. **Save and Deploy.**
+
+Done. From then on, any change that gets pushed makes the live site rebuild in about a minute.
+Cloudflare's free plan has **unlimited bandwidth**, which suits a video-heavy site better than
+Netlify's cap.
+
+> One thing to know: git keeps every version of every file forever. Swapping out lots of video
+> repeatedly will grow the repo permanently. Adding new clips is fine — that's just growth you'd
+> have anyway.
+
+---
+
+## 🌐 Custom domain (jacobgonzales.com or similar)
+
+1. Buy the domain — Cloudflare Registrar, Namecheap or Porkbun, roughly $10–15/year.
+2. **Cloudflare Pages:** project → **Custom domains** → **Set up a domain**, then follow the DNS
+   steps it gives you.
+   **Netlify:** **Domain settings** → **Add custom domain**.
 3. HTTPS is automatic and free on both.
 
 ---
 
-## What's in this folder
+## 📁 What's in this folder
 
 | Path | What it is |
 |---|---|
@@ -55,14 +78,12 @@ Make a free account afterwards to keep the URL and rename the site.
 | `script.js`, `podcasts.js`, `photos.js` | Page behaviour |
 | `assets/manifest.js` | **The video list — edit this to add/remove/reorder work** |
 | `assets/photos-manifest.js` | The photo list |
-| `assets/video/` | Video files |
-| `assets/posters/` | Thumbnail for each video |
-| `assets/photos/` | Photos |
-| `_headers`, `netlify.toml`, `robots.txt` | Hosting config — leave them alone |
+| `assets/video/` · `assets/posters/` · `assets/photos/` | The media |
+| `_headers`, `netlify.toml`, `robots.txt`, `.gitignore` | Config — leave alone |
 
 ---
 
-## Adding new work later
+## ➕ Adding new work later
 
 Open `assets/manifest.js` and copy an existing block:
 
@@ -77,13 +98,11 @@ Open `assets/manifest.js` and copy an existing block:
 },
 ```
 
-Then drop `my-new-clip.mp4` into `assets/video/` and a `my-new-clip.jpg` thumbnail into
-`assets/posters/`. Re-upload the folder to your host.
+Then drop `my-new-clip.mp4` into `assets/video/` and a matching `my-new-clip.jpg` thumbnail into
+`assets/posters/`.
 
----
+**Keep each video under ~20 MB.** Cloudflare Pages rejects anything over 25 MB per file. The
+current largest is 18.5 MB.
 
-## Note on video size
-
-Videos in `assets/video/` are compressed to 720p for fast web loading (originals live on your
-archive drives). If you ever swap in a fresh file, keep it under ~20 MB or Cloudflare Pages
-will reject it (25 MB per-file limit).
+If you edit `styles.css` or any `.js`, bump the `?v=2` on that file's tag in the HTML to `?v=3`
+so browsers pick up the change instead of serving a cached copy.
