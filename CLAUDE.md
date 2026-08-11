@@ -69,7 +69,7 @@ conversation.
 | `public/assets/photos/<id>.jpg` | Photos |
 | `public/assets/jacob-headshot.jpg` | About-section portrait |
 
-Current scale: **151 videos across 6 categories, 34 photos across 7 sessions.**
+Current scale: **225 videos across 6 categories, 34 photos across 7 sessions.**
 
 ---
 
@@ -281,11 +281,76 @@ Standing judgement worth keeping: AI-generated footage is a bad fit for the *por
 is a videographer's credibility page and his real work is stronger. Fine for ads, thumbnails, or
 background plates, clearly labelled. Don't let generated work get listed as delivered client work.
 
+## Session log — 2026-08-11 (work PC): rounds 6 & 7, 158 → 225
+
+**The scan method that finally worked.** Every earlier pass only looked *inside folders named*
+`export|reels|final|…`. That silently missed whole bodies of work sitting in differently-named
+folders. The fix: scan **every** folder and filter on the files instead —
+
+```bash
+find /f /h "$DESKTOP" -type f \( -iname "*.mp4" -o -iname "*.mov" \) -size +300k -size -500M \
+ | grep -v '/\._' \
+ | grep -viE -e "/proxies/" -e "proxymedia" -e "/raw footage/" -e "-utc" -e "stock footage" \
+             -e envato -e "/help/" -e tutorial -e "video iso files" -e "untitled cam" \
+             -e "auto-save" -e "video previews"
+```
+Then drop anything named `Untitled NN` / `C0123.MP4` / under `private/M4ROOT/CLIP/` — those are
+recorder and camera-card output. **What's left with a human-readable filename is almost always a
+real deliverable.** That single heuristic surfaced ~70 pieces three prior passes had missed.
+
+**Round 6 (F:, +26).** HONA Awards — a complete nonprofit awards-show package (show open, sponsor
+reel, 13 award-category nominee films). Used `HONA FINAL/`, not the earlier `HONA WITH MUSIC/`
+iteration (which has doubled `.mp4.mp4` extensions). Plus 8 Wellington Bay resident testimonials
+and 2 Khanna House Studios virtual business cards.
+
+**Round 7 (H: PORTABLE1, +41).** Uncoordinated (12 of 33 titled podcast reels), Super Fit Champs
+(14 named animations for a kids' fitness brand), Tennis with Ema (4 episode reels + animated
+intro/outro/2 sponsor spots), Intro to Podcasting (3), KHS Reels (2), Valentyna G Polo, Devi.
+
+**Deliberately excluded and why — don't re-add these:**
+- `Video ISO Files/Untitled CAM N` across Carlton Chandler, Oxbridge, Jammin' with Jeremy, Amanda
+  Salazar, Mike Morgan — raw multicam recorder ISOs, not deliverables.
+- `private/M4ROOT/CLIP/C####.MP4` (DEVI, 365 Wellness Executive) — Sony camera cards.
+- Childrens Harbor / Catherine Hormats video — all `C####.MP4` card files. Their finished reels and
+  photos are already in.
+- `PHELPS MEDIA GROUP/PHELPS SEP 9/EXPORT/TIM DUTTA PHELPS.mp4` — **audio-only, no video stream.**
+  The real cut is a 2.8 GB 18-minute episode, excluded under the no-long-form rule.
+
+### Gotchas hit this session
+
+- **Mac private-use characters in filenames, again.** `Would You Rather….mp4` actually ends
+  `…Animals.mp4` — U+F025 is a Mac-encoded `%`. Same family as the `` folder hit
+  earlier. If a file "exists" in `ls` but `os.path.exists()` says False, print `repr()` of the real
+  entry from `os.listdir()` and copy the escape from that.
+- **ffmpeg output isn't cp1252.** `subprocess.run(..., text=True)` crashed with
+  `UnicodeDecodeError` probing one file. Always pass `encoding="utf-8", errors="replace"`.
+- **Make batch scripts resumable.** Add a skip-if-output-already-exists guard so a crash at item 35
+  of 42 doesn't re-encode the first 34.
+- **Cloudflare 403s plain scripts.** Verifying the live site with `urllib` gets 403 from bot
+  protection — send a normal browser `User-Agent`. A 404 on a brand-new asset usually just means
+  the deploy is still building; the manifest count tells you which round is live.
+
+### Repo size — watch this
+
+~700 MB and growing. Still fine (GitHub is comfortable under 1 GB, Cloudflare's limit is per-file
+at 25 MB and the largest here is 18.6 MB). But git keeps every version forever, so if this keeps
+growing the move is to host video externally (Cloudflare Stream / Bunny / Mux) and keep only
+posters in the repo. Don't let it drift past ~1 GB without addressing it.
+
 ## Still open
 
-- **More footage — this is the active task.** Jacob is picking this up on his **home PC**. He has
-  said repeatedly there is a lot left unreviewed. Scan that machine's drives using the curation
-  rules above, compress with the recipe above, add to `public/assets/manifest.js`, push.
+- **🔴 WD My Passport (Mac-formatted) — blocked on Jacob.** A second external drive is physically
+  attached and healthy but Windows cannot read it: GPT partition type
+  `48465300-0000-11aa-aa11-00306543ecac` = **Apple HFS+**. That's why it has no drive letter.
+  **Do not assign a letter, initialise, or otherwise touch its partitions — that destroys footage.**
+  It needs HFSExplorer (free, read-only — safest), Paragon HFS+ for Windows (~$20, read/write), or
+  copying the files off using a Mac. Once it's readable, sweep it with the method above.
+- **Uncoordinated has ~21 more titled reels** in `H:/UNCOORDINATED/EPSIODE 1/REELS/` beyond the 12
+  added — deliberately sampled to avoid one show dominating the grid. Easy to top up if he wants.
+- **HONA `HONA WITH MUSIC/`** also holds ~11 per-sponsor spots (SPONSOR-DERBY, SPONSOR-FEDORA,
+  SPONSOR-MAD HATTER etc.) not added. Available if the awards package should go deeper.
+- **More footage generally.** Jacob keeps saying there's more. The F:/H: sweep above is now
+  thorough; the main untapped source is the Mac drive.
 - **Flyers / graphic design.** Real design files exist on the work-PC archive drives but only as
   editable `.psd` / `.ai` (e.g. `TITHING TREE/logos/wild earth allies.psd`). They can't be
   rendered to web images without Photoshop/Illustrator. Also unclear which are Jacob's own
