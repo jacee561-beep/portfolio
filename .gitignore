@@ -24,4 +24,10 @@ public/assets/video_web/
 node_modules/
 
 # Higgsfield source PNGs — the optimised web copies are what ship
-public/assets/y2k/*.png
+# only the heavy generation sources — the obj-*.png cutouts MUST ship
+public/assets/y2k/raw-*.png
+public/assets/y2k/portrait-*.png
+public/assets/y2k/bg-hero.png
+public/assets/y2k/cmp-*.jpg
+public/assets/y2k/loop-strip.jpg
+public/assets/y2k/raw-loop.mp4

@@ -934,3 +934,101 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
 @media (prefers-reduced-motion: reduce) {
   .floaters { display: none; }
 }
+
+/* ============================================================
+   Y2K-professional refinements.
+   The rule applied here: Y2K in the *texture and detail*,
+   restraint in the *structure*. A client scanning the work grid
+   should never fight the decoration to read a card.
+   ============================================================ */
+
+/* faint technical grid — reads as broadcast/engineering, not neon toy */
+.sec::before {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  rgba(34, 211, 238, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 211, 238, 0.035) 1px, transparent 1px);
+  background-size: 68px 68px;
+  -webkit-mask-image: radial-gradient(110% 80% at 50% 40%, #000 20%, transparent 72%);
+          mask-image: radial-gradient(110% 80% at 50% 40%, #000 20%, transparent 72%);
+}
+
+/* chrome sheen on section headings */
+.sec-head h2, .contact h2 {
+  background: linear-gradient(96deg,
+    var(--fg) 0%, var(--fg) 38%,
+    #cfefff 47%, #ffffff 52%, #a9e9f5 57%,
+    var(--fg) 66%, var(--fg) 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  animation: headSheen 9s linear infinite;
+}
+@keyframes headSheen {
+  0%   { background-position: 120% 50%; }
+  100% { background-position: -60% 50%; }
+}
+
+/* card meta in mono — technical slate feel, easier to scan than sentence case */
+.card-client {
+  font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 10.5px !important;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+  opacity: 0.85;
+}
+.card-tag {
+  font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* chrome sweep across a card on hover */
+.card-media::after {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(104deg,
+    transparent 38%, rgba(255,255,255,0.16) 47%,
+    rgba(180,240,255,0.26) 51%, rgba(255,255,255,0.14) 55%, transparent 64%);
+  background-size: 260% 100%;
+  background-position: 120% 0;
+  transition: opacity 0.25s var(--ease);
+}
+.card:hover .card-media::after {
+  opacity: 1;
+  animation: cardSweep 0.9s var(--ease) forwards;
+}
+@keyframes cardSweep {
+  from { background-position: 120% 0; }
+  to   { background-position: -60% 0; }
+}
+
+/* filter chips: subtle glow on the active one */
+.f-btn.on { box-shadow: 0 0 0 1px var(--accent-soft), 0 0 22px -6px var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sec-head h2, .contact h2 { animation: none; }
+  .card-media::after { display: none; }
+  .sec::before { display: none; }
+}
+
+/* ---- looping video backdrop (contact section) ---- */
+.secbg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.26;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(125% 95% at 50% 55%, #000 26%, transparent 76%);
+          mask-image: radial-gradient(125% 95% at 50% 55%, #000 26%, transparent 76%);
+}
+/* the static plate stays as the poster/fallback underneath */
+@media (prefers-reduced-motion: reduce) { .secbg { display: none; } }
