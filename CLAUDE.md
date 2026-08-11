@@ -69,7 +69,28 @@ conversation.
 | `public/assets/photos/<id>.jpg` | Photos |
 | `public/assets/jacob-headshot.jpg` | About-section portrait |
 
-Current scale: **225 videos across 6 categories, 34 photos across 7 sessions.**
+Current scale: **259 videos across 6 categories, 34 photos across 7 sessions.**
+
+### Full-drive audit — the numbers, so nobody re-scans blind
+
+| Drive | Total video files | Verdict |
+|---|---|---|
+| **F: GENERAL** (22 TB) + Desktop | 9,044 | mined; >600 MB band is *all* full-length episodes |
+| **H: PORTABLE1** (3.7 TB) | 1,566 | mined; large files are raw camera/multicam |
+| **WD My Passport** (3.7 TB) | — | **HFS+, unreadable on Windows — see Still open** |
+
+**Two filters caused every earlier miss — do not reuse them blindly:**
+1. A **size cap** (`-size -500M` / `-600M`) hid 422 files on H: and 2,551 on F:. Most were genuinely
+   raw or long-form, but it also hid the *Super Fit Champs* brand film and the whole
+   *Mental Millennials 13-18* / *inSIGHT brand story* / *Julie Khanna* sets.
+2. Searching only folders **named** `export|reels|final` missed work sitting in
+   `STUDIO DUMP 3.26/`, `LOCATION DUMP 3.26/` and `General Storage Dump/` — archive folders that
+   contain other clients' finished deliverables nested several levels down. **Always search those.**
+
+**Long-form is represented by excerpts.** Full episodes run 20–135 min at 3–16 GB and cannot ship
+(Cloudflare rejects >25 MB/file). Round 9 added 75-second excerpts titled `… (excerpt)` at 2.5–6 MB
+each. To add more, use `-ss <start> -i <src> -t 75` with the standard encode flags and start well
+past the cold open.
 
 ---
 
