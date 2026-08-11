@@ -1820,6 +1820,284 @@ const REELS = [
     blurb: "Branded social reel.",
     orientation: "landscape"
   },
+
+  // ==== Round 8: deliverables hidden in DUMP archive folders ====
+  {
+    id: "mm-ep13-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 13 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep13-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 13 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep14-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 14 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep14-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 14 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep16-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 16 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep16-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 16 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep17-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 17 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep17-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 17 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep18-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 18 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep18-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 18 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "insight-brand-story",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Brand Story Film",
+    blurb: "Long-form brand story film for a nonprofit.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-brand-outro",
+    category: "motion",
+    client: "inSIGHT Education",
+    title: "Brand Story — Outro",
+    blurb: "Animated outro from the brand story film.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-names-not-numbers",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Names Not Numbers",
+    blurb: "Segment from a Holocaust-education nonprofit campaign.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-nnn-clip-3",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Names Not Numbers — Clip 3",
+    blurb: "Segment from a Holocaust-education nonprofit campaign.",
+    orientation: "landscape"
+  },
+  {
+    id: "khs-story-board",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Story Board",
+    blurb: "Vertical brand piece for his own studio.",
+    orientation: "portrait"
+  },
+
+  // ==== Round 8b: Julie Khanna reels ====
+  {
+    id: "julie-khanna-reel-1",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Event Reel 1",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "julie-khanna-reel-2",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Event Reel 2",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "julie-khanna-reel-red",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Reel of the Red",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+
+  // ==== Round 9: excerpts from flagship long-form episodes ====
+  {
+    id: "nrg-manifold-episode",
+    category: "podcast",
+    client: "NRG Podcast",
+    title: "Manifold — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 1h48m multi-camera episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "cwk-ep6-episode",
+    category: "podcast",
+    client: "Coffee with Kelly",
+    title: "Episode 6 — Full Show (excerpt)",
+    blurb: "Excerpt from the full 31-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "sojourners-podcast-episode",
+    category: "podcast",
+    client: "Sojourners",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 35-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "kerrigan-podcast-episode",
+    category: "podcast",
+    client: "Dwayne Kerrigan",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from a 2h13m multi-camera episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "eqb2b-ep4-episode",
+    category: "podcast",
+    client: "EQB2B",
+    title: "Episode 4 — Full Show (excerpt)",
+    blurb: "Excerpt from the full 52-minute branded episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "csc-episode",
+    category: "nonprofit",
+    client: "Children's Services Council",
+    title: "Episode — Full Show (excerpt)",
+    blurb: "Excerpt from a 30-minute nonprofit episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "wjm-gale-episode",
+    category: "podcast",
+    client: "We Just Met",
+    title: "Gale — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 48-minute dating-show episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "piper-laine-episode",
+    category: "podcast",
+    client: "Piper Laine",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 30-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-ema-full-episode",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "The Emazing Podcast — Full Show (excerpt)",
+    blurb: "Excerpt from the full 41-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-film",
+    category: "corporate",
+    client: "Super Fit Champs",
+    title: "Brand Film (excerpt)",
+    blurb: "Excerpt from the finished 21-minute brand film.",
+    orientation: "landscape"
+  },
+  {
+    id: "phelps-tim-dutta-film",
+    category: "corporate",
+    client: "Phelps Media Group",
+    title: "Tim Dutta — Feature Film (excerpt)",
+    blurb: "Excerpt from a long-form equestrian feature.",
+    orientation: "landscape"
+  },
+  {
+    id: "adrian-rmante-episode",
+    category: "podcast",
+    client: "Adrian R'Mante",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from a full-length interview episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "rtdb-ep8-episode",
+    category: "podcast",
+    client: "RTDB",
+    title: "Episode 8 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "zoey-30f30-episode",
+    category: "podcast",
+    client: "Zoey Nguyen",
+    title: "30 for 30 — Episode 1 (excerpt)",
+    blurb: "Excerpt from the full 31-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "mm-full-episode",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 29 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "elite-protocol-episode",
+    category: "podcast",
+    client: "Elite Protocol",
+    title: "Episode 1 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
 ];
 
 const CATEGORIES = [
