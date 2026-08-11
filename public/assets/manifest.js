@@ -1280,6 +1280,216 @@ const REELS = [
     blurb: "Animated outro graphic for a medical explainer video.",
     orientation: "landscape"
   },
+
+  // ==== Round 6: HONA awards package, Wellington Bay testimonials, virtual cards ====
+  {
+    id: "hona-open",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Awards Show Open",
+    blurb: "Title sequence opening a nonprofit awards ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-generic",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Ceremony Package",
+    blurb: "Generic award segment built for the live ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-sponsors",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Sponsor Reel",
+    blurb: "Sponsor recognition reel played during the ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-lifetime",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Lifetime Achievement — Nominees",
+    blurb: "Nominee package for the Lifetime Achievement award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-community-hero",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Community Hero — Nominees",
+    blurb: "Nominee package for the Community Hero award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-executive",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Executive of the Year — Nominees",
+    blurb: "Nominee package for the Executive of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-mvp",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "MVP of the Year — Nominees",
+    blurb: "Nominee package for the MVP of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-professional",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Professional of the Year — Nominees",
+    blurb: "Nominee package for the Professional of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-volunteer",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Volunteer of the Year — Nominees",
+    blurb: "Nominee package for the Volunteer of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-education",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Education Impact — Nominees",
+    blurb: "Nominee package for the Education Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-innovation",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Innovation — Nominees",
+    blurb: "Nominee package for the Innovation award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-health",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Health & Wellness Impact — Nominees",
+    blurb: "Nominee package for the Health and Wellness Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-arts",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Arts & Culture Impact — Nominees",
+    blurb: "Nominee package for the Arts and Culture Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-environment",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Environment & Animal Welfare — Nominees",
+    blurb: "Nominee package for the Environment and Animal Welfare Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-family",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Family Services Impact — Nominees",
+    blurb: "Nominee package for the Family Services Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-collaborators",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Community Collaborators — Nominees",
+    blurb: "Nominee package for the Community Collaborators award.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-artie",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Artie Lynnworth",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-carol",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Carol Phillips",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-jan",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Jan Newlands",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-jeff",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Jeff Sigman",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-judie",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Judie Eieibold",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-myra-david",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Myra & David",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-rita",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Rita",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-tony",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Tony",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "khs-virtual-card",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Virtual Business Card",
+    blurb: "Digital business card format produced for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "virtual-card-demo",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Virtual Business Card — Demo",
+    blurb: "Full-length demo of the digital business card product.",
+    orientation: "landscape"
+  },
 ];
 
 const CATEGORIES = [
