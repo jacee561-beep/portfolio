@@ -11,8 +11,8 @@
   --fg: #f4f3f1;
   --fg-dim: #9b9aa3;
   --fg-faint: #6a6973;
-  --accent: #ff5436;
-  --accent-soft: rgba(255, 84, 54, 0.14);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.14);
   --r: 14px;
   --maxw: 1320px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -544,7 +544,9 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .about-photo::after {
   content: "";
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(255, 84, 54, 0.16), transparent 55%);
+  /* Neutral, not accent-tinted — a coloured wash over a face reads as a colour
+     cast on skin. This just grounds the portrait into the page. */
+  background: linear-gradient(to top, rgba(8, 8, 10, 0.42), transparent 55%);
   pointer-events: none;
 }
 .about-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--ease); }
@@ -720,7 +722,7 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
   padding: calc(78px + clamp(56px, 10vh, 108px)) 0 clamp(44px, 7vh, 78px);
   border-bottom: 1px solid var(--line);
   background:
-    radial-gradient(1100px 460px at 12% -10%, rgba(255, 84, 54, 0.11), transparent 62%),
+    radial-gradient(1100px 460px at 12% -10%, rgba(34, 211, 238, 0.11), transparent 62%),
     var(--bg-soft);
 }
 .sub-hero h1 {
@@ -800,4 +802,110 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
   }
   .rv { opacity: 1; transform: none; }
   .hero h1 .ln > span { transform: none; }
+}
+
+/* ============================================================
+   Y2K layer — custom cursor, scanlines, RGB-split glitch.
+   Purely additive: every rule here is gated behind a fine
+   pointer and prefers-reduced-motion, so the base design is
+   untouched on touch devices and for reduced-motion users.
+   ============================================================ */
+
+/* ---- scanlines ---- */
+.scan {
+  position: fixed; inset: 0;
+  z-index: 8; pointer-events: none;
+  opacity: 0.055;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.9) 0px,
+    rgba(255,255,255,0.9) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* ---- custom cursor ---- */
+.cur, .cur-ring {
+  position: fixed; top: 0; left: 0;
+  z-index: 9999; pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+}
+.cur {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fff;
+  margin: -3px 0 0 -3px;
+}
+.cur-ring {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.6);
+  margin: -15px 0 0 -15px;
+  transition: width 0.22s var(--ease), height 0.22s var(--ease),
+              margin 0.22s var(--ease), border-color 0.22s var(--ease),
+              opacity 0.25s var(--ease);
+}
+body.cur-on .cur, body.cur-on .cur-ring { opacity: 1; }
+/* expand + go accent over anything interactive */
+body.cur-hot .cur-ring {
+  width: 54px; height: 54px; margin: -27px 0 0 -27px;
+  border-color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.cur-on, body.cur-on a, body.cur-on button,
+  body.cur-on .card, body.cur-on [data-magnetic] { cursor: none; }
+}
+
+/* ---- RGB-split glitch on the hero headline ---- */
+.hero h1 .ln > span { position: relative; }
+.glitchable::before, .glitchable::after {
+  content: attr(data-txt);
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+}
+.hero h1:hover .glitchable::before {
+  opacity: 0.85; color: #ff2f6d;
+  animation: rgbL 0.42s steps(2) infinite;
+}
+.hero h1:hover .glitchable::after {
+  opacity: 0.85; color: var(--accent);
+  animation: rgbR 0.42s steps(2) infinite;
+}
+@keyframes rgbL {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-3px, 1px); }
+  66%  { transform: translate(2px, -1px); }
+  100% { transform: translate(-1px, 0); }
+}
+@keyframes rgbR {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(3px, -1px); }
+  66%  { transform: translate(-2px, 1px); }
+  100% { transform: translate(1px, 0); }
+}
+
+/* ---- chrome sheen on the accent word ---- */
+.hero h1 em {
+  background: linear-gradient(100deg, var(--accent) 0%, #ffffff 45%, var(--accent) 60%, #b5f6ff 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  animation: sheen 6s linear infinite;
+}
+@keyframes sheen {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan, .cur, .cur-ring { display: none !important; }
+  .hero h1 em { animation: none; }
+  .glitchable::before, .glitchable::after { display: none; }
 }

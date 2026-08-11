@@ -114,6 +114,11 @@ const moreBtn = $("#moreBtn");
 
 $("#workCount").textContent = REELS.length;
 
+/* Keep the "Pieces delivered" stat in sync with the manifest so it can't go
+   stale when work is added. (It was hardcoded at 151 and drifted.) */
+const piecesStat = $('[data-count][data-auto="pieces"]');
+if (piecesStat) piecesStat.dataset.count = REELS.length;
+
 function filtered() {
   return active === "all" ? REELS : REELS.filter((r) => r.category === active);
 }
@@ -303,4 +308,60 @@ if (!reduced && window.matchMedia("(pointer: fine)").matches) {
     { threshold: 0.4 }
   );
   secs.forEach((s) => spy.observe(s));
+})();
+
+/* ============================================================
+   Y2K layer — custom cursor + glitch wiring.
+   Bails out entirely on touch devices and reduced-motion.
+   ============================================================ */
+(function () {
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!fine || reduced) return;
+
+  /* --- scanline overlay --- */
+  const scan = document.createElement("div");
+  scan.className = "scan";
+  document.body.appendChild(scan);
+
+  /* --- cursor --- */
+  const dot = document.createElement("div");
+  dot.className = "cur";
+  const ring = document.createElement("div");
+  ring.className = "cur-ring";
+  document.body.append(dot, ring);
+
+  let mx = innerWidth / 2, my = innerHeight / 2;   // target (mouse)
+  let rx = mx, ry = my;                            // ring position (lagging)
+
+  addEventListener("mousemove", (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+    if (!document.body.classList.contains("cur-on")) document.body.classList.add("cur-on");
+  }, { passive: true });
+
+  addEventListener("mouseleave", () => document.body.classList.remove("cur-on"));
+  addEventListener("mouseenter", () => document.body.classList.add("cur-on"));
+
+  (function loop() {
+    rx += (mx - rx) * 0.16;                        // lerp = the trailing feel
+    ry += (my - ry) * 0.16;
+    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+    requestAnimationFrame(loop);
+  })();
+
+  /* grow the ring over anything clickable */
+  const HOT = "a, button, .card, [data-magnetic], input, textarea, select";
+  document.addEventListener("mouseover", (e) => {
+    if (e.target.closest(HOT)) document.body.classList.add("cur-hot");
+  });
+  document.addEventListener("mouseout", (e) => {
+    if (e.target.closest(HOT)) document.body.classList.remove("cur-hot");
+  });
+
+  /* --- RGB-split glitch: duplicate the headline text into pseudo-elements --- */
+  document.querySelectorAll(".hero h1 .ln > span").forEach((el) => {
+    el.classList.add("glitchable");
+    el.setAttribute("data-txt", el.textContent.trim());
+  });
 })();

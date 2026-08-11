@@ -141,6 +141,14 @@ const REELS = [
     blurb: "Event recap for a nonprofit speaker series.",
     orientation: "portrait"
   },
+  {
+    id: "od2a-webinar-titles",
+    category: "nonprofit",
+    client: "OD2A Webinar Series",
+    title: "Webinar Title System",
+    blurb: "Per-organisation intro and lower-third package for a three-part public-health webinar series.",
+    orientation: "landscape"
+  },
 
   // ---- Interviews ----
   {
@@ -193,6 +201,46 @@ const REELS = [
     blurb: "Animated lower-third graphic package for a medical explainer series.",
     orientation: "landscape"
   },
+  {
+    id: "cryptorubik-orb",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Cryptorubik — Orb",
+    blurb: "Spec concept spot: iridescent 3D orb, glitch transitions, and an animated brand mark.",
+    orientation: "landscape"
+  },
+  {
+    id: "cryptorubik-spot",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Cryptorubik — Concept Spot",
+    blurb: "Spec piece built around a Y2K interface pastiche, halftone selector and live price counter.",
+    orientation: "landscape"
+  },
+  {
+    id: "cryptorubik-market",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Cryptorubik — Market",
+    blurb: "Spec animated market chart built on a curved CRT with scanlines and bloom.",
+    orientation: "landscape"
+  },
+  {
+    id: "vaporwave-collage",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Vaporwave Collage",
+    blurb: "Spec piece mixing 3D objects and cut-out collage over scanline plates.",
+    orientation: "landscape"
+  },
+  {
+    id: "cryptorubik-cube",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Cryptorubik — Cube",
+    blurb: "Spec 3D piece modelled and animated in Blender, finished in After Effects.",
+    orientation: "portrait"
+  },
 
   // ---- Branded Social ----
   {
@@ -217,6 +265,14 @@ const REELS = [
     client: "365 Wellness",
     title: "Branded Reel",
     blurb: "Vertical social reel for a medical wellness brand.",
+    orientation: "portrait"
+  },
+  {
+    id: "vertical-caption-reel",
+    category: "social",
+    client: "Private Client",
+    title: "Vertical Reel — Animated Captions",
+    blurb: "Hook-first vertical cut with word-by-word animated captions, from a fourteen-reel run.",
     orientation: "portrait"
   },
 
