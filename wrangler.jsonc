@@ -8,6 +8,10 @@
   "assets": {
     "directory": "./public"
   },
+  // Keep the *.workers.dev URL alive alongside the custom domain. Defining
+  // "routes" disables it by default, which left portfolio.jacee561.workers.dev
+  // 404ing and meant a stale DNS cache anywhere = no reachable URL at all.
+  "workers_dev": true,
   // Custom domain. Only valid while jacobgonzales.tv is an active zone in this
   // Cloudflare account — if the zone is ever removed, the deploy fails and the
   // live site goes with it. Remove these routes before removing the zone.
