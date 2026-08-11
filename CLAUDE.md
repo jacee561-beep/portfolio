@@ -339,12 +339,22 @@ posters in the repo. Don't let it drift past ~1 GB without addressing it.
 
 ## Still open
 
-- **🔴 WD My Passport (Mac-formatted) — blocked on Jacob.** A second external drive is physically
-  attached and healthy but Windows cannot read it: GPT partition type
-  `48465300-0000-11aa-aa11-00306543ecac` = **Apple HFS+**. That's why it has no drive letter.
-  **Do not assign a letter, initialise, or otherwise touch its partitions — that destroys footage.**
-  It needs HFSExplorer (free, read-only — safest), Paragon HFS+ for Windows (~$20, read/write), or
-  copying the files off using a Mac. Once it's readable, sweep it with the method above.
+- **🟡 WD My Passport (Mac-formatted) — SOLVED, needs Jacob to run one export.** GPT partition type
+  `48465300-0000-11aa-aa11-00306543ecac` = **Apple HFS+**, which is why Windows gives it no drive
+  letter. **Do not assign a letter, initialise, or touch its partitions — that destroys footage.**
+  **No software needs installing.** `DiskInternals Linux Reader` is already installed at
+  `C:\Program Files (x86)\DiskInternals\LinuxReader\LinuxReader64.exe`, reads HFS+, and is
+  **read-only by design**. It detects the drive as **"HFS+ Volume 1 (BACKUP1)", 3725.67 Gb**.
+  It is GUI-only (no CLI), so the export is a manual step: open it → double-click that volume →
+  select the folders worth taking → **Save** → export to `H:\FROM-MAC-DRIVE`. Then sweep that
+  folder with the scan method above and encode normally.
+  *(Also tried and rejected: WSL is not installed and `wsl --mount` would need admin + a reboot;
+  reading `\\.\PhysicalDrive3` directly needs elevation. Disk Drill is also installed and can read
+  HFS+ if Linux Reader gives trouble.)*
+  **GUI-automation note:** driving Linux Reader with computer-use failed because the workstation was
+  **locked** (`LockApp` running) — screenshots come back frozen and identical, and clicks silently
+  do nothing. If that symptom appears, check `Get-Process LogonUI,LockApp` before assuming the app
+  or the permissions are at fault.
 - **Uncoordinated has ~21 more titled reels** in `H:/UNCOORDINATED/EPSIODE 1/REELS/` beyond the 12
   added — deliberately sampled to avoid one show dominating the grid. Easy to top up if he wants.
 - **HONA `HONA WITH MUSIC/`** also holds ~11 per-sponsor spots (SPONSOR-DERBY, SPONSOR-FEDORA,
