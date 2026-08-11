@@ -119,6 +119,46 @@ $("#workCount").textContent = REELS.length;
 const piecesStat = $('[data-count][data-auto="pieces"]');
 if (piecesStat) piecesStat.dataset.count = REELS.length;
 
+/* ============================================================
+   Grid ordering.
+   The manifest is in the order work was added, which scattered
+   most clients across the array (19 of 28 multi-piece clients).
+   A visitor reading it saw the same show reappear at random.
+
+   Order is now:
+     1. a curated FEATURED set, sequenced to show full range in
+        the first row (motion / podcast / social / interview)
+     2. everything else grouped so a client's work is contiguous,
+        with the biggest bodies of work first — a long run of one
+        client reads as an ongoing relationship, not a one-off.
+   ============================================================ */
+const FEATURED = [
+  "cryptorubik-orb",
+  "nrg-manifold-highlight",
+  "vertical-caption-reel",
+  "patricia-heaton",
+  "cryptorubik-spot",
+  "od2a-webinar-titles",
+];
+
+const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
+const MANIFEST_POS = new Map(REELS.map((r, i) => [r.id, i]));
+
+function orderReels(list) {
+  const rank = (id) => {
+    const i = FEATURED.indexOf(id);
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+  };
+  return list.slice().sort((a, b) => {
+    const fa = rank(a.id), fb = rank(b.id);
+    if (fa !== fb) return fa - fb;                         // featured first, in listed order
+    const va = CLIENT_VOLUME[a.client], vb = CLIENT_VOLUME[b.client];
+    if (va !== vb) return vb - va;                         // bigger bodies of work first
+    if (a.client !== b.client) return a.client.localeCompare(b.client);
+    return MANIFEST_POS.get(a.id) - MANIFEST_POS.get(b.id); // stable within a client
+  });
+}
+
 function filtered() {
   const base = active === "all" ? REELS : REELS.filter((r) => r.category === active);
   return orderReels(base);
@@ -370,42 +410,3 @@ if (!reduced && window.matchMedia("(pointer: fine)").matches) {
   place();
 })();
 
-/* ============================================================
-   Grid ordering.
-   The manifest is in the order work was added, which scattered
-   most clients across the array (19 of 28 multi-piece clients).
-   A visitor reading it saw the same show reappear at random.
-
-   Order is now:
-     1. a curated FEATURED set, sequenced to show full range in
-        the first row (motion / podcast / social / interview)
-     2. everything else grouped so a client's work is contiguous,
-        with the biggest bodies of work first — a long run of one
-        client reads as an ongoing relationship, not a one-off.
-   ============================================================ */
-const FEATURED = [
-  "cryptorubik-orb",
-  "nrg-manifold-highlight",
-  "vertical-caption-reel",
-  "patricia-heaton",
-  "cryptorubik-spot",
-  "od2a-webinar-titles",
-];
-
-const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
-const MANIFEST_POS = new Map(REELS.map((r, i) => [r.id, i]));
-
-function orderReels(list) {
-  const rank = (id) => {
-    const i = FEATURED.indexOf(id);
-    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
-  };
-  return list.slice().sort((a, b) => {
-    const fa = rank(a.id), fb = rank(b.id);
-    if (fa !== fb) return fa - fb;                         // featured first, in listed order
-    const va = CLIENT_VOLUME[a.client], vb = CLIENT_VOLUME[b.client];
-    if (va !== vb) return vb - va;                         // bigger bodies of work first
-    if (a.client !== b.client) return a.client.localeCompare(b.client);
-    return MANIFEST_POS.get(a.id) - MANIFEST_POS.get(b.id); // stable within a client
-  });
-}
