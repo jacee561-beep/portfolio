@@ -1,3 +1,20 @@
+# Domain — DONE
+
+**Live at https://jacobgonzales.tv** (and `www.`), registered via Cloudflare Registrar on 2026-08-11 and bound
+in `wrangler.jsonc` under `routes` with `custom_domain: true`.
+
+Fallback: `https://portfolio.jacee561.workers.dev`.
+
+> If the `jacobgonzales.tv` zone is ever removed from the Cloudflare account, **delete the
+> `routes` block in `wrangler.jsonc` first** — otherwise every deploy fails and the site goes down.
+
+Still worth doing: **Cloudflare Email Routing** for `jacob@jacobgonzales.tv` forwarding to
+Gmail (free). The site currently lists a personal Gmail address.
+
+---
+
+<details><summary>Original setup notes (kept for reference)</summary>
+
 # Connecting your domain
 
 The site is live at `https://newportfoilio.jacee561.workers.dev`. This points a real
@@ -90,3 +107,5 @@ Claude Code can confirm end to end:
 - **Email is separate.** Buying the domain does not give you an address on it. If you
   want `jacob@yourdomain`, Cloudflare Email Routing forwards to Gmail for free — worth doing, since the site
   currently lists a personal Gmail address.
+
+</details>

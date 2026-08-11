@@ -6,7 +6,7 @@ Context for any Claude Code session, on any machine. Read this first.
 
 ## 🟢 STATUS — the site is LIVE
 
-**https://newportfoilio.jacee561.workers.dev**
+**https://jacobgonzales.tv**
 
 Deployed on Cloudflare Workers (static assets) from this repo. Verified working in production:
 all three pages render, posters and the headshot load, video streams and plays (720x1280),
