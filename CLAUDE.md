@@ -8,9 +8,20 @@ Context for any Claude Code session, on any machine. Read this first.
 
 **https://jacobgonzales.tv**
 
-Deployed on Cloudflare Workers (static assets) from this repo. Verified working in production:
-all three pages render, posters and the headshot load, video streams and plays (720x1280),
-no console errors.
+Custom domain (apex + `www`), registered via Cloudflare Registrar 2026-08-11 and bound in
+`wrangler.jsonc` under `routes` with `custom_domain: true`. Verified in production: all three
+pages, posters, photos, headshot and video all HTTP 200, SSL valid, 259 manifest entries served.
+
+**Fallback URL: `https://portfolio.jacee561.workers.dev`.** The older
+`newportfoilio.jacee561.workers.dev` is **retired and 404s** — the deploy consolidated onto the
+worker named `portfolio` in `wrangler.jsonc`. Don't cite the old name.
+
+⚠️ If the `jacobgonzales.tv` zone is ever removed from the Cloudflare account, **delete the
+`routes` block in `wrangler.jsonc` first** — otherwise every deploy fails and the site goes down.
+
+`/podcasts.html` and `/photography.html` 307-redirect to `/podcasts` and `/photography`
+(Cloudflare's default `html_handling`). Both forms work. The nav keeps the `.html` links on
+purpose so the local `python -m http.server` preview still resolves them.
 
 **Deployment is automatic.** Push to `main` and Cloudflare rebuilds in about a minute. You do
 not drag folders or touch the dashboard.
@@ -168,7 +179,9 @@ Source archives live on his external drives (`F:` ~22 TB, `K:` ~3.7 TB) and his 
 
 Defined as CSS custom properties at the top of `public/styles.css`.
 
-- Background `#08080a`, panels `#131317`, accent `#ff5436`
+- Background `#08080a`, panels `#131317`, accent **`#22d3ee` (cyan)** — Jacob replaced the original
+  orange `#ff5436`; if you ever change it again, note that two oranges were once hardcoded outside
+  the token (see the 2026-08-11 home-PC log below)
 - Display type: weight 900, tight negative letter-spacing, `clamp()` for fluid sizing
 - Radius `14px`, easing `cubic-bezier(0.22, 1, 0.36, 1)`
 
