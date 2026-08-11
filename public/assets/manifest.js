@@ -1490,6 +1490,336 @@ const REELS = [
     blurb: "Full-length demo of the digital business card product.",
     orientation: "landscape"
   },
+
+  // ==== Round 7: H: PORTABLE1 — Uncoordinated, Super Fit Champs, Tennis with Ema, KHS ====
+  {
+    id: "uncoordinated-name-pronunciation-struggles",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Name Pronunciation Struggles",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-roller-coaster-experience",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Roller Coaster Experience",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-first-skydive",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "First Skydive",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-almost-made-the-team",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Almost Made the Team",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-healing-after-heartbreak",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Healing After Heartbreak",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-the-gym-routine-that-works",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "The Gym Routine That Works",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-live-freestyle-session",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Live Freestyle Session",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-ten-years-of-friendship",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Ten Years of Friendship",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-inside-the-hustle",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Inside the Hustle",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-influencing-vs-a-full-time-job",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Influencing vs. a Full-Time Job",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-warm-showers-changed-my-life",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Warm Showers Changed My Life",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-would-you-rather",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Would You Rather",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "super-fit-champs-be-a-fitness-star",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Be a Fitness Star",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-every-step-counts",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Every Step Counts",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-stay-fit-stay-happy",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Stay Fit, Stay Happy",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-move-to-the-beat",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Move to the Beat",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-let-s-get-active",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Let's Get Active",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-fitness-is-fun",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Fitness Is Fun",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-strong-bodies-strong-minds",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Strong Bodies, Strong Minds",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-smile-and-jump",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Smile and Jump",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-exercise-is-fun",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Exercise Is Fun",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-stretch-and-move",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Stretch and Move",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-energy-up-fun-up",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Energy Up, Fun Up",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-feel-the-power",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Feel the Power",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-run-jump-play",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Run, Jump, Play",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-coach-b",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Coach B",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-reel-1",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode Reel 1",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-reel-2",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode Reel 2",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-2-reel-1",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode 2 — Reel 1",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-2-reel-2",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode 2 — Reel 2",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-podcast-intro",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Podcast Intro",
+    blurb: "Animated title sequence for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-podcast-outro",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Podcast Outro",
+    blurb: "Animated outro graphic for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-lucky-in-love-sponsor-spot",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Lucky in Love — Sponsor Spot",
+    blurb: "Animated sponsor advert cut for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-match-set-sponsor-spot",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Match Set — Sponsor Spot",
+    blurb: "Animated sponsor advert cut for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "khanna-house-studios-studio-welcome",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Studio Welcome",
+    blurb: "Brand introduction film for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "khanna-house-studios-faq-reel",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "FAQ Reel",
+    blurb: "Short-form FAQ explainer for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-1",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 1",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-3",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 3",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-4",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 4",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "valentyna-g-polo-sundays",
+    category: "nonprofit",
+    client: "Valentyna G",
+    title: "Polo Sundays",
+    blurb: "Event film covering a polo Sunday.",
+    orientation: "landscape"
+  },
+  {
+    id: "devi-kodak-jeep-reel",
+    category: "social",
+    client: "Devi",
+    title: "Kodak Jeep Reel",
+    blurb: "Branded social reel.",
+    orientation: "landscape"
+  },
 ];
 
 const CATEGORIES = [
