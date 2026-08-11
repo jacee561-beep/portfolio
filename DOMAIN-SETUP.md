@@ -1,4 +1,4 @@
-# Connecting jacobgonzales.tv
+# Connecting your domain
 
 The site is live at `https://newportfoilio.jacee561.workers.dev`. This points a real
 domain at it. Three steps, roughly 15 minutes plus DNS wait.
@@ -7,11 +7,18 @@ domain at it. Three steps, roughly 15 minutes plus DNS wait.
 
 ## Step 1 — Buy the domain
 
-**jacobgonzales.tv** — confirmed available.
+Both **jacobgonzales.org** and **jacobgonzales.tv** are confirmed available.
+`jacobgonzales.com` / `.net` are taken (see the IONOS note below).
 
-`.tv` is a Tuvalu country domain, so it costs more than `.com`: expect **~$30–40/year**.
-That's normal for `.tv`, not a rip-off. Watch the *renewal* price, not just year one —
-some registrars advertise a cheap first year then renew high.
+| | first year | renewal | notes |
+|---|---|---|---|
+| **.org** | often ~$0.50 on promo | ~$10-15/yr | **recommended** — cheapest long-term, and 49 of the 259 pieces here are nonprofit work across 15 nonprofit clients, so the association fits |
+| **.tv** | ~$30-40 | ~$30-40/yr | reads as "video" instantly, but costs 3x forever |
+
+**Always check the RENEWAL price at checkout, not the first-year price.** A $0.50 first year
+that renews at $40 is a worse deal than a $12 domain. If renewal is $10-15, take it.
+
+You can also have both later — multiple domains can point at the same Worker.
 
 Where to buy, in order of preference:
 
@@ -36,7 +43,7 @@ are published in a public database that spammers scrape.
 
 *Skip this entirely if you bought through Cloudflare Registrar — it's already done.*
 
-1. `dash.cloudflare.com` → **Add a domain** → type `jacobgonzales.tv` → choose the **Free** plan.
+1. `dash.cloudflare.com` → **Add a domain** → type your domain → choose the **Free** plan.
 2. Cloudflare gives you two nameservers, e.g. `dana.ns.cloudflare.com`.
 3. Go to the registrar you bought from → find **Nameservers** → replace theirs with Cloudflare's two.
 4. Wait. Usually minutes, occasionally a few hours.
@@ -50,8 +57,8 @@ Once the domain shows **Active** in Cloudflare, tell Claude Code and it will add
 
 ```jsonc
 "routes": [
-  { "pattern": "jacobgonzales.tv",     "custom_domain": true },
-  { "pattern": "www.jacobgonzales.tv", "custom_domain": true }
+  { "pattern": "jacobgonzales.org",     "custom_domain": true },
+  { "pattern": "www.jacobgonzales.org", "custom_domain": true }
 ]
 ```
 
@@ -68,7 +75,7 @@ certificate on its own.
 ## Step 4 — Verify
 
 Claude Code can confirm end to end:
-- `jacobgonzales.tv` and `www.` both resolve
+- the domain and its `www.` both resolve
 - HTTPS certificate issued and valid
 - all pieces load on the real domain
 - the old `.workers.dev` URL still works as a fallback
@@ -80,6 +87,6 @@ Claude Code can confirm end to end:
 - **Keep the `.workers.dev` URL.** It keeps working and is a useful fallback if DNS ever breaks.
 - **Renewal:** put a calendar reminder a month before expiry, or enable auto-renew. A lapsed
   domain can be bought out from under you and they are expensive to recover.
-- **Email is separate.** Buying the domain does not give you `jacob@jacobgonzales.tv`. If you
-  want that, Cloudflare Email Routing forwards to Gmail for free — worth doing, since the site
+- **Email is separate.** Buying the domain does not give you an address on it. If you
+  want `jacob@yourdomain`, Cloudflare Email Routing forwards to Gmail for free — worth doing, since the site
   currently lists a personal Gmail address.
