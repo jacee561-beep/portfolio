@@ -314,3 +314,33 @@ background plates, clearly labelled. Don't let generated work get listed as deli
 **Jacob is not a developer.** Don't hand him terminal steps unless there's no alternative, don't
 assume he'll interpret an error log, and verify changes by actually loading the page rather than
 asserting they work.
+
+### 8. Y2K visual layer + AI assets (same session, later)
+
+Accent orange → cyan `#22d3ee`. The custom cursor that was here briefly was removed — he disliked it.
+Kept: scanlines, RGB-split headline glitch, chrome sheen on the accent word.
+
+**Higgsfield is wired up and working** (MCP at `https://mcp.higgsfield.ai/mcp`, in `.mcp.json` one level
+up; CLI also installed and authed). He's on a 3-day Plus trial — ~100 credits, expires fast, then
+$49/mo unless cancelled. Say "cancel auto-renewal" in a chat with the MCP connected.
+
+Cost trap: **2K images cost 10 credits, 1K cost ~1.5.** Stay on 1K, it's plenty for web. Also the
+model name silently swaps — requesting `nano_banana_2` runs `nano_banana_flash`. And a
+"ran out of credits" error appeared while ~98 credits were available; don't trust it, check `balance`.
+
+Generated assets live in `public/assets/y2k/` (source PNGs are gitignored, web copies ship):
+- `bg-contact.jpg` — Y2K plate behind the contact section at 22% with a radial fade. Deliberately
+  **not** in the hero: the hero rotates his real footage and that's stronger than any generated plate.
+- `obj-cube/star/ring/crt.png` — alpha cutouts (generate → `remove_background`) floating in the work,
+  personal and contact sections with scroll parallax (`.flo` + `data-speed`/`data-spin`, JS at the end
+  of `script.js`). `.flo` takes the JS transform; the inner `<img>` runs the CSS idle drift — keep them
+  separate or they fight over `transform`.
+
+**The About photo is now AI-generated** (`assets/y2k/portrait-v4a.png`), from an Element trained on his
+one real headshot. Both real versions are preserved: `jacob-headshot-ORIGINAL-backup.jpg` and
+`jacob-headshot-RETOUCHED-real.jpg` — **do not delete either.**
+
+Open issue worth solving: with only one reference photo, the more the hair/styling is pushed the more
+the face drifts off him — he noticed and disliked it. The real fix is Soul training with 5-20 real
+photos of him (`show_characters action=train`). His iCloud folders hold ~3,000 personal photos;
+**do not sweep them** — ask him to hand over a chosen set.

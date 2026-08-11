@@ -22,3 +22,6 @@ public/assets/video_web/
 # Wrangler / Cloudflare
 .wrangler/
 node_modules/
+
+# Higgsfield source PNGs — the optimised web copies are what ship
+public/assets/y2k/*.png

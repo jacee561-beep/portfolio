@@ -324,44 +324,47 @@ if (!reduced && window.matchMedia("(pointer: fine)").matches) {
   scan.className = "scan";
   document.body.appendChild(scan);
 
-  /* --- cursor --- */
-  const dot = document.createElement("div");
-  dot.className = "cur";
-  const ring = document.createElement("div");
-  ring.className = "cur-ring";
-  document.body.append(dot, ring);
-
-  let mx = innerWidth / 2, my = innerHeight / 2;   // target (mouse)
-  let rx = mx, ry = my;                            // ring position (lagging)
-
-  addEventListener("mousemove", (e) => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-    if (!document.body.classList.contains("cur-on")) document.body.classList.add("cur-on");
-  }, { passive: true });
-
-  addEventListener("mouseleave", () => document.body.classList.remove("cur-on"));
-  addEventListener("mouseenter", () => document.body.classList.add("cur-on"));
-
-  (function loop() {
-    rx += (mx - rx) * 0.16;                        // lerp = the trailing feel
-    ry += (my - ry) * 0.16;
-    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
-    requestAnimationFrame(loop);
-  })();
-
-  /* grow the ring over anything clickable */
-  const HOT = "a, button, .card, [data-magnetic], input, textarea, select";
-  document.addEventListener("mouseover", (e) => {
-    if (e.target.closest(HOT)) document.body.classList.add("cur-hot");
-  });
-  document.addEventListener("mouseout", (e) => {
-    if (e.target.closest(HOT)) document.body.classList.remove("cur-hot");
-  });
-
   /* --- RGB-split glitch: duplicate the headline text into pseudo-elements --- */
   document.querySelectorAll(".hero h1 .ln > span").forEach((el) => {
     el.classList.add("glitchable");
     el.setAttribute("data-txt", el.textContent.trim());
   });
+})();
+
+/* ============================================================
+   Floating Y2K objects — scroll parallax.
+   Each .flo drifts at its own data-speed as it passes through
+   the viewport, and rotates slightly with scroll. Idle motion
+   lives on the inner <img> in CSS.
+   ============================================================ */
+(function () {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.innerWidth < 820) return;
+
+  const flo = [...document.querySelectorAll(".flo")];
+  if (!flo.length) return;
+
+  let ticking = false;
+
+  function place() {
+    const vh = window.innerHeight;
+    for (const el of flo) {
+      const r = el.parentElement.getBoundingClientRect();
+      // -1 (section below viewport) .. 1 (section above viewport)
+      const progress = (vh / 2 - (r.top + r.height / 2)) / (vh / 2 + r.height / 2);
+      const speed = parseFloat(el.dataset.speed || "0.3");
+      const spin = parseFloat(el.dataset.spin || "18");
+      el.style.transform =
+        `translate3d(0, ${(progress * 100 * speed).toFixed(2)}px, 0) rotate(${(progress * spin).toFixed(2)}deg)`;
+    }
+    ticking = false;
+  }
+
+  addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(place); }
+  }, { passive: true });
+  addEventListener("resize", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(place); }
+  }, { passive: true });
+  place();
 })();
