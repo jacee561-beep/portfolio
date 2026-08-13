@@ -8,25 +8,7 @@ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 document.getElementById("yr").textContent = new Date().getFullYear();
 
-/* ---------- preloader ---------- */
-(function loader() {
-  const el = $("#loader"), bar = $("#loaderBar"), pct = $("#loaderPct");
-  let v = 0;
-  const tick = setInterval(() => {
-    v = Math.min(100, v + Math.random() * 18 + 6);
-    bar.style.width = v + "%";
-    pct.textContent = Math.round(v);
-    if (v >= 100) {
-      clearInterval(tick);
-      setTimeout(() => {
-        el.classList.add("done");
-        document.body.classList.remove("is-locked");
-        startHero();
-      }, 260);
-    }
-  }, 110);
-  document.body.classList.add("is-locked");
-})();
+/* Preloader removed — the site now paints immediately. */
 
 /* ---------- header ---------- */
 (function header() {
@@ -57,45 +39,9 @@ document.getElementById("yr").textContent = new Date().getFullYear();
   );
 })();
 
-/* ---------- hero video rotation ---------- */
-const HERO = ["cwk-reel", "patricia-heaton", "literacy-kravis-luncheon", "ite-gala-interview1"];
-let heroStarted = false;
-
-function startHero() {
-  if (heroStarted || reduced) return;
-  heroStarted = true;
-  const box = $("#heroMedia");
-  const poster = $("#heroPoster");
-  let i = 0;
-
-  const play = (id) => {
-    const v = document.createElement("video");
-    v.src = `assets/video/${id}.mp4`;
-    v.muted = true;
-    v.playsInline = true;
-    v.loop = false;
-    v.preload = "auto";
-    v.addEventListener("canplay", () => {
-      box.appendChild(v);
-      requestAnimationFrame(() => {
-        v.classList.add("on");
-        poster.classList.remove("on");
-      });
-      v.play().catch(() => {});
-      // swap after 7s or when it ends, whichever first
-      const next = () => {
-        v.classList.remove("on");
-        setTimeout(() => v.remove(), 1400);
-        i = (i + 1) % HERO.length;
-        play(HERO[i]);
-      };
-      const t = setTimeout(next, 7000);
-      v.addEventListener("ended", () => { clearTimeout(t); next(); }, { once: true });
-    }, { once: true });
-    v.addEventListener("error", () => { i = (i + 1) % HERO.length; play(HERO[i]); }, { once: true });
-  };
-  play(HERO[i]);
-}
+/* Hero highlight-reel rotation removed — the hero is a single still image.
+   The work itself carries the page; an auto-playing reel up top competed
+   with the grid and was the first thing a visitor had to sit through. */
 
 /* ---------- marquee ---------- */
 (function marquee() {
@@ -120,40 +66,93 @@ const piecesStat = $('[data-count][data-auto="pieces"]');
 if (piecesStat) piecesStat.dataset.count = REELS.length;
 
 /* ============================================================
-   Grid ordering.
-   The manifest is in the order work was added, which scattered
-   most clients across the array (19 of 28 multi-piece clients).
-   A visitor reading it saw the same show reappear at random.
+   Grid ordering — by VISUAL IMPACT, not by volume.
 
-   Order is now:
-     1. a curated FEATURED set, sequenced to show full range in
-        the first row (motion / podcast / social / interview)
-     2. everything else grouped so a client's work is contiguous,
-        with the biggest bodies of work first — a long run of one
-        client reads as an ongoing relationship, not a one-off.
+   A prospective client scrolls a few rows and leaves. Previously
+   the sort favoured clients with the most pieces, which meant 92
+   talking-head podcast reels outranked the VFX and design work.
+   That buries the strongest material.
+
+   Order now:
+     1. SHOWCASE — hand-picked openers, rendered as large cards
+     2. impact tier (see below), lowest number first
+     3. within a tier, a client's work stays contiguous
    ============================================================ */
-const FEATURED = [
+
+/* Rendered double-width at the top of the grid. */
+const SHOWCASE = [
   "cryptorubik-orb",
-  "nrg-manifold-highlight",
-  "vertical-caption-reel",
-  "patricia-heaton",
+  "vaporwave-collage",
+  "tht-plane-intro",
+  "polo-recap-ae",
   "cryptorubik-spot",
-  "od2a-webinar-titles",
+  "sparked-logo",
 ];
+
+/* Tier 1 — design/VFX/3D led. The work that makes someone stop scrolling. */
+const TIER1 = new Set([
+  ...SHOWCASE,
+  "cryptorubik-market", "cryptorubik-cube",
+  "tht-logo-intro", "tht-blue-intro", "tht-card-animation", "tht-card-animation-2",
+  "sparked-spark-mark", "sparked-notification", "sparked-logo-sting", "sparked-outro",
+  "polo-recap-ae-2", "insight-logo-animation", "insight-ite-intro",
+  "ite-brand-intro-prerender", "insight-brand-outro",
+  "khs-logo-intro", "khs-intro-loop", "ceod-logo", "rtdb-logo-intro",
+  "csc-intro", "csc-outro", "eqb2b-comp", "eqb2b-ep3-intro",
+  "dk-intro", "dk-outro", "nrg-intro", "gygo-podcast-intro",
+  "od2a-webinar-titles",
+  "tennis-with-ema-podcast-intro", "tennis-with-ema-podcast-outro",
+  "tennis-with-ema-lucky-in-love-sponsor-spot", "tennis-with-ema-match-set-sponsor-spot",
+]);
+
+/* Tier 2 — polished branded/produced pieces. */
+const TIER2 = new Set([
+  "sparked-rethink", "sparked-how-it-works", "sparked-thank-you", "sparked-school-leaders",
+  "hona-open", "hona-generic", "hona-sponsors",
+  "childrens-harbor-reel1", "childrens-harbor-reel2", "cch-golf-reel1",
+  "literacy-coalition-recap", "literacy-kravis-luncheon", "hona-recap",
+  "people-of-purpose-recap", "gift-gathering-recap", "promisefund-event",
+  "insight-brand-story", "insight-names-not-numbers", "insight-nnn-clip-3",
+  "wybt-promo", "patricia-heaton", "super-fit-champs-film",
+  "vertical-caption-reel", "devi-kodak-jeep-reel",
+  "julie-khanna-reel-1", "julie-khanna-reel-2", "julie-khanna-reel-red",
+  "jenilee-reel1", "jenilee-reel2",
+  "tithing-tree-reel1", "tithing-tree-reel2", "valentyna-g-polo-sundays",
+]);
+
+/* Tier 4 — least visually distinctive: repetitive utility graphics,
+   near-identical award packages, plain talking-head cuts, long-form excerpts. */
+const isTier4 = (r) =>
+  /lower third/i.test(r.title) ||
+  /nominees/i.test(r.title) ||
+  /\(excerpt\)/i.test(r.title) ||
+  /b-roll/i.test(r.title) ||
+  r.id.startsWith("elite-");
+
+function impactOf(r) {
+  if (TIER1.has(r.id)) return 1;
+  if (TIER2.has(r.id)) return 2;
+  if (isTier4(r)) return 4;
+  if (r.category === "motion" || r.category === "social") return 2;
+  if (r.category === "podcast") return 3.5;   // the 90+ talking-head cuts sit low
+  return 3;
+}
 
 const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
 const MANIFEST_POS = new Map(REELS.map((r, i) => [r.id, i]));
 
 function orderReels(list) {
-  const rank = (id) => {
-    const i = FEATURED.indexOf(id);
+  const showcaseRank = (id) => {
+    const i = SHOWCASE.indexOf(id);
     return i < 0 ? Number.MAX_SAFE_INTEGER : i;
   };
   return list.slice().sort((a, b) => {
-    const fa = rank(a.id), fb = rank(b.id);
-    if (fa !== fb) return fa - fb;                         // featured first, in listed order
+    const sa = showcaseRank(a.id), sb = showcaseRank(b.id);
+    if (sa !== sb) return sa - sb;                          // showcase openers, in listed order
+    const ia = impactOf(a), ib = impactOf(b);
+    if (ia !== ib) return ia - ib;                          // strongest work first
     const va = CLIENT_VOLUME[a.client], vb = CLIENT_VOLUME[b.client];
-    if (va !== vb) return vb - va;                         // bigger bodies of work first
+    if (va !== vb) return vb - va;                          // bigger bodies of work first
     if (a.client !== b.client) return a.client.localeCompare(b.client);
     return MANIFEST_POS.get(a.id) - MANIFEST_POS.get(b.id); // stable within a client
   });
@@ -186,7 +185,12 @@ function buildFilters() {
 
 function card(reel, idx) {
   const el = document.createElement("article");
-  el.className = "card" + (reel.orientation === "landscape" ? " wide" : "");
+  // Showcase pieces render double-width, but only in the unfiltered view —
+  // inside a category the grid should stay an even rhythm.
+  const feat = active === "all" && SHOWCASE.includes(reel.id);
+  el.className = "card"
+    + (reel.orientation === "landscape" ? " wide" : "")
+    + (feat ? " feat" : "");
   el.style.animation = `cardIn .65s cubic-bezier(.22,1,.36,1) ${Math.min(idx, 12) * 0.035}s both`;
   el.innerHTML = `
     <div class="card-media">
