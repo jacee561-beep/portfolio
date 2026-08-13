@@ -6,11 +6,22 @@ Context for any Claude Code session, on any machine. Read this first.
 
 ## 🟢 STATUS — the site is LIVE
 
-**https://newportfoilio.jacee561.workers.dev**
+**https://jacobgonzales.tv**
 
-Deployed on Cloudflare Workers (static assets) from this repo. Verified working in production:
-all three pages render, posters and the headshot load, video streams and plays (720x1280),
-no console errors.
+Custom domain (apex + `www`), registered via Cloudflare Registrar 2026-08-11 and bound in
+`wrangler.jsonc` under `routes` with `custom_domain: true`. Verified in production: all three
+pages, posters, photos, headshot and video all HTTP 200, SSL valid, 259 manifest entries served.
+
+**Fallback URL: `https://portfolio.jacee561.workers.dev`.** The older
+`newportfoilio.jacee561.workers.dev` is **retired and 404s** — the deploy consolidated onto the
+worker named `portfolio` in `wrangler.jsonc`. Don't cite the old name.
+
+⚠️ If the `jacobgonzales.tv` zone is ever removed from the Cloudflare account, **delete the
+`routes` block in `wrangler.jsonc` first** — otherwise every deploy fails and the site goes down.
+
+`/podcasts.html` and `/photography.html` 307-redirect to `/podcasts` and `/photography`
+(Cloudflare's default `html_handling`). Both forms work. The nav keeps the `.html` links on
+purpose so the local `python -m http.server` preview still resolves them.
 
 **Deployment is automatic.** Push to `main` and Cloudflare rebuilds in about a minute. You do
 not drag folders or touch the dashboard.
@@ -69,7 +80,28 @@ conversation.
 | `public/assets/photos/<id>.jpg` | Photos |
 | `public/assets/jacob-headshot.jpg` | About-section portrait |
 
-Current scale: **151 videos across 6 categories, 34 photos across 7 sessions.**
+Current scale: **259 videos across 6 categories, 34 photos across 7 sessions.**
+
+### Full-drive audit — the numbers, so nobody re-scans blind
+
+| Drive | Total video files | Verdict |
+|---|---|---|
+| **F: GENERAL** (22 TB) + Desktop | 9,044 | mined; >600 MB band is *all* full-length episodes |
+| **H: PORTABLE1** (3.7 TB) | 1,566 | mined; large files are raw camera/multicam |
+| **WD My Passport** (3.7 TB) | — | **HFS+, unreadable on Windows — see Still open** |
+
+**Two filters caused every earlier miss — do not reuse them blindly:**
+1. A **size cap** (`-size -500M` / `-600M`) hid 422 files on H: and 2,551 on F:. Most were genuinely
+   raw or long-form, but it also hid the *Super Fit Champs* brand film and the whole
+   *Mental Millennials 13-18* / *inSIGHT brand story* / *Julie Khanna* sets.
+2. Searching only folders **named** `export|reels|final` missed work sitting in
+   `STUDIO DUMP 3.26/`, `LOCATION DUMP 3.26/` and `General Storage Dump/` — archive folders that
+   contain other clients' finished deliverables nested several levels down. **Always search those.**
+
+**Long-form is represented by excerpts.** Full episodes run 20–135 min at 3–16 GB and cannot ship
+(Cloudflare rejects >25 MB/file). Round 9 added 75-second excerpts titled `… (excerpt)` at 2.5–6 MB
+each. To add more, use `-ss <start> -i <src> -t 75` with the standard encode flags and start well
+past the cold open.
 
 ---
 
@@ -147,7 +179,9 @@ Source archives live on his external drives (`F:` ~22 TB, `K:` ~3.7 TB) and his 
 
 Defined as CSS custom properties at the top of `public/styles.css`.
 
-- Background `#08080a`, panels `#131317`, accent `#ff5436`
+- Background `#08080a`, panels `#131317`, accent **`#22d3ee` (cyan)** — Jacob replaced the original
+  orange `#ff5436`; if you ever change it again, note that two oranges were once hardcoded outside
+  the token (see the 2026-08-11 home-PC log below)
 - Display type: weight 900, tight negative letter-spacing, `clamp()` for fluid sizing
 - Radius `14px`, easing `cubic-bezier(0.22, 1, 0.36, 1)`
 
@@ -281,11 +315,86 @@ Standing judgement worth keeping: AI-generated footage is a bad fit for the *por
 is a videographer's credibility page and his real work is stronger. Fine for ads, thumbnails, or
 background plates, clearly labelled. Don't let generated work get listed as delivered client work.
 
+## Session log — 2026-08-11 (work PC): rounds 6 & 7, 158 → 225
+
+**The scan method that finally worked.** Every earlier pass only looked *inside folders named*
+`export|reels|final|…`. That silently missed whole bodies of work sitting in differently-named
+folders. The fix: scan **every** folder and filter on the files instead —
+
+```bash
+find /f /h "$DESKTOP" -type f \( -iname "*.mp4" -o -iname "*.mov" \) -size +300k -size -500M \
+ | grep -v '/\._' \
+ | grep -viE -e "/proxies/" -e "proxymedia" -e "/raw footage/" -e "-utc" -e "stock footage" \
+             -e envato -e "/help/" -e tutorial -e "video iso files" -e "untitled cam" \
+             -e "auto-save" -e "video previews"
+```
+Then drop anything named `Untitled NN` / `C0123.MP4` / under `private/M4ROOT/CLIP/` — those are
+recorder and camera-card output. **What's left with a human-readable filename is almost always a
+real deliverable.** That single heuristic surfaced ~70 pieces three prior passes had missed.
+
+**Round 6 (F:, +26).** HONA Awards — a complete nonprofit awards-show package (show open, sponsor
+reel, 13 award-category nominee films). Used `HONA FINAL/`, not the earlier `HONA WITH MUSIC/`
+iteration (which has doubled `.mp4.mp4` extensions). Plus 8 Wellington Bay resident testimonials
+and 2 Khanna House Studios virtual business cards.
+
+**Round 7 (H: PORTABLE1, +41).** Uncoordinated (12 of 33 titled podcast reels), Super Fit Champs
+(14 named animations for a kids' fitness brand), Tennis with Ema (4 episode reels + animated
+intro/outro/2 sponsor spots), Intro to Podcasting (3), KHS Reels (2), Valentyna G Polo, Devi.
+
+**Deliberately excluded and why — don't re-add these:**
+- `Video ISO Files/Untitled CAM N` across Carlton Chandler, Oxbridge, Jammin' with Jeremy, Amanda
+  Salazar, Mike Morgan — raw multicam recorder ISOs, not deliverables.
+- `private/M4ROOT/CLIP/C####.MP4` (DEVI, 365 Wellness Executive) — Sony camera cards.
+- Childrens Harbor / Catherine Hormats video — all `C####.MP4` card files. Their finished reels and
+  photos are already in.
+- `PHELPS MEDIA GROUP/PHELPS SEP 9/EXPORT/TIM DUTTA PHELPS.mp4` — **audio-only, no video stream.**
+  The real cut is a 2.8 GB 18-minute episode, excluded under the no-long-form rule.
+
+### Gotchas hit this session
+
+- **Mac private-use characters in filenames, again.** `Would You Rather….mp4` actually ends
+  `…Animals.mp4` — U+F025 is a Mac-encoded `%`. Same family as the `` folder hit
+  earlier. If a file "exists" in `ls` but `os.path.exists()` says False, print `repr()` of the real
+  entry from `os.listdir()` and copy the escape from that.
+- **ffmpeg output isn't cp1252.** `subprocess.run(..., text=True)` crashed with
+  `UnicodeDecodeError` probing one file. Always pass `encoding="utf-8", errors="replace"`.
+- **Make batch scripts resumable.** Add a skip-if-output-already-exists guard so a crash at item 35
+  of 42 doesn't re-encode the first 34.
+- **Cloudflare 403s plain scripts.** Verifying the live site with `urllib` gets 403 from bot
+  protection — send a normal browser `User-Agent`. A 404 on a brand-new asset usually just means
+  the deploy is still building; the manifest count tells you which round is live.
+
+### Repo size — watch this
+
+~700 MB and growing. Still fine (GitHub is comfortable under 1 GB, Cloudflare's limit is per-file
+at 25 MB and the largest here is 18.6 MB). But git keeps every version forever, so if this keeps
+growing the move is to host video externally (Cloudflare Stream / Bunny / Mux) and keep only
+posters in the repo. Don't let it drift past ~1 GB without addressing it.
+
 ## Still open
 
-- **More footage — this is the active task.** Jacob is picking this up on his **home PC**. He has
-  said repeatedly there is a lot left unreviewed. Scan that machine's drives using the curation
-  rules above, compress with the recipe above, add to `public/assets/manifest.js`, push.
+- **🟡 WD My Passport (Mac-formatted) — SOLVED, needs Jacob to run one export.** GPT partition type
+  `48465300-0000-11aa-aa11-00306543ecac` = **Apple HFS+**, which is why Windows gives it no drive
+  letter. **Do not assign a letter, initialise, or touch its partitions — that destroys footage.**
+  **No software needs installing.** `DiskInternals Linux Reader` is already installed at
+  `C:\Program Files (x86)\DiskInternals\LinuxReader\LinuxReader64.exe`, reads HFS+, and is
+  **read-only by design**. It detects the drive as **"HFS+ Volume 1 (BACKUP1)", 3725.67 Gb**.
+  It is GUI-only (no CLI), so the export is a manual step: open it → double-click that volume →
+  select the folders worth taking → **Save** → export to `H:\FROM-MAC-DRIVE`. Then sweep that
+  folder with the scan method above and encode normally.
+  *(Also tried and rejected: WSL is not installed and `wsl --mount` would need admin + a reboot;
+  reading `\\.\PhysicalDrive3` directly needs elevation. Disk Drill is also installed and can read
+  HFS+ if Linux Reader gives trouble.)*
+  **GUI-automation note:** driving Linux Reader with computer-use failed because the workstation was
+  **locked** (`LockApp` running) — screenshots come back frozen and identical, and clicks silently
+  do nothing. If that symptom appears, check `Get-Process LogonUI,LockApp` before assuming the app
+  or the permissions are at fault.
+- **Uncoordinated has ~21 more titled reels** in `H:/UNCOORDINATED/EPSIODE 1/REELS/` beyond the 12
+  added — deliberately sampled to avoid one show dominating the grid. Easy to top up if he wants.
+- **HONA `HONA WITH MUSIC/`** also holds ~11 per-sponsor spots (SPONSOR-DERBY, SPONSOR-FEDORA,
+  SPONSOR-MAD HATTER etc.) not added. Available if the awards package should go deeper.
+- **More footage generally.** Jacob keeps saying there's more. The F:/H: sweep above is now
+  thorough; the main untapped source is the Mac drive.
 - **Flyers / graphic design.** Real design files exist on the work-PC archive drives but only as
   editable `.psd` / `.ai` (e.g. `TITHING TREE/logos/wild earth allies.psd`). They can't be
   rendered to web images without Photoshop/Illustrator. Also unclear which are Jacob's own

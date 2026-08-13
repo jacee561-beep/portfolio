@@ -1280,6 +1280,824 @@ const REELS = [
     blurb: "Animated outro graphic for a medical explainer video.",
     orientation: "landscape"
   },
+
+  // ==== Round 6: HONA awards package, Wellington Bay testimonials, virtual cards ====
+  {
+    id: "hona-open",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Awards Show Open",
+    blurb: "Title sequence opening a nonprofit awards ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-generic",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Ceremony Package",
+    blurb: "Generic award segment built for the live ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-sponsors",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Sponsor Reel",
+    blurb: "Sponsor recognition reel played during the ceremony.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-lifetime",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Lifetime Achievement — Nominees",
+    blurb: "Nominee package for the Lifetime Achievement award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-community-hero",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Community Hero — Nominees",
+    blurb: "Nominee package for the Community Hero award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-executive",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Executive of the Year — Nominees",
+    blurb: "Nominee package for the Executive of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-mvp",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "MVP of the Year — Nominees",
+    blurb: "Nominee package for the MVP of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-professional",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Professional of the Year — Nominees",
+    blurb: "Nominee package for the Professional of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-volunteer",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Volunteer of the Year — Nominees",
+    blurb: "Nominee package for the Volunteer of the Year award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-education",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Education Impact — Nominees",
+    blurb: "Nominee package for the Education Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-innovation",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Innovation — Nominees",
+    blurb: "Nominee package for the Innovation award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-health",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Health & Wellness Impact — Nominees",
+    blurb: "Nominee package for the Health and Wellness Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-arts",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Arts & Culture Impact — Nominees",
+    blurb: "Nominee package for the Arts and Culture Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-environment",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Environment & Animal Welfare — Nominees",
+    blurb: "Nominee package for the Environment and Animal Welfare Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-family",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Family Services Impact — Nominees",
+    blurb: "Nominee package for the Family Services Impact award.",
+    orientation: "landscape"
+  },
+  {
+    id: "hona-collaborators",
+    category: "nonprofit",
+    client: "HONA Awards",
+    title: "Community Collaborators — Nominees",
+    blurb: "Nominee package for the Community Collaborators award.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-artie",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Artie Lynnworth",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-carol",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Carol Phillips",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-jan",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Jan Newlands",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-jeff",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Jeff Sigman",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-judie",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Judie Eieibold",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-myra-david",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Myra & David",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-rita",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Rita",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "wb-tony",
+    category: "corporate",
+    client: "Wellington Bay",
+    title: "Testimonial — Tony",
+    blurb: "Resident testimonial film for a senior living community.",
+    orientation: "landscape"
+  },
+  {
+    id: "khs-virtual-card",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Virtual Business Card",
+    blurb: "Digital business card format produced for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "virtual-card-demo",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Virtual Business Card — Demo",
+    blurb: "Full-length demo of the digital business card product.",
+    orientation: "landscape"
+  },
+
+  // ==== Round 7: H: PORTABLE1 — Uncoordinated, Super Fit Champs, Tennis with Ema, KHS ====
+  {
+    id: "uncoordinated-name-pronunciation-struggles",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Name Pronunciation Struggles",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-roller-coaster-experience",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Roller Coaster Experience",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-first-skydive",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "First Skydive",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-almost-made-the-team",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Almost Made the Team",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-healing-after-heartbreak",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Healing After Heartbreak",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-the-gym-routine-that-works",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "The Gym Routine That Works",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-live-freestyle-session",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Live Freestyle Session",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-ten-years-of-friendship",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Ten Years of Friendship",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-inside-the-hustle",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Inside the Hustle",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-influencing-vs-a-full-time-job",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Influencing vs. a Full-Time Job",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-warm-showers-changed-my-life",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Warm Showers Changed My Life",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "uncoordinated-would-you-rather",
+    category: "podcast",
+    client: "Uncoordinated",
+    title: "Would You Rather",
+    blurb: "Episode reel cut for social from a comedy/lifestyle podcast.",
+    orientation: "portrait"
+  },
+  {
+    id: "super-fit-champs-be-a-fitness-star",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Be a Fitness Star",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-every-step-counts",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Every Step Counts",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-stay-fit-stay-happy",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Stay Fit, Stay Happy",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-move-to-the-beat",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Move to the Beat",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-let-s-get-active",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Let's Get Active",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-fitness-is-fun",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Fitness Is Fun",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-strong-bodies-strong-minds",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Strong Bodies, Strong Minds",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-smile-and-jump",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Smile and Jump",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-exercise-is-fun",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Exercise Is Fun",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-stretch-and-move",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Stretch and Move",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-energy-up-fun-up",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Energy Up, Fun Up",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-feel-the-power",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Feel the Power",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-run-jump-play",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Run, Jump, Play",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-coach-b",
+    category: "motion",
+    client: "Super Fit Champs",
+    title: "Coach B",
+    blurb: "Animated segment for a children's fitness brand.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-reel-1",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode Reel 1",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-reel-2",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode Reel 2",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-2-reel-1",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode 2 — Reel 1",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-episode-2-reel-2",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "Episode 2 — Reel 2",
+    blurb: "Highlight reel cut from a tennis podcast episode.",
+    orientation: "portrait"
+  },
+  {
+    id: "tennis-with-ema-podcast-intro",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Podcast Intro",
+    blurb: "Animated title sequence for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-podcast-outro",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Podcast Outro",
+    blurb: "Animated outro graphic for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-lucky-in-love-sponsor-spot",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Lucky in Love — Sponsor Spot",
+    blurb: "Animated sponsor advert cut for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-with-ema-match-set-sponsor-spot",
+    category: "motion",
+    client: "Tennis with Ema",
+    title: "Match Set — Sponsor Spot",
+    blurb: "Animated sponsor advert cut for the show.",
+    orientation: "landscape"
+  },
+  {
+    id: "khanna-house-studios-studio-welcome",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Studio Welcome",
+    blurb: "Brand introduction film for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "khanna-house-studios-faq-reel",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "FAQ Reel",
+    blurb: "Short-form FAQ explainer for his own studio.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-1",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 1",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-3",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 3",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "intro-to-podcasting-episode-4",
+    category: "corporate",
+    client: "Intro to Podcasting",
+    title: "Episode 4",
+    blurb: "Educational episode from a podcasting how-to series.",
+    orientation: "landscape"
+  },
+  {
+    id: "valentyna-g-polo-sundays",
+    category: "nonprofit",
+    client: "Valentyna G",
+    title: "Polo Sundays",
+    blurb: "Event film covering a polo Sunday.",
+    orientation: "landscape"
+  },
+  {
+    id: "devi-kodak-jeep-reel",
+    category: "social",
+    client: "Devi",
+    title: "Kodak Jeep Reel",
+    blurb: "Branded social reel.",
+    orientation: "landscape"
+  },
+
+  // ==== Round 8: deliverables hidden in DUMP archive folders ====
+  {
+    id: "mm-ep13-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 13 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep13-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 13 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep14-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 14 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep14-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 14 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep16-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 16 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep16-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 16 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep17-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 17 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep17-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 17 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep18-reel1",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 18 — Reel 1",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "mm-ep18-reel2",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 18 — Reel 2",
+    blurb: "Episode highlight reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "insight-brand-story",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Brand Story Film",
+    blurb: "Long-form brand story film for a nonprofit.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-brand-outro",
+    category: "motion",
+    client: "inSIGHT Education",
+    title: "Brand Story — Outro",
+    blurb: "Animated outro from the brand story film.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-names-not-numbers",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Names Not Numbers",
+    blurb: "Segment from a Holocaust-education nonprofit campaign.",
+    orientation: "landscape"
+  },
+  {
+    id: "insight-nnn-clip-3",
+    category: "nonprofit",
+    client: "inSIGHT Education",
+    title: "Names Not Numbers — Clip 3",
+    blurb: "Segment from a Holocaust-education nonprofit campaign.",
+    orientation: "landscape"
+  },
+  {
+    id: "khs-story-board",
+    category: "corporate",
+    client: "Khanna House Studios",
+    title: "Story Board",
+    blurb: "Vertical brand piece for his own studio.",
+    orientation: "portrait"
+  },
+
+  // ==== Round 8b: Julie Khanna reels ====
+  {
+    id: "julie-khanna-reel-1",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Event Reel 1",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "julie-khanna-reel-2",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Event Reel 2",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+  {
+    id: "julie-khanna-reel-red",
+    category: "social",
+    client: "Julie Khanna",
+    title: "Reel of the Red",
+    blurb: "Vertical event reel cut for social.",
+    orientation: "portrait"
+  },
+
+  // ==== Round 9: excerpts from flagship long-form episodes ====
+  {
+    id: "nrg-manifold-episode",
+    category: "podcast",
+    client: "NRG Podcast",
+    title: "Manifold — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 1h48m multi-camera episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "cwk-ep6-episode",
+    category: "podcast",
+    client: "Coffee with Kelly",
+    title: "Episode 6 — Full Show (excerpt)",
+    blurb: "Excerpt from the full 31-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "sojourners-podcast-episode",
+    category: "podcast",
+    client: "Sojourners",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 35-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "kerrigan-podcast-episode",
+    category: "podcast",
+    client: "Dwayne Kerrigan",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from a 2h13m multi-camera episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "eqb2b-ep4-episode",
+    category: "podcast",
+    client: "EQB2B",
+    title: "Episode 4 — Full Show (excerpt)",
+    blurb: "Excerpt from the full 52-minute branded episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "csc-episode",
+    category: "nonprofit",
+    client: "Children's Services Council",
+    title: "Episode — Full Show (excerpt)",
+    blurb: "Excerpt from a 30-minute nonprofit episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "wjm-gale-episode",
+    category: "podcast",
+    client: "We Just Met",
+    title: "Gale — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 48-minute dating-show episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "piper-laine-episode",
+    category: "podcast",
+    client: "Piper Laine",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from the full 30-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "tennis-ema-full-episode",
+    category: "podcast",
+    client: "Tennis with Ema",
+    title: "The Emazing Podcast — Full Show (excerpt)",
+    blurb: "Excerpt from the full 41-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "super-fit-champs-film",
+    category: "corporate",
+    client: "Super Fit Champs",
+    title: "Brand Film (excerpt)",
+    blurb: "Excerpt from the finished 21-minute brand film.",
+    orientation: "landscape"
+  },
+  {
+    id: "phelps-tim-dutta-film",
+    category: "corporate",
+    client: "Phelps Media Group",
+    title: "Tim Dutta — Feature Film (excerpt)",
+    blurb: "Excerpt from a long-form equestrian feature.",
+    orientation: "landscape"
+  },
+  {
+    id: "adrian-rmante-episode",
+    category: "podcast",
+    client: "Adrian R'Mante",
+    title: "Podcast — Full Episode (excerpt)",
+    blurb: "Excerpt from a full-length interview episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "rtdb-ep8-episode",
+    category: "podcast",
+    client: "RTDB",
+    title: "Episode 8 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "zoey-30f30-episode",
+    category: "podcast",
+    client: "Zoey Nguyen",
+    title: "30 for 30 — Episode 1 (excerpt)",
+    blurb: "Excerpt from the full 31-minute episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "mm-full-episode",
+    category: "podcast",
+    client: "Mental Millennials",
+    title: "Episode 29 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
+  {
+    id: "elite-protocol-episode",
+    category: "podcast",
+    client: "Elite Protocol",
+    title: "Episode 1 — Full Show (excerpt)",
+    blurb: "Excerpt from a full-length episode.",
+    orientation: "landscape"
+  },
 ];
 
 const CATEGORIES = [
