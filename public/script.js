@@ -66,6 +66,23 @@ const piecesStat = $('[data-count][data-auto="pieces"]');
 if (piecesStat) piecesStat.dataset.count = REELS.length;
 
 /* ============================================================
+   Two-tier filtering.
+   A visitor could not tell the creative work from the corporate
+   work. The top tier splits those; the category chips below then
+   only count and offer categories inside the chosen group.
+   ============================================================ */
+const GROUPS = [
+  { id: "all",        label: "Everything",             cats: null },
+  { id: "creative",   label: "Creative &amp; Motion",      cats: ["motion", "social"] },
+  { id: "commercial", label: "Client &amp; Commercial",    cats: ["podcast", "corporate", "nonprofit", "interviews"] },
+];
+let group = "all";
+const inGroup = (r) => {
+  const g = GROUPS.find((x) => x.id === group);
+  return !g || !g.cats ? true : g.cats.includes(r.category);
+};
+
+/* ============================================================
    Grid ordering — by VISUAL IMPACT, not by volume.
 
    A prospective client scrolls a few rows and leaves. Previously
@@ -159,15 +176,39 @@ function orderReels(list) {
 }
 
 function filtered() {
-  const base = active === "all" ? REELS : REELS.filter((r) => r.category === active);
+  const pool = REELS.filter(inGroup);
+  const base = active === "all" ? pool : pool.filter((r) => r.category === active);
   return orderReels(base);
+}
+
+function buildGroups() {
+  const box = document.getElementById("groups");
+  if (!box) return;
+  box.innerHTML = "";
+  GROUPS.forEach((g) => {
+    const n = g.cats ? REELS.filter((r) => g.cats.includes(r.category)).length : REELS.length;
+    const b = document.createElement("button");
+    b.className = "g-btn" + (g.id === group ? " on" : "");
+    b.innerHTML = g.label + "<b>" + n + "</b>";
+    b.addEventListener("click", () => {
+      if (group === g.id) return;
+      group = g.id;
+      active = "all";
+      shown = PAGE;
+      buildGroups();
+      buildFilters();
+      renderGrid(true);
+    });
+    box.appendChild(b);
+  });
 }
 
 function buildFilters() {
   const box = $("#filters");
   box.innerHTML = "";
   CATEGORIES.forEach((c) => {
-    const n = c.id === "all" ? REELS.length : REELS.filter((r) => r.category === c.id).length;
+    const pool = REELS.filter(inGroup);
+    const n = c.id === "all" ? pool.length : pool.filter((r) => r.category === c.id).length;
     if (!n) return;
     const b = document.createElement("button");
     b.className = "f-btn" + (c.id === active ? " on" : "");
@@ -252,6 +293,7 @@ moreBtn.addEventListener("click", () => {
   renderGrid(false);
 });
 
+buildGroups();
 buildFilters();
 renderGrid(true);
 
@@ -369,11 +411,6 @@ if (!reduced && window.matchMedia("(pointer: fine)").matches) {
   scan.className = "scan";
   document.body.appendChild(scan);
 
-  /* --- RGB-split glitch: duplicate the headline text into pseudo-elements --- */
-  document.querySelectorAll(".hero h1 .ln > span").forEach((el) => {
-    el.classList.add("glitchable");
-    el.setAttribute("data-txt", el.textContent.trim());
-  });
 })();
 
 /* ============================================================
@@ -414,3 +451,4 @@ if (!reduced && window.matchMedia("(pointer: fine)").matches) {
   place();
 })();
 
+/* Showreel block removed. */

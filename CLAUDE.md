@@ -453,3 +453,29 @@ Open issue worth solving: with only one reference photo, the more the hair/styli
 the face drifts off him — he noticed and disliked it. The real fix is Soul training with 5-20 real
 photos of him (`show_characters action=train`). His iCloud folders hold ~3,000 personal photos;
 **do not sweep them** — ask him to hand over a chosen set.
+
+### 9. Showreel, two-tier filtering, Y2K pass
+
+**There is now a showreel** — `public/assets/video/showreel.mp4`, 24s, cut with ffmpeg from twelve
+existing library clips (in-points and order in the build script; verticals pillarboxed to 1920x1080,
+end card drawn with drawtext). Research was blunt about this: recruiters give a portfolio under two
+minutes and expect a reel first, and there wasn't one. Rebuild it whenever the best work changes.
+
+**Two-tier filtering** — his complaint was that a client couldn't tell the creative work from the
+corporate work. `GROUPS` (Everything / Creative &amp; Motion / Client &amp; Commercial) sits above the
+category chips; the chips then count and offer only categories inside the chosen group. The two
+groups sum to exactly 158, so nothing is orphaned — **keep that true** if categories change.
+
+**Résumé is finally linked** — `public/assets/files/Jacob_Gonzales_Resume.docx`, Aqua button in contact.
+
+**Y2K pass**, from actual research into the aesthetic (chrome, Aqua gloss, bloom, starfield, blobs):
+glossy Aqua-gradient buttons, chrome-gradient hero type, drifting starfield, 3D `rotateY` spin on
+the floating objects. **The RGB-split headline glitch was removed — he found it cringe. Don't
+reintroduce it.**
+
+**Verification, learned the hard way:** `node --check` only parses. It shipped a temporal-dead-zone
+bug that blanked the whole site. Use `scratchpad/verify.js` instead — it executes manifest.js +
+script.js against a stubbed DOM and asserts group totals and asset refs. Run it before every push.
+
+**Line endings:** the repo files are CRLF. Node patch scripts must normalise to LF, patch, then
+restore CRLF, or every string match silently fails.

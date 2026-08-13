@@ -803,7 +803,7 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
 }
 
 /* ============================================================
-   Y2K layer — custom cursor, scanlines, RGB-split glitch.
+   Y2K layer — scanlines and chrome sheen.
    Purely additive: every rule here is gated behind a fine
    pointer and prefers-reduced-motion, so the base design is
    untouched on touch devices and for reduced-motion users.
@@ -824,36 +824,6 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
   mix-blend-mode: overlay;
 }
 
-/* ---- RGB-split glitch on the hero headline ---- */
-.hero h1 .ln > span { position: relative; }
-.glitchable::before, .glitchable::after {
-  content: attr(data-txt);
-  position: absolute; left: 0; top: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.18s var(--ease);
-}
-.hero h1:hover .glitchable::before {
-  opacity: 0.85; color: #ff2f6d;
-  animation: rgbL 0.42s steps(2) infinite;
-}
-.hero h1:hover .glitchable::after {
-  opacity: 0.85; color: var(--accent);
-  animation: rgbR 0.42s steps(2) infinite;
-}
-@keyframes rgbL {
-  0%   { transform: translate(0, 0); }
-  33%  { transform: translate(-3px, 1px); }
-  66%  { transform: translate(2px, -1px); }
-  100% { transform: translate(-1px, 0); }
-}
-@keyframes rgbR {
-  0%   { transform: translate(0, 0); }
-  33%  { transform: translate(3px, -1px); }
-  66%  { transform: translate(-2px, 1px); }
-  100% { transform: translate(1px, 0); }
-}
 
 /* ---- chrome sheen on the accent word ---- */
 .hero h1 em {
@@ -871,7 +841,6 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
 @media (prefers-reduced-motion: reduce) {
   .scan { display: none !important; }
   .hero h1 em { animation: none; }
-  .glitchable::before, .glitchable::after { display: none; }
 }
 
 /* ============================================================
@@ -1010,3 +979,115 @@ a.bcard:hover .bcard-go svg { transform: translateX(5px); }
 }
 /* the static plate stays as the poster/fallback underneath */
 @media (prefers-reduced-motion: reduce) { .secbg { display: none; } }
+
+/* ============================================================
+   Aqua CTA buttons (contact)
+   ============================================================ */
+.contact-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+.aqua {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-weight: 700; font-size: 14.5px;
+  color: #06323d;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.94) 0%, rgba(206,244,255,0.88) 48%, rgba(116,214,240,0.92) 52%, rgba(56,168,204,0.96) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(0,0,0,0.2),
+    0 10px 26px -10px rgba(34,211,238,0.7);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s, filter 0.3s;
+}
+.aqua:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 16px 34px -12px rgba(34,211,238,0.85); }
+.aqua.ghost {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+  box-shadow: none;
+}
+.aqua.ghost:hover { border-color: var(--accent); color: var(--accent); filter: none; }
+
+/* ============================================================
+   Two-tier filters
+   ============================================================ */
+.filter-stack { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+.groups { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.g-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px; font-weight: 700;
+  color: var(--fg-dim);
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.02);
+  transition: color 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.3s;
+}
+.g-btn b {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10.5px; font-weight: 500; margin-left: 8px; opacity: 0.65;
+}
+.g-btn:hover { color: var(--fg); border-color: var(--line-strong); }
+.g-btn.on {
+  color: #06323d;
+  border-color: transparent;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(190,238,252,0.9) 50%, rgba(70,190,220,0.95) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 22px -10px rgba(34,211,238,0.8);
+}
+.g-btn.on b { opacity: 0.8; }
+@media (max-width: 900px) { .filter-stack { align-items: flex-start; } .groups { justify-content: flex-start; } }
+
+/* ============================================================
+   Chrome treatment on the hero name + starfield
+   ============================================================ */
+.hero h1 .ln > span {
+  background: linear-gradient(178deg, #ffffff 0%, #dff6ff 26%, #9fdcea 44%, #ffffff 52%, #7fc9dd 60%, #eaf9ff 78%, #ffffff 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.hero h1 em {
+  background: linear-gradient(100deg, var(--accent) 0%, #ffffff 45%, var(--accent) 60%, #b5f6ff 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  animation: sheen 6s linear infinite;
+}
+
+.stars {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, rgba(255,255,255,0.75), transparent),
+    radial-gradient(1.2px 1.2px at 74% 26%, rgba(180,240,255,0.7), transparent),
+    radial-gradient(1.6px 1.6px at 38% 62%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.1px 1.1px at 88% 72%, rgba(180,240,255,0.65), transparent),
+    radial-gradient(1.3px 1.3px at 22% 84%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 58% 8%, rgba(255,255,255,0.5), transparent);
+  background-repeat: repeat;
+  background-size: 900px 900px;
+  opacity: 0.5;
+  animation: starDrift 140s linear infinite;
+}
+@keyframes starDrift {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to   { background-position: 900px 900px, -900px 900px, 900px -900px, -900px -900px, 900px 900px, -900px 900px; }
+}
+
+/* ============================================================
+   3D spin on the floating objects
+   ============================================================ */
+.floaters { perspective: 900px; }
+.flo img {
+  animation: floDrift 9s ease-in-out infinite alternate,
+             floSpin 26s linear infinite;
+  transform-style: preserve-3d;
+}
+.flo:nth-of-type(2) img { animation-duration: 11s, 34s; animation-delay: -3s, -8s; }
+@keyframes floSpin {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stars { display: none; }
+  .hero h1 em { animation: none; }
+  .flo img { animation: none; }
+}
