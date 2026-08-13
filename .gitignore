@@ -31,3 +31,6 @@ public/assets/y2k/bg-hero.png
 public/assets/y2k/cmp-*.jpg
 public/assets/y2k/loop-strip.jpg
 public/assets/y2k/raw-loop.mp4
+
+# showreel build scratch
+public/assets/.reelbuild/
