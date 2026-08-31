@@ -1,454 +1,652 @@
 /* ============================================================
-   Jacob Gonzales — portfolio interactions
+   Jacob Gonzales — jacobgonzales.tv
+   Everything editable lives in assets/site-config.js.
    ============================================================ */
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g,
+  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-document.getElementById("yr").textContent = new Date().getFullYear();
+/* Reduced motion is read LIVE — a user can change it mid-session. */
+const mq = matchMedia("(prefers-reduced-motion: reduce)");
+let reduced = mq.matches;
+mq.addEventListener("change", (e) => { reduced = e.matches; if (reduced) releasePreview(); });
 
-/* Preloader removed — the site now paints immediately. */
+if (DRAFT) document.body.dataset.draft = "1";
 
-/* ---------- header ---------- */
-(function header() {
-  const hdr = $("#hdr"), burger = $("#burger"), nav = $("#nav"), prog = $("#prog");
-  let last = 0;
-  const onScroll = () => {
-    const y = window.scrollY;
-    hdr.classList.toggle("solid", y > 40);
-    if (!nav.classList.contains("open")) {
-      hdr.classList.toggle("hide", y > last && y > 340);
-    }
-    last = y;
-    const h = document.documentElement.scrollHeight - window.innerHeight;
-    prog.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+/* ---------- derived data ---------- */
+const CAT_LABEL = {
+  podcast: "Podcast",
+  motion: "Motion",
+  nonprofit: "Nonprofit & Events",
+  corporate: "Corporate",
+  social: "Branded Social",
+  interviews: "Interviews",
+};
+const CAT_ORDER = ["podcast", "motion", "nonprofit", "corporate", "social", "interviews"];
 
-  burger.addEventListener("click", () => {
-    burger.classList.toggle("x");
-    nav.classList.toggle("open");
+const COUNTS = REELS.reduce((m, r) => (m[r.category] = (m[r.category] || 0) + 1, m), {});
+const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
+const CLIENTS = Object.keys(CLIENT_VOLUME);
+const clientsIn = (cat) => new Set(REELS.filter((r) => r.category === cat).map((r) => r.client)).size;
+const ar = (r) => (r.w && r.h ? `${r.w}/${r.h}` : r.orientation === "landscape" ? "16/9" : "9/16");
+const roleOf = (r) => r.role || (SITE.defaultRoles && SITE.defaultRoles[r.category]) || null;
+
+/* Curated nine: the reel if it exists, the motion/brand-led showcase, then
+   top up so every discipline is represented. Volume-ranking buries the
+   strongest material, which is why this is hand-picked, not sorted. */
+const SHOWCASE = [
+  "cryptorubik-orb", "vaporwave-collage", "tht-plane-intro",
+  "polo-recap-ae", "cryptorubik-spot", "sparked-logo",
+];
+function curatedNine() {
+  const byId = new Map(REELS.map((r) => [r.id, r]));
+  const out = [];
+  if (SITE.reel && SITE.reel.id && byId.has(SITE.reel.id)) out.push(byId.get(SITE.reel.id));
+  SHOWCASE.forEach((id) => { const r = byId.get(id); if (r && !out.includes(r)) out.push(r); });
+  ["nonprofit", "corporate", "interviews", "social", "podcast"].forEach((cat) => {
+    if (out.length >= 9) return;
+    const pick = REELS.find((r) => r.category === cat && !out.includes(r));
+    if (pick) out.push(pick);
   });
-  $$("#nav a").forEach((a) =>
-    a.addEventListener("click", () => {
-      burger.classList.remove("x");
-      nav.classList.remove("open");
-    })
-  );
+  return out.slice(0, 9);
+}
+
+/* ---------- the pooled hover preview ----------
+   ONE <video> for the whole page. The old build created a player per card,
+   set preload="auto", and never cancelled the download on mouseleave. */
+const preview = Object.assign(document.createElement("video"), {
+  muted: true, loop: true, playsInline: true, preload: "metadata",
+});
+preview.setAttribute("disableremoteplayback", "");
+preview.setAttribute("disablepictureinpicture", "");
+let armed = null, armTimer = 0;
+
+function releasePreview() {
+  clearTimeout(armTimer);
+  if (!armed) return;
+  armed.classList.remove("playing");
+  armed = null;
+  preview.pause();
+  preview.removeAttribute("src");
+  preview.load();              // cancels any in-flight download
+  if (preview.parentNode) preview.parentNode.removeChild(preview);
+}
+
+function armPreview(host, id) {
+  if (reduced || !PREVIEWS) return;
+  clearTimeout(armTimer);
+  armTimer = setTimeout(() => {
+    releasePreview();
+    const box = $(".media", host) || $(".card-media", host);
+    if (!box) return;
+    preview.src = `assets/preview/${id}.mp4`;
+    box.appendChild(preview);
+    armed = host;
+    preview.play().then(() => host.classList.add("playing")).catch(() => releasePreview());
+  }, 220);
+}
+
+/* ---------- status strip ---------- */
+(function strip() {
+  const bits = [];
+  if (SITE.available === false && SITE.availableFrom) bits.push(`Booking from ${SITE.availableFrom}`);
+  else if (SITE.availableFrom) bits.push(`Available from ${SITE.availableFrom}`);
+  if (SITE.region) bits.push(SITE.region);
+  if (SITE.turnaround) bits.push(`Typical turnaround ${SITE.turnaround}`);
+
+  const box = $("#stripIn");
+  if (SITE.available === false) box.parentElement.setAttribute("data-booking", "");
+  box.innerHTML =
+    `<i></i>` +
+    bits.map((b) => `<s>${esc(b)}</s>`).join(`<s>·</s>`) +
+    (bits.length ? `<s>·</s>` : "") +
+    `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>`;
 })();
 
-/* Hero highlight-reel rotation removed — the hero is a single still image.
-   The work itself carries the page; an auto-playing reel up top competed
-   with the grid and was the first thing a visitor had to sit through. */
+/* ---------- hero frames ---------- */
+(function heroFrames() {
+  const picks = curatedNine().filter((r) => r.orientation === "landscape").slice(0, 3);
+  while (picks.length < 3) {
+    const extra = curatedNine().find((r) => !picks.includes(r));
+    if (!extra) break;
+    picks.push(extra);
+  }
+  $("#heroFrames").innerHTML = picks.map((r, i) => `
+    <figure class="frame">
+      <div class="media" style="--ar:${ar(r)}">
+        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+             width="${r.w || 1920}" height="${r.h || 1080}"
+             ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
+      </div>
+      <figcaption>${esc(r.client)} · ${esc(CAT_LABEL[r.category] || r.category)}</figcaption>
+    </figure>`).join("");
 
-/* ---------- marquee ---------- */
-(function marquee() {
-  const clients = [...new Set(REELS.map((r) => r.client))];
-  const row = clients.map((c) => `<span>${c}</span>`).join("");
-  $("#marquee").innerHTML = row + row;
+  if (picks[0]) {
+    const l = document.createElement("link");
+    l.rel = "preload"; l.as = "image";
+    l.href = `assets/posters/${picks[0].id}.jpg`;
+    l.setAttribute("fetchpriority", "high");
+    document.head.appendChild(l);
+  }
 })();
 
-/* ---------- work grid ---------- */
-const PAGE = 18;
-let active = "all";
+/* ---------- contents band ---------- */
+(function contents() {
+  const cells = CAT_ORDER.map((c) =>
+    `<a href="#index" data-cat="${c}"><span>${esc(CAT_LABEL[c])}</span><b>${COUNTS[c] || 0}</b></a>`);
+  const photos = typeof PHOTOS !== "undefined" ? PHOTOS.length : 0;
+  if (photos) cells.push(`<a href="photography.html"><span>Photography</span><b>${photos}</b></a>`);
+  $("#contents").innerHTML = cells.join("");
+  $$("#contents a[data-cat]").forEach((a) =>
+    a.addEventListener("click", () => setFilter(a.dataset.cat)));
+})();
+
+/* ---------- ledger rules ---------- */
+$("#ledgerWork").textContent = "9 selected";
+$("#ledgerComm").textContent = `${CAT_ORDER.length} disciplines`;
+$("#ledgerIndex").textContent = `${REELS.length} pieces`;
+$("#ledgerClients").textContent = `${CLIENTS.length} clients`;
+$("#ledgerStudio").textContent = "About";
+$("#ledgerDives").textContent = "Deep dives";
+
+/* ---------- slate ---------- */
+function slate(r) {
+  const cells = [
+    ["Client", r.client],
+    ["Role", roleOf(r)],
+    ["Year", r.year],
+    ["Runtime", r.dur],
+  ].filter(([, v]) => v);                        // never render an empty cell
+  if (!cells.length) return "";
+  return `<dl class="slate">${cells.map(([k, v]) =>
+    `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`;
+}
+
+/* ---------- 01 selected work ---------- */
+(function plates() {
+  const nine = curatedNine();
+  const score = ["a1", "a2", "", "", "", "c", "a1", "a2", ""];
+  $("#plates").innerHTML = nine.map((r, i) => `
+    <article class="plate ${score[i] || ""}" data-id="${r.id}">
+      <div class="media" style="--ar:${ar(r)}">
+        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+             width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+      </div>
+      <h3 class="plate-t">${esc(r.title)}</h3>
+      <p class="plate-b">${esc(r.blurb || "")}</p>
+      ${slate(r)}
+    </article>`).join("");
+})();
+
+/* ---------- 02 commission rows ---------- */
+(function commission() {
+  const NAMES = {
+    podcast: "Podcast package",
+    motion: "Motion graphics & titles",
+    nonprofit: "Nonprofit & event film",
+    corporate: "Corporate & brand film",
+    social: "Branded social / verticals",
+    interviews: "Interviews & panels",
+  };
+  const DESC = {
+    podcast: "Multi-camera recording through to episode and clip delivery.",
+    motion: "Logo animation, title systems, lower thirds and show packaging.",
+    nonprofit: "Event coverage, recap films and testimonial pieces.",
+    corporate: "Brand film, explainers and executive interviews.",
+    social: "Vertical cutdowns with captions, built for the feed.",
+    interviews: "Gala, panel and red-carpet interview coverage.",
+  };
+  const FIELDS = [
+    ["included", "What's included"],
+    ["turnaround", "Turnaround"],
+    ["needFromYou", "What I need from you"],
+  ];
+
+  $("#comm").innerHTML = CAT_ORDER.map((cat, i) => {
+    const cfg = (SITE.commission && SITE.commission[cat]) || {};
+    const strip = REELS.filter((r) => r.category === cat).slice(0, 4);
+    const terms = FIELDS.map(([key, label]) => {
+      const val = cfg[key];
+      const body = val
+        ? esc(val)
+        : `<span class="todo">${esc(label)} — one line</span>`;
+      if (!val && !DRAFT) return "";
+      return `<div><dt>${label}</dt><dd>${body}</dd></div>`;
+    }).filter(Boolean).join("");
+
+    return `
+    <details id="c-${cat}">
+      <summary>
+        <span class="comm-n">${String(i + 1).padStart(2, "0")}</span>
+        <span class="comm-name">${esc(NAMES[cat])}</span>
+        <span class="comm-d">${esc(DESC[cat])}</span>
+        <span class="comm-proof">${COUNTS[cat]} pieces · ${clientsIn(cat)} clients</span>
+        <span class="comm-x" aria-hidden="true">+</span>
+      </summary>
+      <div class="comm-body">
+        ${terms ? `<dl class="comm-terms">${terms}</dl>` : ""}
+        <div class="comm-strip">
+          ${strip.map((r) => `
+            <div class="media" style="--ar:${ar(r)}">
+              <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+                   width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+            </div>`).join("")}
+        </div>
+        <a class="btn-text" href="#index" data-cat="${cat}">See all ${COUNTS[cat]} in the index →</a>
+      </div>
+    </details>`;
+  }).join("");
+
+  $$("#comm a[data-cat]").forEach((a) =>
+    a.addEventListener("click", () => setFilter(a.dataset.cat)));
+
+  // deep link: /#c-nonprofit opens that row
+  if (location.hash.startsWith("#c-")) {
+    const d = $(location.hash);
+    if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ block: "center" }), 60); }
+  }
+})();
+
+/* ---------- 03 the index ---------- */
+const PAGE = 24;
+let filter = "all";
+let query = "";
+let view = (() => {
+  try { return localStorage.getItem("jg.index.view") || "list"; } catch (e) { return "list"; }
+})();
 let shown = PAGE;
 
-const grid = $("#grid");
-const moreBtn = $("#moreBtn");
+const idxMain = $("#idxMain");
+const idxSide = $("#idxSide");
+const moreWrap = $("#moreWrap");
 
-$("#workCount").textContent = REELS.length;
-
-/* Keep the "Pieces delivered" stat in sync with the manifest so it can't go
-   stale when work is added. (It was hardcoded at 151 and drifted.) */
-const piecesStat = $('[data-count][data-auto="pieces"]');
-if (piecesStat) piecesStat.dataset.count = REELS.length;
-
-/* ============================================================
-   Two-tier filtering.
-   A visitor could not tell the creative work from the corporate
-   work. The top tier splits those; the category chips below then
-   only count and offer categories inside the chosen group.
-   ============================================================ */
-const GROUPS = [
-  { id: "all",        label: "Everything",             cats: null },
-  { id: "creative",   label: "Creative &amp; Motion",      cats: ["motion", "social"] },
-  { id: "commercial", label: "Client &amp; Commercial",    cats: ["podcast", "corporate", "nonprofit", "interviews"] },
-];
-let group = "all";
-const inGroup = (r) => {
-  const g = GROUPS.find((x) => x.id === group);
-  return !g || !g.cats ? true : g.cats.includes(r.category);
-};
-
-/* ============================================================
-   Grid ordering — by VISUAL IMPACT, not by volume.
-
-   A prospective client scrolls a few rows and leaves. Previously
-   the sort favoured clients with the most pieces, which meant 92
-   talking-head podcast reels outranked the VFX and design work.
-   That buries the strongest material.
-
-   Order now:
-     1. SHOWCASE — hand-picked openers, rendered as large cards
-     2. impact tier (see below), lowest number first
-     3. within a tier, a client's work stays contiguous
-   ============================================================ */
-
-/* Rendered double-width at the top of the grid. */
-const SHOWCASE = [
-  "cryptorubik-orb",
-  "vaporwave-collage",
-  "tht-plane-intro",
-  "polo-recap-ae",
-  "cryptorubik-spot",
-  "sparked-logo",
-];
-
-/* Tier 1 — design/VFX/3D led. The work that makes someone stop scrolling. */
-const TIER1 = new Set([
-  ...SHOWCASE,
-  "cryptorubik-market", "cryptorubik-cube",
-  "tht-logo-intro", "tht-blue-intro", "tht-card-animation", "tht-card-animation-2",
-  "sparked-spark-mark", "sparked-notification", "sparked-logo-sting", "sparked-outro",
-  "polo-recap-ae-2", "insight-logo-animation", "insight-ite-intro",
-  "ite-brand-intro-prerender", "insight-brand-outro",
-  "khs-logo-intro", "khs-intro-loop", "ceod-logo", "rtdb-logo-intro",
-  "csc-intro", "csc-outro", "eqb2b-comp", "eqb2b-ep3-intro",
-  "dk-intro", "dk-outro", "nrg-intro", "gygo-podcast-intro",
-  "od2a-webinar-titles",
-  "tennis-with-ema-podcast-intro", "tennis-with-ema-podcast-outro",
-  "tennis-with-ema-lucky-in-love-sponsor-spot", "tennis-with-ema-match-set-sponsor-spot",
-]);
-
-/* Tier 2 — polished branded/produced pieces. */
-const TIER2 = new Set([
-  "sparked-rethink", "sparked-how-it-works", "sparked-thank-you", "sparked-school-leaders",
-  "hona-open", "hona-generic", "hona-sponsors",
-  "childrens-harbor-reel1", "childrens-harbor-reel2", "cch-golf-reel1",
-  "literacy-coalition-recap", "literacy-kravis-luncheon", "hona-recap",
-  "people-of-purpose-recap", "gift-gathering-recap", "promisefund-event",
-  "insight-brand-story", "insight-names-not-numbers", "insight-nnn-clip-3",
-  "wybt-promo", "patricia-heaton", "super-fit-champs-film",
-  "vertical-caption-reel", "devi-kodak-jeep-reel",
-  "julie-khanna-reel-1", "julie-khanna-reel-2", "julie-khanna-reel-red",
-  "jenilee-reel1", "jenilee-reel2",
-  "tithing-tree-reel1", "tithing-tree-reel2", "valentyna-g-polo-sundays",
-]);
-
-/* Tier 4 — least visually distinctive: repetitive utility graphics,
-   near-identical award packages, plain talking-head cuts, long-form excerpts. */
-const isTier4 = (r) =>
-  /lower third/i.test(r.title) ||
-  /nominees/i.test(r.title) ||
-  /\(excerpt\)/i.test(r.title) ||
-  /b-roll/i.test(r.title) ||
-  r.id.startsWith("elite-");
-
-function impactOf(r) {
-  if (TIER1.has(r.id)) return 1;
-  if (TIER2.has(r.id)) return 2;
-  if (isTier4(r)) return 4;
-  if (r.category === "motion" || r.category === "social") return 2;
-  if (r.category === "podcast") return 3.5;   // the 90+ talking-head cuts sit low
-  return 3;
-}
-
-const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
-const MANIFEST_POS = new Map(REELS.map((r, i) => [r.id, i]));
-
-function orderReels(list) {
-  const showcaseRank = (id) => {
-    const i = SHOWCASE.indexOf(id);
-    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
-  };
-  return list.slice().sort((a, b) => {
-    const sa = showcaseRank(a.id), sb = showcaseRank(b.id);
-    if (sa !== sb) return sa - sb;                          // showcase openers, in listed order
-    const ia = impactOf(a), ib = impactOf(b);
-    if (ia !== ib) return ia - ib;                          // strongest work first
-    const va = CLIENT_VOLUME[a.client], vb = CLIENT_VOLUME[b.client];
-    if (va !== vb) return vb - va;                          // bigger bodies of work first
-    if (a.client !== b.client) return a.client.localeCompare(b.client);
-    return MANIFEST_POS.get(a.id) - MANIFEST_POS.get(b.id); // stable within a client
+function matching() {
+  const q = query.trim().toLowerCase();
+  return REELS.filter((r) => {
+    if (filter !== "all" && r.category !== filter) return false;
+    if (!q) return true;
+    return (r.client + " " + r.title).toLowerCase().includes(q);
   });
 }
 
-function filtered() {
-  const pool = REELS.filter(inGroup);
-  const base = active === "all" ? pool : pool.filter((r) => r.category === active);
-  return orderReels(base);
+function buildChips() {
+  const items = [["all", `All ${REELS.length}`]].concat(
+    CAT_ORDER.filter((c) => COUNTS[c]).map((c) => [c, `${CAT_LABEL[c]} ${COUNTS[c]}`]));
+  $("#chips").innerHTML = items.map(([id, label]) =>
+    `<button type="button" class="chip${id === filter ? " on" : ""}" data-f="${id}"
+       aria-pressed="${id === filter}">${esc(label)}</button>`).join("");
+  $$("#chips .chip").forEach((b) =>
+    b.addEventListener("click", () => setFilter(b.dataset.f)));
 }
 
-function buildGroups() {
-  const box = document.getElementById("groups");
-  if (!box) return;
-  box.innerHTML = "";
-  GROUPS.forEach((g) => {
-    const n = g.cats ? REELS.filter((r) => g.cats.includes(r.category)).length : REELS.length;
-    const b = document.createElement("button");
-    b.className = "g-btn" + (g.id === group ? " on" : "");
-    b.innerHTML = g.label + "<b>" + n + "</b>";
-    b.addEventListener("click", () => {
-      if (group === g.id) return;
-      group = g.id;
-      active = "all";
-      shown = PAGE;
-      buildGroups();
-      buildFilters();
-      renderGrid(true);
-    });
-    box.appendChild(b);
-  });
+function setFilter(cat) {
+  filter = cat;
+  shown = PAGE;
+  buildChips();
+  renderIndex();
+  const sec = $("#index");
+  if (sec) sec.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
 }
 
-function buildFilters() {
-  const box = $("#filters");
-  box.innerHTML = "";
-  CATEGORIES.forEach((c) => {
-    const pool = REELS.filter(inGroup);
-    const n = c.id === "all" ? pool.length : pool.filter((r) => r.category === c.id).length;
-    if (!n) return;
-    const b = document.createElement("button");
-    b.className = "f-btn" + (c.id === active ? " on" : "");
-    b.innerHTML = `${c.label}<b>${n}</b>`;
-    b.addEventListener("click", () => {
-      if (active === c.id) return;
-      active = c.id;
-      shown = PAGE;
-      buildFilters();
-      renderGrid(true);
-    });
-    box.appendChild(b);
-  });
+function setView(v) {
+  view = v;
+  try { localStorage.setItem("jg.index.view", v); } catch (e) { /* private mode */ }
+  $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === v));
+  shown = PAGE;
+  renderIndex();
 }
 
-function card(reel, idx) {
-  const el = document.createElement("article");
-  // Showcase pieces render double-width, but only in the unfiltered view —
-  // inside a category the grid should stay an even rhythm.
-  const feat = active === "all" && SHOWCASE.includes(reel.id);
-  el.className = "card"
-    + (reel.orientation === "landscape" ? " wide" : "")
-    + (feat ? " feat" : "");
-  el.style.animation = `cardIn .65s cubic-bezier(.22,1,.36,1) ${Math.min(idx, 12) * 0.035}s both`;
-  el.innerHTML = `
-    <div class="card-media">
-      <img loading="lazy" src="assets/posters/${reel.id}.jpg" alt="${reel.title}" />
-      <span class="card-tag">${labelOf(reel.category)}</span>
-      <span class="card-play">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </span>
+function rowHTML(r, i) {
+  const role = roleOf(r);
+  return `<a class="row" href="#" data-id="${r.id}">
+    <span class="row-n">${String(i + 1).padStart(3, "0")}</span>
+    <span class="row-c">${esc(r.client)}</span>
+    <span class="row-t">${esc(r.title)}</span>
+    <span class="row-d">${esc(CAT_LABEL[r.category] || r.category)}</span>
+    <span class="row-y">${esc(r.dur || "")}</span>
+    ${role ? `<span class="sr-only">${esc(role)}</span>` : ""}
+  </a>`;
+}
+
+function tileHTML(r) {
+  return `<article class="tile" data-id="${r.id}">
+    <div class="media" style="--ar:${ar(r)}">
+      <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+           width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
     </div>
-    <div class="card-body">
-      <p class="card-client">${reel.client}</p>
-      <h3 class="card-title">${reel.title}</h3>
-      <p class="card-blurb">${reel.blurb}</p>
-    </div>`;
-
-  // hover-to-preview
-  let vid = null, timer = null;
-  const enter = () => {
-    if (reduced) return;
-    timer = setTimeout(() => {
-      if (vid) return;
-      vid = document.createElement("video");
-      vid.src = `assets/video/${reel.id}.mp4`;
-      vid.muted = true;
-      vid.loop = true;
-      vid.playsInline = true;
-      vid.preload = "auto";
-      $(".card-media", el).appendChild(vid);
-      vid.play().then(() => el.classList.add("playing")).catch(() => {});
-    }, 190);
-  };
-  const leave = () => {
-    clearTimeout(timer);
-    el.classList.remove("playing");
-    if (vid) { const v = vid; vid = null; setTimeout(() => v.remove(), 450); }
-  };
-  el.addEventListener("mouseenter", enter);
-  el.addEventListener("mouseleave", leave);
-  el.addEventListener("click", () => { leave(); openLB(reel); });
-  return el;
+    <div class="tile-m"><span class="tile-c">${esc(r.client)}</span><span>${esc(r.dur || "")}</span></div>
+  </article>`;
 }
 
-function labelOf(id) {
-  const c = CATEGORIES.find((x) => x.id === id);
-  return c ? c.label.replace(" & ", " / ") : id;
+function renderIndex() {
+  const list = matching();
+  $("#idxCount").textContent = `${list.length} of ${REELS.length}`;
+
+  if (view === "list") {
+    idxMain.className = "idx-rows";
+    idxMain.innerHTML = list.map(rowHTML).join("");
+    idxSide.setAttribute("aria-hidden", "true");
+    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row</div></div>`;
+    moreWrap.hidden = true;
+  } else {
+    idxMain.className = "tiles";
+    idxMain.innerHTML = list.slice(0, shown).map(tileHTML).join("");
+    idxSide.innerHTML = "";
+    moreWrap.hidden = shown >= list.length;
+    if (!moreWrap.hidden) {
+      $("#moreBtn").textContent = `Load more (${list.length - shown} left)`;
+    }
+  }
 }
 
-function renderGrid(reset) {
-  const list = filtered();
-  if (reset) grid.innerHTML = "";
-  const start = reset ? 0 : grid.children.length;
-  list.slice(start, shown).forEach((r, i) => grid.appendChild(card(r, i)));
-  moreBtn.parentElement.style.display = shown >= list.length ? "none" : "flex";
-  moreBtn.textContent = `Load more work (${Math.max(0, list.length - shown)} left)`;
-}
+/* one delegated listener for the whole index, both views */
+idxMain.addEventListener("pointerover", (e) => {
+  if (e.pointerType !== "mouse") return;
+  const host = e.target.closest(".row, .tile");
+  if (!host) return;
+  const r = REELS.find((x) => x.id === host.dataset.id);
+  if (!r) return;
+  if (view === "list") {
+    idxSide.innerHTML = `
+      <div class="pin">
+        <div class="media" style="--ar:${ar(r)}">
+          <img src="assets/posters/${r.id}.jpg" alt="" decoding="async" />
+        </div>
+        <p class="pin-meta">${esc(r.client)} — ${esc(r.title)}</p>
+      </div>`;
+    armPreview($(".pin", idxSide), r.id);
+  } else {
+    armPreview(host, r.id);
+  }
+});
+idxMain.addEventListener("pointerleave", releasePreview);
 
-moreBtn.addEventListener("click", () => {
-  shown += PAGE;
-  renderGrid(false);
+idxMain.addEventListener("click", (e) => {
+  const host = e.target.closest(".row, .tile");
+  if (!host) return;
+  e.preventDefault();
+  const r = REELS.find((x) => x.id === host.dataset.id);
+  if (r) openLB(r);
 });
 
-buildGroups();
-buildFilters();
-renderGrid(true);
-
-/* card entry keyframes (injected so CSS file stays tidy) */
-const kf = document.createElement("style");
-kf.textContent = `@keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.98)}to{opacity:1;transform:none}}`;
-document.head.appendChild(kf);
-
-/* ---------- lightbox ---------- */
-const lb = $("#lb"), lbVideo = $("#lbVideo");
-
-function openLB(reel) {
-  lb.classList.toggle("wide", reel.orientation === "landscape");
-  lbVideo.src = `assets/video/${reel.id}.mp4`;
-  $("#lbClient").textContent = reel.client;
-  $("#lbTitle").textContent = reel.title;
-  lb.classList.add("open");
-  document.body.classList.add("is-locked");
-  lbVideo.play().catch(() => {});
-}
-function closeLB() {
-  lb.classList.remove("open");
-  document.body.classList.remove("is-locked");
-  lbVideo.pause();
-  setTimeout(() => { lbVideo.removeAttribute("src"); lbVideo.load(); }, 400);
-}
-$("#lbX").addEventListener("click", closeLB);
-lb.addEventListener("click", (e) => { if (e.target === lb) closeLB(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLB(); });
-
-/* ---------- scroll reveal ---------- */
-const io = new IntersectionObserver(
-  (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),
-  { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-);
-$$(".rv").forEach((el) => io.observe(el));
-
-/* ---------- count-up numbers ---------- */
-function countTo(el, target, suffix = "") {
-  const dur = 1500, t0 = performance.now();
-  const step = (t) => {
-    const p = Math.min(1, (t - t0) / dur);
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(target * eased) + suffix;
-    if (p < 1) requestAnimationFrame(step);
+$("#idxSearch").addEventListener("input", (() => {
+  let t = 0;
+  return (e) => {
+    clearTimeout(t);
+    t = setTimeout(() => { query = e.target.value; shown = PAGE; renderIndex(); }, 120);
   };
-  requestAnimationFrame(step);
-}
+})());
 
-const statIO = new IntersectionObserver(
-  (entries) => entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    const el = e.target;
-    countTo(el, +el.dataset.count, el.dataset.suffix || "");
-    statIO.unobserve(el);
-  }),
-  { threshold: 0.6 }
-);
-$$("[data-count]").forEach((el) => statIO.observe(el));
+$$("#viewToggle button").forEach((b) =>
+  b.addEventListener("click", () => setView(b.dataset.view)));
+$("#moreBtn").addEventListener("click", () => { shown += PAGE; renderIndex(); });
 
-/* hero mini-stats */
-setTimeout(() => {
-  countTo($("#mStat1"), REELS.length);
-  countTo($("#mStat2"), new Set(REELS.map((r) => r.client)).size, "+");
-}, 1200);
+buildChips();
+/* Force grid on real phones only. innerWidth can be 0 in a hidden/offscreen
+   frame — treating that as mobile would persist "grid" for a desktop user. */
+const narrow = innerWidth > 0 && innerWidth < 760;
+if (narrow) { view = "grid"; }
+$$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
+renderIndex();
 
-/* ---------- magnetic buttons ---------- */
-if (!reduced && window.matchMedia("(pointer: fine)").matches) {
-  $$("[data-magnetic]").forEach((el) => {
-    el.addEventListener("mousemove", (e) => {
-      const r = el.getBoundingClientRect();
-      const x = e.clientX - r.left, y = e.clientY - r.top;
-      el.style.setProperty("--bx", x + "px");
-      el.style.setProperty("--by", y + "px");
-      el.style.transform = `translate(${(x - r.width / 2) * 0.14}px, ${(y - r.height / 2) * 0.22}px)`;
-    });
-    el.addEventListener("mouseleave", () => { el.style.transform = ""; });
-  });
-  // ripple origin for all buttons
-  $$(".btn").forEach((el) => {
-    el.addEventListener("mouseenter", (e) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty("--bx", e.clientX - r.left + "px");
-      el.style.setProperty("--by", e.clientY - r.top + "px");
-    });
-  });
-}
-
-/* ---------- nav active state ---------- */
-(function navSpy() {
-  const links = $$('#nav a[href^="#"]');
-  const secs = links.map((a) => $(a.getAttribute("href"))).filter(Boolean);
-  if (!secs.length) return;
-  const spy = new IntersectionObserver(
-    (entries) => entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
-    }),
-    { threshold: 0.4 }
-  );
-  secs.forEach((s) => spy.observe(s));
+/* ---------- 04 client ledger ---------- */
+(function roster() {
+  $("#roster").innerHTML = CLIENTS.slice().sort((a, b) => a.localeCompare(b)).map((c) => {
+    const n = CLIENT_VOLUME[c];
+    return `<a href="#index" data-client="${esc(c)}">
+      <b>${esc(c)}</b>
+      <span>${n}${n >= 8 ? '<em>Ongoing</em>' : ""}</span>
+    </a>`;
+  }).join("");
+  $$("#roster a").forEach((a) => a.addEventListener("click", () => {
+    filter = "all";
+    query = a.dataset.client;
+    $("#idxSearch").value = a.dataset.client;
+    shown = PAGE;
+    buildChips();
+    renderIndex();
+  }));
 })();
 
-/* ============================================================
-   Y2K layer — custom cursor + glitch wiring.
-   Bails out entirely on touch devices and reduced-motion.
-   ============================================================ */
-(function () {
-  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!fine || reduced) return;
+/* ---------- 05/06/07 gated sections ---------- */
+function blank(el, label, ask) {
+  if (!el) return;
+  el.innerHTML = `<b>${esc(label)}</b><p>${ask}</p>`;
+}
 
-  /* --- scanline overlay --- */
-  const scan = document.createElement("div");
-  scan.className = "scan";
-  document.body.appendChild(scan);
-
-})();
-
-/* ============================================================
-   Floating Y2K objects — scroll parallax.
-   Each .flo drifts at its own data-speed as it passes through
-   the viewport, and rotates slightly with scroll. Idle motion
-   lives on the inner <img> in CSS.
-   ============================================================ */
-(function () {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (window.innerWidth < 820) return;
-
-  const flo = [...document.querySelectorAll(".flo")];
-  if (!flo.length) return;
-
-  let ticking = false;
-
-  function place() {
-    const vh = window.innerHeight;
-    for (const el of flo) {
-      const r = el.parentElement.getBoundingClientRect();
-      // -1 (section below viewport) .. 1 (section above viewport)
-      const progress = (vh / 2 - (r.top + r.height / 2)) / (vh / 2 + r.height / 2);
-      const speed = parseFloat(el.dataset.speed || "0.3");
-      const spin = parseFloat(el.dataset.spin || "18");
-      el.style.transform =
-        `translate3d(0, ${(progress * 100 * speed).toFixed(2)}px, 0) rotate(${(progress * spin).toFixed(2)}deg)`;
-    }
-    ticking = false;
+(function gated() {
+  // testimonials
+  const qs = SITE.testimonials || [];
+  if (qs.length) {
+    $("#says").hidden = false;
+    $("#ledgerSays").textContent = `${qs.length} quote${qs.length > 1 ? "s" : ""}`;
+    $("#quotes").innerHTML = qs.map((q) => `
+      <figure class="quote">
+        <blockquote>${esc(q.quote)}</blockquote>
+        <figcaption>${esc(q.name)}${q.role ? " · " + esc(q.role) : ""}${q.org ? " · " + esc(q.org) : ""}</figcaption>
+      </figure>`).join("");
+  } else if (DRAFT) {
+    $("#says").hidden = false;
+    $("#ledgerSays").textContent = "empty";
+    blank($("#blankQuotes"), "Placeholder — testimonials",
+      `The single highest-value thing on this page. Four emails would fill it:
+       NRG Podcast, Literacy Coalition, CEO Discovery, Children's Harbor.
+       Add to <code>SITE.testimonials</code> in <code>assets/site-config.js</code> as
+       <code>{quote, name, role, org}</code>, quote under 240 characters.
+       <b style="color:inherit;display:inline">One quote renders correctly on its own — do not wait for three.</b>`);
   }
 
-  addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(place); }
-  }, { passive: true });
-  addEventListener("resize", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(place); }
-  }, { passive: true });
-  place();
+  // terms
+  const t = SITE.terms || {};
+  const LABELS = {
+    process: "How a project runs", turnaround: "Turnaround",
+    revisions: "Revisions included", usage: "Usage & licensing",
+    payment: "Payment terms", backup: "Backup & redundancy",
+    insurance: "Insurance & travel",
+  };
+  const filled = Object.keys(LABELS).filter((k) => t[k]);
+  if (filled.length) {
+    $("#terms").hidden = false;
+    $("#ledgerTerms").textContent = `${filled.length} of 7`;
+    $("#termsList").innerHTML = filled.map((k) =>
+      `<div><dt>${LABELS[k]}</dt><dd>${esc(t[k])}</dd></div>`).join("");
+    if (SITE.budgetLine) {
+      $("#budgetLine").hidden = false;
+      $("#budgetLine").textContent = SITE.budgetLine;
+    }
+  } else if (DRAFT) {
+    $("#terms").hidden = false;
+    $("#ledgerTerms").textContent = "empty";
+    blank($("#blankTerms"), "Placeholder — working with me",
+      `Seven plain answers in <code>SITE.terms</code>: process, turnaround, revisions,
+       usage, payment, backup, insurance. Each row appears on its own, so filling in
+       three of seven still looks deliberate. <code>SITE.budgetLine</code> is one honest
+       sentence with your number — a stated floor filters out people who were never
+       going to pay. Leave it null rather than guess.`);
+  }
+
+  // case studies
+  const cs = SITE.caseStudies || [];
+  if (cs.length) {
+    $("#cases").hidden = false;
+    $("#ledgerCases").textContent = `${cs.length} stud${cs.length > 1 ? "ies" : "y"}`;
+    const byId = new Map(REELS.map((r) => [r.id, r]));
+    $("#caseList").innerHTML = cs.map((c) => {
+      const r = byId.get(c.pieceId);
+      return `
+      <div class="case-media">${r ? `
+        <div class="media" style="--ar:${ar(r)}">
+          <img src="assets/posters/${r.id}.jpg" alt="${esc(c.client)}" loading="lazy" decoding="async" />
+        </div>` : ""}</div>
+      <div class="case-body">
+        <dl class="case-meta">
+          <div><dt>Client</dt><dd>${esc(c.client)}</dd></div>
+          <div><dt>Sector</dt><dd>${esc(c.sector)}</dd></div>
+          <div><dt>Services</dt><dd>${esc(c.services)}</dd></div>
+          <div><dt>Duration</dt><dd>${esc(c.duration)}</dd></div>
+        </dl>
+        <h4>Challenge</h4><p>${esc(c.challenge)}</p>
+        <h4>Approach</h4><p>${esc(c.approach)}</p>
+        ${c.outcome ? `<h4>Outcome</h4><p>${esc(c.outcome)}</p>` : ""}
+      </div>`;
+    }).join("");
+  } else if (DRAFT) {
+    $("#cases").hidden = false;
+    $("#ledgerCases").textContent = "empty";
+    blank($("#blankCases"), "Placeholder — case studies",
+      `Write <b style="color:inherit;display:inline">two, not six</b> — one podcast retainer,
+       one nonprofit film. Add to <code>SITE.caseStudies</code>:
+       <code>{client, sector, services, duration, challenge, approach, outcome, pieceId}</code>.
+       60–90 words each. The outcome needs one real number you collected — if you don't
+       have one, leave the field out rather than inventing it.`);
+  }
+
+  // reel
+  if (!(SITE.reel && SITE.reel.id) && DRAFT) {
+    blank($("#blankReel"), "Placeholder — showreel",
+      `60–90 seconds, strongest shot first, no build-up and no title card.
+       Drop <code>assets/video/reel.mp4</code> and <code>assets/posters/reel.jpg</code>,
+       then set <code>SITE.reel.id = "reel"</code>. It becomes the first piece here —
+       inside the grid, click to play. It is never an autoplaying hero.`);
+  }
 })();
 
-/* Showreel block removed. */
+/* ---------- 08 fact box ---------- */
+(function facts() {
+  const f = SITE.facts || {};
+  const rows = [
+    ["Based", f.based], ["Works as", f.worksAs], ["Cameras", f.cameras],
+    ["Edit", f.edit], ["Delivers", f.delivers], ["Turnaround", SITE.turnaround],
+  ].filter(([, v]) => v);
+  $("#facts").innerHTML = rows.map(([k, v]) =>
+    `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
+})();
+
+/* ---------- 09 deep dives ---------- */
+(function dives() {
+  const shows = new Set(REELS.filter((r) => r.category === "podcast").map((r) => r.client)).size;
+  const pods = REELS.filter((r) => r.category === "podcast").slice(0, 4);
+  const photos = typeof PHOTOS !== "undefined" ? PHOTOS : [];
+  const sessions = new Set(photos.map((p) => p.client || p.session)).size;
+
+  const tiles = (items, dir) => items.map((p) => `
+    <div class="media" style="--ar:${p.w && p.h ? p.w + "/" + p.h : "1/1"}">
+      <img src="assets/${dir}/${p.id}.jpg" alt="" loading="lazy" decoding="async" />
+    </div>`).join("");
+
+  $("#diveList").innerHTML = `
+    <a class="dive" href="podcasts.html">
+      <div class="dive-grid">${tiles(pods, "posters")}</div>
+      <h3>Podcasts</h3>
+      <p>${COUNTS.podcast} pieces across ${shows} shows.</p>
+      <span class="btn-text">Open the catalogue →</span>
+    </a>
+    <a class="dive" href="photography.html">
+      <div class="dive-grid">${tiles(photos.slice(0, 4), "photos")}</div>
+      <h3>Photography</h3>
+      <p>${photos.length} photographs across ${sessions} sessions.</p>
+      <span class="btn-text">Open the gallery →</span>
+    </a>`;
+})();
+
+/* ---------- 10 contact ---------- */
+(function contact() {
+  $("#mailtoPlain").href = `mailto:${SITE.email}`;
+  $("#mailtoPlain").textContent = SITE.email;
+  if (SITE.replyTime) { $("#replyTime").hidden = false; $("#replyTime").textContent = SITE.replyTime; }
+
+  $("#ftrContact").innerHTML =
+    `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>` +
+    (SITE.instagram ? `<a href="${esc(SITE.instagram)}" rel="noopener">Instagram</a>` : "") +
+    `<span class="mono">© ${new Date().getFullYear()}</span>`;
+
+  const send = $("#briefSend");
+  const compose = () => {
+    const what = $("#bWhat").value, when = $("#bWhen").value, budget = $("#bBudget").value;
+    const lines = [
+      `What: ${what}`, `When: ${when}`, `Budget: ${budget}`,
+      `From: ${$("#bName").value || "(name)"}`, "",
+      $("#bMsg").value || "",
+    ];
+    const body = encodeURIComponent(lines.join("\n").slice(0, 1200));
+    send.href = `mailto:${SITE.email}?subject=${encodeURIComponent("New project — " + what)}&body=${body}`;
+  };
+  $$("#brief select, #brief input, #brief textarea").forEach((el) => {
+    el.addEventListener("input", compose);
+    el.addEventListener("change", compose);
+  });
+  compose();
+})();
+
+/* ---------- 11 off the clock ---------- */
+(function otc() {
+  const bits = [`<span class="mono">Off the clock</span>`];
+  if (SITE.instagram) bits.push(`<a class="btn-text" href="${esc(SITE.instagram)}" rel="noopener">Instagram →</a>`);
+  if (SITE.music) bits.push(`<a class="btn-text" href="${esc(SITE.music)}" rel="noopener">Music →</a>`);
+  bits.push(`<p>Shooting, editing and producing music when nobody is paying me to.</p>`);
+  $("#otc").innerHTML = bits.join("");
+})();
+
+/* ---------- lightbox — native <dialog> ---------- */
+const lb = $("#lb");
+function openLB(r) {
+  releasePreview();
+  const isPhoto = !r.category;
+  $("#lbMedia").innerHTML = isPhoto
+    ? `<img src="assets/photos/${r.id}.jpg" alt="${esc(r.title)}" />`
+    : `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
+         poster="assets/posters/${r.id}.jpg"></video>`;
+  $("#lbMeta").innerHTML =
+    `<h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p>` + slate(r);
+  lb.showModal();
+}
+function teardown() {
+  const v = $("#lbMedia video");
+  if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
+  $("#lbMedia").innerHTML = "";
+}
+/* Do NOT rely on the "close" event alone — it does not fire in every engine
+   (verified: a bare <dialog> fails to fire it in some Chromium builds), which
+   would leave the video playing with audio over the page after closing.
+   teardown() is idempotent, so calling it from several paths is safe. */
+function closeLB() { teardown(); if (lb.open) lb.close(); }
+lb.addEventListener("close", teardown);
+lb.addEventListener("cancel", teardown);          // Esc
+$("#lbX").addEventListener("click", closeLB);
+lb.addEventListener("click", (e) => { if (e.target === lb) closeLB(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb.open) closeLB(); });
+
+/* plates open the lightbox too */
+$("#plates").addEventListener("click", (e) => {
+  const host = e.target.closest(".plate");
+  if (!host) return;
+  const r = REELS.find((x) => x.id === host.dataset.id);
+  if (r) openLB(r);
+});
+$("#plates").addEventListener("pointerover", (e) => {
+  if (e.pointerType !== "mouse") return;
+  const host = e.target.closest(".plate");
+  if (host) armPreview(host, host.dataset.id);
+});
+$("#plates").addEventListener("pointerleave", releasePreview);
+
+/* ---------- draft banner ---------- */
+if (DRAFT) {
+  const missing = [];
+  if (!(SITE.reel && SITE.reel.id)) missing.push("reel");
+  if (!(SITE.testimonials || []).length) missing.push("testimonials");
+  if (!(SITE.caseStudies || []).length) missing.push("case studies");
+  if (!Object.values(SITE.terms || {}).some(Boolean)) missing.push("terms");
+  if (!SITE.budgetLine) missing.push("budget line");
+  if (!SITE.availableFrom) missing.push("availability");
+  const noRole = REELS.filter((r) => !roleOf(r)).length;
+
+  const bar = document.createElement("div");
+  bar.className = "draft-bar";
+  bar.textContent = `DRAFT — still to fill: ${missing.join(", ")}`
+    + (noRole ? ` · role missing on ${noRole}/${REELS.length} pieces` : "")
+    + " · edit assets/site-config.js";
+  document.body.appendChild(bar);
+}

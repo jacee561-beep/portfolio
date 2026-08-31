@@ -1,19 +1,9 @@
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-$("#yr").textContent = new Date().getFullYear();
+const yr = $("#yr"); if (yr) yr.textContent = new Date().getFullYear();
 
-(function header() {
-  const burger = $("#burger"), nav = $("#nav"), prog = $("#prog");
-  const onScroll = () => {
-    const y = window.scrollY;
-    const h = document.documentElement.scrollHeight - window.innerHeight;
-    prog.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-  burger.addEventListener("click", () => { burger.classList.toggle("x"); nav.classList.toggle("open"); });
-})();
+/* header: static in the new design — no burger, no progress bar. */
 
 const sessions = new Map();
 PHOTOS.forEach((p) => {

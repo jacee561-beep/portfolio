@@ -2,20 +2,9 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-$("#yr").textContent = new Date().getFullYear();
+const yr = $("#yr"); if (yr) yr.textContent = new Date().getFullYear();
 
-/* header */
-(function header() {
-  const hdr = $("#hdr"), burger = $("#burger"), nav = $("#nav"), prog = $("#prog");
-  const onScroll = () => {
-    const y = window.scrollY;
-    const h = document.documentElement.scrollHeight - window.innerHeight;
-    prog.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-  burger.addEventListener("click", () => { burger.classList.toggle("x"); nav.classList.toggle("open"); });
-})();
+/* header: static in the new design — no burger, no progress bar. */
 
 const pods = REELS.filter((r) => r.category === "podcast");
 const shows = new Map();
