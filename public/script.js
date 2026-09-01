@@ -107,8 +107,10 @@ function armPreview(host, id) {
 
 /* ---------- hero frames ---------- */
 (function heroFrames() {
-  const picks = curatedNine().filter((r) => r.orientation === "landscape").slice(0, 3);
-  while (picks.length < 3) {
+  /* Two landscape frames side by side. Three stacked made the hero 978px on a
+     900px screen — you could never see the whole thing at once. */
+  const picks = curatedNine().filter((r) => (r.w || 0) >= (r.h || 1)).slice(0, 2);
+  while (picks.length < 2) {
     const extra = curatedNine().find((r) => !picks.includes(r));
     if (!extra) break;
     picks.push(extra);
@@ -166,10 +168,27 @@ function slate(r) {
 
 /* ---------- 01 selected work ---------- */
 (function plates() {
+  /* Slots are assigned BY ORIENTATION, not by position. A 9:16 vertical in a
+     7-column slot renders a 1300px-tall card — one piece filling a screen and
+     a half. Landscape pieces take the wide slots; verticals stay narrow. */
   const nine = curatedNine();
-  const score = ["a1", "a2", "", "", "", "c", "a1", "a2", ""];
-  $("#plates").innerHTML = nine.map((r, i) => `
-    <article class="plate ${score[i] || ""}" data-id="${r.id}">
+  const wide = nine.filter((r) => (r.w || 0) >= (r.h || 1));
+  const tall = nine.filter((r) => (r.w || 0) < (r.h || 1));
+  const laid = [];
+  const takeWide = () => wide.shift() || tall.shift();
+  const takeTall = () => tall.shift() || wide.shift();
+
+  // row A: two landscape · row B: three verticals · row C: one landscape spread
+  [["a1", takeWide], ["a2", takeWide],
+   ["", takeTall], ["", takeTall], ["", takeTall],
+   ["c", takeWide],
+   ["", takeTall], ["", takeTall], ["", takeTall]].forEach(([cls, take]) => {
+    const r = take();
+    if (r) laid.push([cls, r]);
+  });
+
+  $("#plates").innerHTML = laid.map(([score, r]) => `
+    <article class="plate ${score}" data-id="${r.id}">
       <div class="media" style="--ar:${ar(r)}">
         <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
              width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
@@ -250,13 +269,14 @@ function slate(r) {
 })();
 
 /* ---------- 03 the index ---------- */
-const PAGE = 24;
+const PAGE = 24;      // tiles per page
+const PAGE_LIST = 60; // rows per page — 259 at once made the page 22 screens
 let filter = "all";
 let query = "";
 let view = (() => {
   try { return localStorage.getItem("jg.index.view") || "list"; } catch (e) { return "list"; }
 })();
-let shown = PAGE;
+let shown = PAGE_LIST;
 
 const idxMain = $("#idxMain");
 const idxSide = $("#idxSide");
@@ -283,7 +303,7 @@ function buildChips() {
 
 function setFilter(cat) {
   filter = cat;
-  shown = PAGE;
+  shown = view === "list" ? PAGE_LIST : PAGE;
   buildChips();
   renderIndex();
   const sec = $("#index");
@@ -294,7 +314,7 @@ function setView(v) {
   view = v;
   try { localStorage.setItem("jg.index.view", v); } catch (e) { /* private mode */ }
   $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === v));
-  shown = PAGE;
+  shown = v === "list" ? PAGE_LIST : PAGE;
   renderIndex();
 }
 
@@ -326,10 +346,13 @@ function renderIndex() {
 
   if (view === "list") {
     idxMain.className = "idx-rows";
-    idxMain.innerHTML = list.map(rowHTML).join("");
+    idxMain.innerHTML = list.slice(0, shown).map(rowHTML).join("");
     idxSide.setAttribute("aria-hidden", "true");
     idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row</div></div>`;
-    moreWrap.hidden = true;
+    moreWrap.hidden = shown >= list.length;
+    if (!moreWrap.hidden) {
+      $("#moreBtn").textContent = `Show more (${list.length - shown} left)`;
+    }
   } else {
     idxMain.className = "tiles";
     idxMain.innerHTML = list.slice(0, shown).map(tileHTML).join("");
@@ -375,19 +398,20 @@ $("#idxSearch").addEventListener("input", (() => {
   let t = 0;
   return (e) => {
     clearTimeout(t);
-    t = setTimeout(() => { query = e.target.value; shown = PAGE; renderIndex(); }, 120);
+    t = setTimeout(() => { query = e.target.value; shown = view === "list" ? PAGE_LIST : PAGE; renderIndex(); }, 120);
   };
 })());
 
 $$("#viewToggle button").forEach((b) =>
   b.addEventListener("click", () => setView(b.dataset.view)));
-$("#moreBtn").addEventListener("click", () => { shown += PAGE; renderIndex(); });
+$("#moreBtn").addEventListener("click", () => { shown += view === "list" ? PAGE_LIST : PAGE; renderIndex(); });
 
 buildChips();
 /* Force grid on real phones only. innerWidth can be 0 in a hidden/offscreen
    frame — treating that as mobile would persist "grid" for a desktop user. */
 const narrow = innerWidth > 0 && innerWidth < 760;
 if (narrow) { view = "grid"; }
+shown = view === "list" ? PAGE_LIST : PAGE;   // page size must match the view
 $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
 renderIndex();
 
@@ -404,7 +428,7 @@ renderIndex();
     filter = "all";
     query = a.dataset.client;
     $("#idxSearch").value = a.dataset.client;
-    shown = PAGE;
+    shown = view === "list" ? PAGE_LIST : PAGE;
     buildChips();
     renderIndex();
   }));

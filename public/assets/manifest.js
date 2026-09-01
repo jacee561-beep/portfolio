@@ -207,7 +207,7 @@ const REELS = [
     client: "Self-Directed",
     title: "Cryptorubik — Orb",
     blurb: "Spec concept spot: iridescent 3D orb, glitch transitions, and an animated brand mark.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:08"
+    orientation: "landscape", w: 720, h: 720, dur: "0:08"
   },
   {
     id: "cryptorubik-spot",
@@ -215,7 +215,7 @@ const REELS = [
     client: "Self-Directed",
     title: "Cryptorubik — Concept Spot",
     blurb: "Spec piece built around a Y2K interface pastiche, halftone selector and live price counter.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:10"
+    orientation: "landscape", w: 720, h: 720, dur: "0:10"
   },
   {
     id: "cryptorubik-market",
@@ -223,7 +223,7 @@ const REELS = [
     client: "Self-Directed",
     title: "Cryptorubik — Market",
     blurb: "Spec animated market chart built on a curved CRT with scanlines and bloom.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:06"
+    orientation: "landscape", w: 704, h: 688, dur: "0:06"
   },
   {
     id: "vaporwave-collage",
@@ -231,7 +231,7 @@ const REELS = [
     client: "Self-Directed",
     title: "Vaporwave Collage",
     blurb: "Spec piece mixing 3D objects and cut-out collage over scanline plates.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:08"
+    orientation: "landscape", w: 720, h: 720, dur: "0:08"
   },
   {
     id: "cryptorubik-cube",
@@ -1078,7 +1078,7 @@ const REELS = [
     client: "Dwayne Kerrigan",
     title: "Podcast Intro Animation",
     blurb: "Animated title sequence for a podcast.",
-    orientation: "landscape", w: 1920, h: 1080, dur: "0:36"
+    orientation: "landscape", w: 1184, h: 688, dur: "0:36"
   },
   {
     id: "dk-outro",
@@ -1086,7 +1086,7 @@ const REELS = [
     client: "Dwayne Kerrigan",
     title: "Podcast Outro Animation",
     blurb: "Animated outro graphic for a podcast.",
-    orientation: "landscape", w: 1920, h: 1080, dur: "1:08"
+    orientation: "landscape", w: 1184, h: 688, dur: "1:08"
   },
   {
     id: "eqb2b-ep3-intro",
@@ -1270,7 +1270,7 @@ const REELS = [
     client: "365 Wellness",
     title: "Lower Third — Title Card",
     blurb: "Animated lower-third title card graphic.",
-    orientation: "landscape", w: 1920, h: 1080, dur: "0:02"
+    orientation: "landscape", w: 1164, h: 476, dur: "0:02"
   },
   {
     id: "wellness-walkin-outro",
@@ -1594,7 +1594,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Be a Fitness Star",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1148, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-every-step-counts",
@@ -1602,7 +1602,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Every Step Counts",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-stay-fit-stay-happy",
@@ -1610,7 +1610,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Stay Fit, Stay Happy",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-move-to-the-beat",
@@ -1618,7 +1618,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Move to the Beat",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-let-s-get-active",
@@ -1626,7 +1626,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Let's Get Active",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1138, h: 644, dur: "0:07"
   },
   {
     id: "super-fit-champs-fitness-is-fun",
@@ -1634,7 +1634,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Fitness Is Fun",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 642, dur: "0:07"
   },
   {
     id: "super-fit-champs-strong-bodies-strong-minds",
@@ -1642,7 +1642,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Strong Bodies, Strong Minds",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1138, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-smile-and-jump",
@@ -1650,7 +1650,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Smile and Jump",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 626, dur: "0:07"
   },
   {
     id: "super-fit-champs-exercise-is-fun",
@@ -1658,7 +1658,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Exercise Is Fun",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 656, dur: "0:07"
   },
   {
     id: "super-fit-champs-stretch-and-move",
@@ -1666,7 +1666,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Stretch and Move",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-energy-up-fun-up",
@@ -1674,7 +1674,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Energy Up, Fun Up",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 662, dur: "0:07"
   },
   {
     id: "super-fit-champs-feel-the-power",
@@ -1682,7 +1682,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Feel the Power",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 618, dur: "0:07"
   },
   {
     id: "super-fit-champs-run-jump-play",
@@ -1690,7 +1690,7 @@ const REELS = [
     client: "Super Fit Champs",
     title: "Run, Jump, Play",
     blurb: "Animated segment for a children's fitness brand.",
-    orientation: "landscape", w: 1280, h: 720, dur: "0:07"
+    orientation: "landscape", w: 1140, h: 650, dur: "0:07"
   },
   {
     id: "super-fit-champs-coach-b",
@@ -1818,7 +1818,7 @@ const REELS = [
     client: "Devi",
     title: "Kodak Jeep Reel",
     blurb: "Branded social reel.",
-    orientation: "landscape", w: 1106, h: 720, dur: "0:20"
+    orientation: "portrait", w: 352, h: 672, dur: "0:20"
   },
 
   // ==== Round 8: deliverables hidden in DUMP archive folders ====

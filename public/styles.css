@@ -30,7 +30,7 @@
 
   /* spacing */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
-  --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:144px; --s11:192px;
+  --s6:32px; --s7:48px; --s8:64px; --s9:64px; --s10:72px; --s11:96px;
 
   --r-0:0px;   /* all structure */
   --r-1:2px;   /* chips, inputs */
@@ -46,15 +46,15 @@
   /* type scale — fluid 390→1440. The hole between 24 and 34 is
      deliberate: the gap between 12px metadata and 132px display
      IS the hierarchy. Do not fill it. */
-  --fs-display-xl: clamp(44px, 11.31px + 8.381vw, 132px);
-  --fs-display-l:  clamp(34px, 18.40px + 4.000vw, 76px);
-  --fs-display-m:  clamp(24px, 18.06px + 1.524vw, 40px);
-  --fs-title:      clamp(19px, 17.14px + 0.476vw, 24px);
-  --fs-lede:       clamp(18px, 16.51px + 0.381vw, 22px);
-  --fs-body: 17px;
-  --fs-small: 15px;
-  --fs-meta: 12px;
-  --fs-micro: 11px;
+  --fs-display-xl: clamp(34px, 19.43px + 3.738vw, 64px);
+  --fs-display-l:  clamp(26px, 20.17px + 1.495vw, 38px);
+  --fs-display-m:  clamp(18px, 16.06px + 0.498vw, 22px);
+  --fs-title:      clamp(16px, 15.03px + 0.249vw, 18px);
+  --fs-lede:       clamp(15px, 14.51px + 0.125vw, 16px);
+  --fs-body: 15px;
+  --fs-small: 13.5px;
+  --fs-meta: 11px;
+  --fs-micro: 10px;
 
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -75,7 +75,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;          /* opening the dialog must not jolt the page */
-  scroll-padding-top: 108px;         /* header + status strip */
+  scroll-padding-top: 96px;         /* header + status strip */
 }
 
 body {
@@ -105,7 +105,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--gut);
-  row-gap: 40px;
+  row-gap: var(--s5);
 }
 
 .mono {
@@ -167,7 +167,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 56px;
   gap: var(--s5);
 }
 .brand { display: block; line-height: 1.15; white-space: nowrap; }
@@ -203,7 +203,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .nav-cta:hover { opacity: 0.85; }
 
 .strip {
-  margin-top: 64px;
+  margin-top: 56px;
   background: var(--surface);
   border-bottom: 1px solid var(--rule);
 }
@@ -237,7 +237,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 /* ============================================================
    Hero
    ============================================================ */
-.hero { padding: var(--s9) 0 var(--s8); }
+.hero { padding: var(--s6) 0 var(--s6); }
 .hero-in { align-items: center; }
 .hero-copy { grid-column: 1 / span 6; }
 .hero-frames { grid-column: 8 / span 5; }
@@ -255,23 +255,22 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   font-size: var(--fs-display-xl);
   font-weight: 800;
   font-stretch: 112%;
-  line-height: 0.90;
-  letter-spacing: -0.045em;
-  margin-bottom: var(--s4);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  margin-bottom: var(--s3);
 }
 .hero-role {
   font-size: var(--fs-title);
   font-weight: 500;
   color: var(--fg-dim);
-  margin-bottom: var(--s5);
+  margin-bottom: var(--s4);
 }
 .hero-lede {
   font-size: var(--fs-lede);
-  line-height: 1.45;
-  letter-spacing: -0.005em;
+  line-height: 1.5;
   color: var(--fg-dim);
-  max-width: 48ch;
-  margin-bottom: var(--s6);
+  max-width: 52ch;
+  margin-bottom: var(--s5);
 }
 .hero-act { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; }
 
@@ -279,7 +278,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   display: inline-flex;
   align-items: center;
   gap: var(--s2);
-  height: 48px;
+  height: 42px;
   padding: 0 var(--s5);
   border-radius: var(--r-1);
   background: var(--fg);
@@ -300,11 +299,9 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .btn-text:hover { color: var(--fg); border-color: var(--signal); }
 
 /* three staggered frames — the only decorative composition on the page */
+.hero-frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
 .frame { border: 1px solid var(--rule); position: relative; }
-.frame + .frame { margin-top: var(--s3); }
-.frame:nth-child(1) { width: 100%; }
-.frame:nth-child(2) { width: 88%; margin-left: 6%; }
-.frame:nth-child(3) { width: 76%; margin-left: 12%; }
+.frame .media { max-height: 34vh; }
 .frame figcaption {
   font-family: var(--mono);
   font-size: var(--fs-micro);
@@ -341,7 +338,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .contents-in {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  min-height: 96px;
+  min-height: 72px;
 }
 .contents a {
   display: flex;
@@ -355,7 +352,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .contents a:first-child { border-left: 0; }
 .contents a:hover { background: var(--raised); }
 .contents b {
-  font-size: 28px;
+  font-size: 21px;
   font-weight: 800;
   font-stretch: 125%;
   line-height: 1;
@@ -381,8 +378,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s5);
-  padding-bottom: var(--s3);
-  margin-bottom: var(--s7);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s5);
   position: relative;
   font-family: var(--mono);
   font-size: var(--fs-meta);
@@ -418,17 +415,23 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   margin-bottom: var(--s4);
 }
 .sec-note { font-size: var(--fs-lede); color: var(--fg-dim); max-width: 60ch; }
-.sec-head { margin-bottom: var(--s8); }
+.sec-head { margin-bottom: var(--s6); }
 
 /* ============================================================
    Selected work — asymmetric plate score
    ============================================================ */
-.plates { column-gap: var(--s6); row-gap: 56px; }
+.plates { column-gap: var(--s5); row-gap: var(--s6); }
 .plate { grid-column: span 4; }
 .plate.a1 { grid-column: 1 / span 7; }
 .plate.a2 { grid-column: 8 / span 5; }
 .plate.c  { grid-column: 1 / span 12; }
-.plate .media { border: 1px solid var(--rule); cursor: pointer; }
+.plate .media {
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  /* Hard ceiling: a card must never eat a whole screen, whatever its ratio. */
+  max-height: 62vh;
+}
+.plate.c .media { max-height: 54vh; }
 .plate:hover .media img { transform: scale(1.03); }
 
 .plate-t {
@@ -467,11 +470,11 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .comm details { border-bottom: 1px solid var(--rule); }
 .comm summary {
   display: grid;
-  grid-template-columns: 48px minmax(0, 3fr) minmax(0, 3fr) auto 32px;
+  grid-template-columns: 40px minmax(0, 3fr) minmax(0, 3fr) auto 28px;
   align-items: center;
   gap: var(--s4);
-  min-height: 88px;
-  padding: var(--s4) 0;
+  min-height: 60px;
+  padding: var(--s3) 0;
   cursor: pointer;
   list-style: none;
   transition: background var(--t-ui) var(--ease);
@@ -503,7 +506,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   text-align: right;
 }
 .comm-x {
-  font-size: 24px;
+  font-size: 19px;
   line-height: 1;
   color: var(--fg-meta);
   text-align: center;
@@ -610,11 +613,11 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   grid-template-columns: 48px minmax(0, 2fr) minmax(0, 3fr) 110px 52px;
   align-items: center;
   gap: var(--s4);
-  min-height: 56px;
-  padding: var(--s2) 0;
+  min-height: 38px;
+  padding: 3px 0;
   border-bottom: 1px solid var(--rule);
   content-visibility: auto;
-  contain-intrinsic-size: auto 56px;
+  contain-intrinsic-size: auto 38px;
   transition: background var(--t-ui) var(--ease);
 }
 .row:hover, .row:focus-visible { background: var(--raised); }
@@ -645,7 +648,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .row-y { text-align: right; }
 
-.pin { position: sticky; top: 120px; }
+.pin { position: sticky; top: 104px; }
 .pin .media { border: 1px solid var(--rule); }
 .pin-meta {
   margin-top: var(--s3);
@@ -711,7 +714,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s3);
-  padding: 14px 0;
+  padding: 9px 0;
   border-top: 1px solid var(--rule);
   transition: color var(--t-ui) var(--ease);
 }
@@ -845,7 +848,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
    Deep dives / contact / off the clock / footer
    ============================================================ */
 .dives { column-gap: var(--gut); }
-.dive { grid-column: span 6; border: 1px solid var(--rule); padding: var(--s6); }
+.dive { grid-column: span 6; border: 1px solid var(--rule); padding: var(--s5); }
 .dive-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s2); margin-bottom: var(--s5); }
 .dive h3 { font-size: var(--fs-display-m); font-weight: 700; letter-spacing: -0.022em; margin-bottom: var(--s2); }
 .dive p { color: var(--fg-dim); font-size: var(--fs-small); margin-bottom: var(--s4); }
@@ -868,7 +871,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .mailto:hover { border-color: var(--signal); }
 .contact-l p { color: var(--fg-dim); margin-bottom: var(--s2); }
 
-.brief { border: 1px solid var(--rule); padding: var(--s6); }
+.brief { border: 1px solid var(--rule); padding: var(--s5); }
 .brief-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); margin-bottom: var(--s3); }
 .brief label {
   display: block;
@@ -1065,10 +1068,24 @@ dialog.lb::backdrop { background: rgba(6, 6, 5, 0.88); }
 
 @media (max-width: 759px) {
   .sec { padding: var(--s8) 0; }
+  /* The header must not overflow: at 375px the wordmark plus a full nav
+     pushed the CTA off the right edge. Shrink both, drop the middle links. */
+  .hdr-in { gap: var(--s3); }
+  .brand b { font-size: 13px; letter-spacing: 0.01em; }
   .brand span { display: none; }
-  .nav { gap: var(--s4); }
+  .nav { gap: var(--s3); }
   .nav a:not(.nav-cta) { display: none; }
-  .nav a[data-keep] { display: inline; }
+  .nav a[data-keep] { display: inline; font-size: 13px; }
+  .nav-cta { height: 32px; padding: 0 var(--s3); font-size: 12.5px; white-space: nowrap; }
+}
+
+/* Phones proper. The wordmark plus "Index" plus the CTA does not fit 375px,
+   so the secondary link goes and the CTA gets a shorter label. */
+@media (max-width: 520px) {
+  .nav a[data-keep] { display: none; }
+  .brand b { font-size: 12.5px; }
+  .nav-cta { font-size: 12px; padding: 0 10px; }
+  .nav-cta .long { display: none; }
   .contents-in { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .contents a:nth-child(odd) { border-left: 0; }
   .plate, .plate.a1, .plate.a2, .plate.c, .tile { grid-column: span 12; }
