@@ -140,9 +140,10 @@ const SITE = {
    Technical switches — leave these alone unless told otherwise.
    ------------------------------------------------------------ */
 
-/* Short silent hover-preview clips. Off until tools/make_previews.py
-   has been run; the site is designed to look correct without them. */
-const PREVIEWS = false;
+/* Hover previews: pointing at any piece plays it, muted, in place.
+   It streams the real video file and stops the download the moment the
+   pointer leaves. Set to false to turn previews off everywhere. */
+const PREVIEWS = true;
 
 /* Draft mode: ?draft=1 in the URL, or run  localStorage.jgDraft = 1
    in the browser console to keep it on. */

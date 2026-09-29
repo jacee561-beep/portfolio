@@ -4,54 +4,72 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jacob Gonzales — Videographer, Editor &amp; Motion Designer</title>
-<meta name="description" content="Jacob Gonzales — videographer, editor, motion designer and photographer in South Florida. Podcast packages, nonprofit and corporate film, event and interview coverage, motion graphics and portraits. 259 delivered pieces for 51 clients." />
+<meta name="description" content="Jacob Gonzales — videographer, editor, motion designer and photographer in South Florida. Podcast packages, nonprofit and corporate film, event and interview coverage, motion graphics and portraits. 259 delivered pieces." />
 <meta property="og:title" content="Jacob Gonzales — Videographer, Editor &amp; Motion Designer" />
 <meta property="og:description" content="Podcast packages, nonprofit and corporate film, event coverage, motion graphics and photography. South Florida." />
 <meta property="og:type" content="website" />
-<meta name="theme-color" content="#0F0F0E" />
+<meta name="theme-color" content="#07060C" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" />
-<link rel="stylesheet" href="styles.css?v=27" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230F0F0E'/%3E%3Ctext x='50' y='70' font-family='Arial,sans-serif' font-size='62' font-weight='900' fill='%23F2EDE3' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css?v=28" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='71' font-family='Arial,sans-serif' font-size='62' font-weight='900' fill='%2307060C' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
 
+<!-- the colour field behind everything: three drifting light pools + grain -->
+<div class="bg" aria-hidden="true">
+  <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
+  <i class="grain"></i>
+</div>
+<div class="progress" aria-hidden="true"></div>
+
 <header class="hdr">
   <div class="wrap hdr-in">
-    <a class="brand" href="#top"><b>JACOB GONZALES</b></a>
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">J</span><b>JACOB GONZALES</b></a>
     <nav class="nav">
       <a href="#work">Work</a>
       <a href="#index" data-keep>Index</a>
       <a href="#studio">Studio</a>
-      <a class="nav-cta" href="#contact">Start<span class="long"> a project</span></a>
+      <a class="nav-cta" href="#contact"><span>Start</span><span class="long">&nbsp;a project</span></a>
     </nav>
   </div>
 </header>
-
-<div class="strip" id="strip">
-  <div class="wrap strip-in" id="stripIn"></div>
-</div>
 
 <main id="top">
 
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="wrap g hero-in">
+    <div class="hero-floor" aria-hidden="true"><i></i></div>
+    <div class="wrap hero-in">
       <div class="hero-copy">
-        <p class="eyebrow">Portfolio / 2026</p>
-        <h1>Jacob Gonzales</h1>
-        <p class="hero-role">Videographer · Editor · Motion designer · Photographer</p>
+        <p class="status" id="status"></p>
+        <h1 class="hero-h">
+          <span class="l1">Jacob</span>
+          <span class="l2"><em class="grad">Gonzales</em></span>
+        </h1>
+        <p class="hero-role">
+          <span>Videographer</span><i></i><span>Editor</span><i></i><span>Motion designer</span><i></i><span>Photographer</span>
+        </p>
         <p class="hero-lede">
           Podcast packages, nonprofit and corporate film, event and interview coverage,
           motion graphics and portraits — for teams in South Florida and remote.
         </p>
         <div class="hero-act">
-          <a class="btn" href="#contact">Start a project</a>
-          <a class="btn-text" href="#work">See the work ↓</a>
+          <a class="btn" href="#contact">Start a project <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#work">See the work</a>
         </div>
+        <dl class="hero-stats" id="heroStats"></dl>
       </div>
-      <div class="hero-frames" id="heroFrames"></div>
+      <div class="hero-stack" id="heroStack">
+        <img class="chrome chrome-star" src="assets/y2k/obj-star.png" alt="" aria-hidden="true" decoding="async" />
+      </div>
     </div>
+  </section>
+
+  <!-- ============ TAPE: a moving strip of the work ============ -->
+  <section class="tape" aria-label="Highlights from the archive">
+    <div class="tape-reel"><div class="tape-track" id="ribbon"></div></div>
+    <div class="tape-words" aria-hidden="true"><div class="tape-track" id="words"></div></div>
   </section>
 
   <!-- ============ CONTENTS BAND ============ -->
@@ -64,8 +82,8 @@
     <div class="wrap">
       <div class="ledger"><span>01</span><span id="ledgerWork"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">Selected work.</h2>
-        <p class="sec-note">Nine pieces across every discipline. The full archive is below.</p>
+        <h2 class="sec-h">Selected <em class="grad">work.</em></h2>
+        <p class="sec-note">Nine pieces across every discipline. Hover to preview, click to watch. The full archive is below.</p>
       </div>
       <div class="blank" id="blankReel"></div>
       <div class="g plates" id="plates"></div>
@@ -77,7 +95,7 @@
     <div class="wrap">
       <div class="ledger"><span>02</span><span id="ledgerComm"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">What you can<br />commission.</h2>
+        <h2 class="sec-h">What you can <em class="grad">commission.</em></h2>
         <p class="sec-note">Every count below is real delivered work, not a capability list.</p>
       </div>
       <div class="comm" id="comm"></div>
@@ -89,7 +107,7 @@
     <div class="wrap">
       <div class="ledger"><span>03</span><span id="ledgerIndex"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">The index.</h2>
+        <h2 class="sec-h">The <em class="grad">index.</em></h2>
         <p class="sec-note">Everything delivered, in one list.</p>
       </div>
 
@@ -121,9 +139,17 @@
     <div class="wrap">
       <div class="ledger"><span>04</span><span id="ledgerClients"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">Trusted by.</h2>
+        <h2 class="sec-h">Trusted <em class="grad">by.</em></h2>
       </div>
+    </div>
+    <div class="names" aria-hidden="true">
+      <div class="names-row"><div class="tape-track" id="namesA"></div></div>
+      <div class="names-row rev"><div class="tape-track" id="namesB"></div></div>
+    </div>
+    <div class="wrap">
+      <p class="roster-note">Tap a name to see their work in the index.</p>
       <div class="roster" id="roster"></div>
+      <button class="more-btn roster-more" id="rosterMore" type="button" aria-expanded="false" aria-controls="roster" hidden></button>
     </div>
   </section>
 
@@ -131,7 +157,7 @@
   <section class="sec" id="says" hidden>
     <div class="wrap">
       <div class="ledger"><span>05</span><span id="ledgerSays"></span></div>
-      <div class="sec-head"><h2 class="sec-h">What clients say.</h2></div>
+      <div class="sec-head"><h2 class="sec-h">What clients <em class="grad">say.</em></h2></div>
       <div class="g quotes" id="quotes"></div>
       <div class="blank" id="blankQuotes"></div>
     </div>
@@ -141,9 +167,9 @@
   <section class="sec" id="terms" hidden>
     <div class="wrap">
       <div class="ledger"><span>06</span><span id="ledgerTerms"></span></div>
-      <div class="sec-head"><h2 class="sec-h">Working with me.</h2></div>
+      <div class="sec-head"><h2 class="sec-h">Working <em class="grad">with me.</em></h2></div>
       <div class="terms" id="termsList"></div>
-      <p class="sec-note" id="budgetLine" style="margin-top:var(--s5)" hidden></p>
+      <p class="sec-note budget-line" id="budgetLine" hidden></p>
       <div class="blank" id="blankTerms"></div>
     </div>
   </section>
@@ -152,7 +178,7 @@
   <section class="sec" id="cases" hidden>
     <div class="wrap">
       <div class="ledger"><span>07</span><span id="ledgerCases"></span></div>
-      <div class="sec-head"><h2 class="sec-h">Case studies.</h2></div>
+      <div class="sec-head"><h2 class="sec-h">Case <em class="grad">studies.</em></h2></div>
       <div class="g case" id="caseList"></div>
       <div class="blank" id="blankCases"></div>
     </div>
@@ -164,12 +190,15 @@
       <div class="ledger"><span>08</span><span id="ledgerStudio"></span></div>
       <div class="g">
         <div class="studio-photo">
-          <div class="media" style="--ar:4/5">
-            <img src="assets/jacob-headshot.jpg" alt="Jacob Gonzales" loading="lazy" decoding="async" />
+          <div class="ring">
+            <div class="media">
+              <img src="assets/jacob-headshot.jpg" alt="Jacob Gonzales" loading="lazy" decoding="async" />
+            </div>
           </div>
+          <img class="chrome chrome-ring" src="assets/y2k/obj-ring.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <div class="studio-copy">
-          <h2 class="sec-h">Jacob Gonzales.</h2>
+          <h2 class="sec-h">Jacob <em class="grad">Gonzales.</em></h2>
           <p>
             I shoot, edit, animate and deliver. Multi-camera podcast production, nonprofit and
             corporate film, event and interview coverage, motion graphics and logo animation,
@@ -204,58 +233,60 @@
   <!-- ============ 10 CONTACT ============ -->
   <section class="sec contact" id="contact">
     <div class="wrap">
-      <div class="ledger"><span>10</span><span>CONTACT</span></div>
-      <div class="g">
-        <div class="contact-l">
-          <h2>Start a project.</h2>
-          <a class="mailto" id="mailtoPlain" href="#">—</a>
-          <p>South Florida — available for travel.</p>
-          <p id="replyTime" hidden></p>
-        </div>
-        <div class="contact-r">
-          <form class="brief" id="brief" onsubmit="return false">
-            <div class="brief-row">
-              <div>
-                <label for="bWhat">What</label>
-                <select id="bWhat">
-                  <option>Podcast package</option>
-                  <option>Event or recap film</option>
-                  <option>Nonprofit or brand film</option>
-                  <option>Interviews / panels</option>
-                  <option>Motion graphics</option>
-                  <option>Photography</option>
-                  <option selected>Not sure yet</option>
-                </select>
+      <div class="contact-panel">
+        <div class="g">
+          <div class="contact-l">
+            <p class="contact-k">10 — Contact</p>
+            <h2>Start a project.</h2>
+            <a class="mailto" id="mailtoPlain" href="#">—</a>
+            <p>South Florida — available for travel.</p>
+            <p id="replyTime" hidden></p>
+          </div>
+          <div class="contact-r">
+            <form class="brief" id="brief">
+              <div class="brief-row">
+                <div>
+                  <label for="bWhat">What</label>
+                  <select id="bWhat">
+                    <option>Podcast package</option>
+                    <option>Event or recap film</option>
+                    <option>Nonprofit or brand film</option>
+                    <option>Interviews / panels</option>
+                    <option>Motion graphics</option>
+                    <option>Photography</option>
+                    <option selected>Not sure yet</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="bWhen">When</label>
+                  <select id="bWhen">
+                    <option>This month</option>
+                    <option>Next 1–2 months</option>
+                    <option selected>Just planning</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="bBudget">Budget</label>
+                  <select id="bBudget">
+                    <option>Under $2k</option>
+                    <option>$2–5k</option>
+                    <option>$5–10k</option>
+                    <option>$10k+</option>
+                    <option selected>Not sure</option>
+                  </select>
+                </div>
+              </div>
+              <div class="brief-field">
+                <label for="bName">Name &amp; organisation</label>
+                <input id="bName" type="text" autocomplete="organization" />
               </div>
               <div>
-                <label for="bWhen">When</label>
-                <select id="bWhen">
-                  <option>This month</option>
-                  <option>Next 1–2 months</option>
-                  <option selected>Just planning</option>
-                </select>
+                <label for="bMsg">Anything else</label>
+                <textarea id="bMsg" rows="3"></textarea>
               </div>
-              <div>
-                <label for="bBudget">Budget</label>
-                <select id="bBudget">
-                  <option>Under $2k</option>
-                  <option>$2–5k</option>
-                  <option>$5–10k</option>
-                  <option>$10k+</option>
-                  <option selected>Not sure</option>
-                </select>
-              </div>
-            </div>
-            <div style="margin-bottom:var(--s3)">
-              <label for="bName">Name &amp; organisation</label>
-              <input id="bName" type="text" autocomplete="organization" />
-            </div>
-            <div>
-              <label for="bMsg">Anything else</label>
-              <textarea id="bMsg" rows="3"></textarea>
-            </div>
-            <a class="btn" id="briefSend" href="#">Send this brief</a>
-          </form>
+              <a class="btn" id="briefSend" href="#">Send this brief <span aria-hidden="true">→</span></a>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -269,20 +300,31 @@
 </main>
 
 <footer class="ftr">
-  <div class="wrap ftr-in">
-    <div>
-      <p><b>Jacob Gonzales</b></p>
-      <p class="mono">Khanna House Studios · South Florida</p>
+  <div class="wrap">
+    <svg class="ftr-mark" viewBox="0 0 1000 96" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="ftrGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F6F4FF" stop-opacity="0.26" />
+          <stop offset="1" stop-color="#F6F4FF" stop-opacity="0.02" />
+        </linearGradient>
+      </defs>
+      <text x="0" y="86" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="url(#ftrGrad)">JACOB GONZALES</text>
+    </svg>
+    <div class="ftr-in">
+      <div>
+        <p><b>Jacob Gonzales</b></p>
+        <p class="mono">Khanna House Studios · South Florida</p>
+      </div>
+      <nav class="ftr-links" aria-label="Footer">
+        <a href="#work">Work</a>
+        <a href="#index">Index</a>
+        <a href="podcasts.html">Podcasts</a>
+        <a href="photography.html">Photography</a>
+        <a href="#studio">Studio</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="ftr-links" id="ftrContact"></div>
     </div>
-    <nav class="ftr-links" aria-label="Footer">
-      <a href="#work">Work</a>
-      <a href="#index">Index</a>
-      <a href="podcasts.html">Podcasts</a>
-      <a href="photography.html">Photography</a>
-      <a href="#studio">Studio</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <div class="ftr-links" id="ftrContact"></div>
   </div>
 </footer>
 
@@ -294,9 +336,10 @@
   </div>
 </dialog>
 
-<script src="assets/site-config.js?v=27"></script>
-<script src="assets/manifest.js?v=27"></script>
-<script src="assets/photos-manifest.js?v=27"></script>
-<script src="script.js?v=27"></script>
+<script src="assets/site-config.js?v=28"></script>
+<script src="assets/manifest.js?v=28"></script>
+<script src="assets/photos-manifest.js?v=28"></script>
+<script src="common.js?v=28"></script>
+<script src="script.js?v=28"></script>
 </body>
 </html>

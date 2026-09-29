@@ -1,37 +1,25 @@
 /* ============================================================
    Jacob Gonzales — jacobgonzales.tv
    Everything editable lives in assets/site-config.js.
+   Shared helpers ($, esc, previews, lightbox, count-up, tilt) are in
+   common.js, which loads first.
    ============================================================ */
-
-const $ = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g,
-  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-/* Reduced motion is read LIVE — a user can change it mid-session. */
-const mq = matchMedia("(prefers-reduced-motion: reduce)");
-let reduced = mq.matches;
-mq.addEventListener("change", (e) => { reduced = e.matches; if (reduced) releasePreview(); });
 
 if (DRAFT) document.body.dataset.draft = "1";
 
 /* ---------- derived data ---------- */
-const CAT_LABEL = {
-  podcast: "Podcast",
-  motion: "Motion",
-  nonprofit: "Nonprofit & Events",
-  corporate: "Corporate",
-  social: "Branded Social",
-  interviews: "Interviews",
-};
 const CAT_ORDER = ["podcast", "motion", "nonprofit", "corporate", "social", "interviews"];
 
 const COUNTS = REELS.reduce((m, r) => (m[r.category] = (m[r.category] || 0) + 1, m), {});
 const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
 const CLIENTS = Object.keys(CLIENT_VOLUME);
 const clientsIn = (cat) => new Set(REELS.filter((r) => r.category === cat).map((r) => r.client)).size;
-const ar = (r) => (r.w && r.h ? `${r.w}/${r.h}` : r.orientation === "landscape" ? "16/9" : "9/16");
-const roleOf = (r) => r.role || (SITE.defaultRoles && SITE.defaultRoles[r.category]) || null;
+const BY_ID = new Map(REELS.map((r) => [r.id, r]));
+const find = (id) => BY_ID.get(id);
+/* Not clients: his own spec work, his own studio, and an unnamed one-off. */
+const NOT_CLIENTS = new Set(["Self-Directed", "Khanna House Studios", "Private Client"]);
+const REAL_CLIENTS = CLIENTS.filter((c) => !NOT_CLIENTS.has(c));
+const PHOTO_COUNT = typeof PHOTOS !== "undefined" ? PHOTOS.length : 0;
 
 /* Curated nine: the reel if it exists, the motion/brand-led showcase, then
    top up so every discipline is represented. Volume-ranking buries the
@@ -41,10 +29,9 @@ const SHOWCASE = [
   "polo-recap-ae", "cryptorubik-spot", "sparked-logo",
 ];
 function curatedNine() {
-  const byId = new Map(REELS.map((r) => [r.id, r]));
   const out = [];
-  if (SITE.reel && SITE.reel.id && byId.has(SITE.reel.id)) out.push(byId.get(SITE.reel.id));
-  SHOWCASE.forEach((id) => { const r = byId.get(id); if (r && !out.includes(r)) out.push(r); });
+  if (SITE.reel && SITE.reel.id && BY_ID.has(SITE.reel.id)) out.push(find(SITE.reel.id));
+  SHOWCASE.forEach((id) => { const r = find(id); if (r && !out.includes(r)) out.push(r); });
   ["nonprofit", "corporate", "interviews", "social", "podcast"].forEach((cat) => {
     if (out.length >= 9) return;
     const pick = REELS.find((r) => r.category === cat && !out.includes(r));
@@ -53,150 +40,123 @@ function curatedNine() {
   return out.slice(0, 9);
 }
 
-/* ---------- the pooled hover preview ----------
-   ONE <video> for the whole page. The old build created a player per card,
-   set preload="auto", and never cancelled the download on mouseleave. */
-const preview = Object.assign(document.createElement("video"), {
-  muted: true, loop: true, playsInline: true, preload: "metadata",
-});
-preview.setAttribute("disableremoteplayback", "");
-preview.setAttribute("disablepictureinpicture", "");
-let armed = null, armTimer = 0;
-
-function releasePreview() {
-  clearTimeout(armTimer);
-  if (!armed) return;
-  armed.classList.remove("playing");
-  armed = null;
-  preview.pause();
-  preview.removeAttribute("src");
-  preview.load();              // cancels any in-flight download
-  if (preview.parentNode) preview.parentNode.removeChild(preview);
-}
-
-function armPreview(host, id) {
-  if (reduced || !PREVIEWS) return;
-  clearTimeout(armTimer);
-  armTimer = setTimeout(() => {
-    releasePreview();
-    const box = $(".media", host) || $(".card-media", host);
-    if (!box) return;
-    preview.src = `assets/preview/${id}.mp4`;
-    box.appendChild(preview);
-    armed = host;
-    preview.play().then(() => host.classList.add("playing")).catch(() => releasePreview());
-  }, 220);
-}
-
-/* ---------- status strip ---------- */
-(function strip() {
+/* ---------- hero: status pill ---------- */
+(function status() {
+  const box = $("#status");
   const bits = [];
-  if (SITE.available === false && SITE.availableFrom) bits.push(`Booking from ${SITE.availableFrom}`);
-  else if (SITE.availableFrom) bits.push(`Available from ${SITE.availableFrom}`);
+  if (SITE.available === false) {
+    box.setAttribute("data-booking", "");
+    bits.push(SITE.availableFrom ? `Booking from ${SITE.availableFrom}` : "Fully booked");
+  } else {
+    bits.push(SITE.availableFrom ? `Available from ${SITE.availableFrom}` : "Available for projects");
+  }
   if (SITE.region) bits.push(SITE.region);
-  if (SITE.turnaround) bits.push(`Typical turnaround ${SITE.turnaround}`);
-
-  const box = $("#stripIn");
-  if (SITE.available === false) box.parentElement.setAttribute("data-booking", "");
-  box.innerHTML =
-    `<i></i>` +
-    bits.map((b) => `<s>${esc(b)}</s>`).join(`<s>·</s>`) +
-    (bits.length ? `<s>·</s>` : "") +
-    `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>`;
+  if (SITE.turnaround) bits.push(`Turnaround ${SITE.turnaround}`);
+  box.innerHTML = `<i></i>` + bits.map((b) => `<span>${esc(b)}</span>`).join(`<s>/</s>`);
 })();
 
-/* ---------- hero frames ---------- */
-(function heroFrames() {
-  /* Two landscape frames side by side. Three stacked made the hero 978px on a
-     900px screen — you could never see the whole thing at once. */
-  const picks = curatedNine().filter((r) => (r.w || 0) >= (r.h || 1)).slice(0, 2);
-  while (picks.length < 2) {
-    const extra = curatedNine().find((r) => !picks.includes(r));
-    if (!extra) break;
-    picks.push(extra);
-  }
-  $("#heroFrames").innerHTML = picks.map((r, i) => `
-    <figure class="frame">
-      <div class="media" style="--ar:${ar(r)}">
-        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-             width="${r.w || 1920}" height="${r.h || 1080}"
-             ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
-      </div>
-      <figcaption>${esc(r.client)} · ${esc(CAT_LABEL[r.category] || r.category)}</figcaption>
-    </figure>`).join("");
+/* ---------- hero: stats ---------- */
+(function heroStats() {
+  // Clients are rounded DOWN to the nearest 5 with a "+", on purpose:
+  // a few names in the manifest are the same client spelled two ways.
+  const clients = Math.floor(REAL_CLIENTS.length / 5) * 5;
+  const stats = [
+    ["Pieces delivered", REELS.length, ""],
+    ["Clients & shows", clients, "+"],
+    ["Photographs", PHOTO_COUNT, ""],
+  ].filter(([, n]) => n);
+  $("#heroStats").innerHTML = stats.map(([k, n, suf]) =>
+    `<div><dt>${k}</dt><dd data-count="${n}" data-suffix="${suf}">${n}${suf}</dd></div>`).join("");
+})();
 
-  if (picks[0]) {
-    const l = document.createElement("link");
-    l.rel = "preload"; l.as = "image";
-    l.href = `assets/posters/${picks[0].id}.jpg`;
-    l.setAttribute("fetchpriority", "high");
-    document.head.appendChild(l);
-  }
+/* ---------- hero: the fanned stack ---------- */
+const HERO_STACK = ["hona-open", "cryptorubik-spot", "cryptorubik-orb"];
+(function heroStack() {
+  const picks = HERO_STACK.map(find).filter(Boolean);
+  curatedNine().forEach((r) => { if (picks.length < 3 && !picks.includes(r)) picks.push(r); });
+  const box = $("#heroStack");
+  box.insertAdjacentHTML("afterbegin", picks.map((r, i) => `
+    <button type="button" class="hcard hc${i + 1}" data-id="${r.id}" data-cat="${r.category}"
+            aria-label="Play ${esc(r.title)} — ${esc(r.client)}">
+      <span class="media" data-ar="${ar(r)}">
+        ${posterImg(r, i === 2 ? 'fetchpriority="high"' : "")}
+        <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
+      </span>
+    </button>`).join(""));
+  paintAR(box);
+  wirePieces(box, ".hcard", find);
+})();
+
+/* ---------- tape: the moving strip of work ---------- */
+const RIBBON = [
+  "cryptorubik-orb", "hona-open", "promisefund-event", "tht-plane-intro",
+  "vaporwave-collage", "dk-intro", "super-fit-champs-energy-up-fun-up",
+  "literacy-kravis-luncheon", "cryptorubik-spot", "hona-lifetime",
+  "wellness-lt-text", "patricia-heaton", "tennis-with-ema-podcast-outro",
+  "khanna-house-studios-studio-welcome", "cryptorubik-market", "promisefund-c433",
+];
+(function tape() {
+  const items = RIBBON.map(find).filter(Boolean);
+  const one = items.map((r) => `
+    <div class="tape-item" data-id="${r.id}" title="${esc(r.client)} — ${esc(r.title)}">
+      <div class="media" data-ar="${ar(r)}">${posterImg(r)}</div>
+    </div>`).join("");
+  const track = $("#ribbon");
+  track.innerHTML = one + one;                 // twice, so the loop is seamless
+  // the second copy is decoration only
+  $$(".tape-item", track).slice(items.length).forEach((el) => el.setAttribute("aria-hidden", "true"));
+  paintAR(track);
+  wirePieces(track, ".tape-item", find);
+
+  const words = ["Videography", "Motion design", "Editing", "Photography",
+    "Podcasts", "Brand film", "Events", "Logo animation"];
+  const w = words.map((x) => `<span>${esc(x)}</span>`).join("");
+  $("#words").innerHTML = w + w;
 })();
 
 /* ---------- contents band ---------- */
 (function contents() {
   const cells = CAT_ORDER.map((c) =>
-    `<a href="#index" data-cat="${c}"><span>${esc(CAT_LABEL[c])}</span><b>${COUNTS[c] || 0}</b></a>`);
-  const photos = typeof PHOTOS !== "undefined" ? PHOTOS.length : 0;
-  if (photos) cells.push(`<a href="photography.html"><span>Photography</span><b>${photos}</b></a>`);
+    `<a href="#index" data-cat="${c}"><span><i class="dot"></i>${esc(CAT_LABEL[c])}</span><b data-count="${COUNTS[c] || 0}">${COUNTS[c] || 0}</b></a>`);
+  if (PHOTO_COUNT) cells.push(`<a href="photography.html" data-cat="photo"><span><i class="dot"></i>Photography</span><b data-count="${PHOTO_COUNT}">${PHOTO_COUNT}</b></a>`);
   $("#contents").innerHTML = cells.join("");
-  $$("#contents a[data-cat]").forEach((a) =>
-    a.addEventListener("click", () => setFilter(a.dataset.cat)));
+  $$("#contents a[data-cat]").forEach((a) => {
+    if (a.dataset.cat !== "photo") a.addEventListener("click", () => setFilter(a.dataset.cat));
+  });
 })();
 
 /* ---------- ledger rules ---------- */
 $("#ledgerWork").textContent = "9 selected";
 $("#ledgerComm").textContent = `${CAT_ORDER.length} disciplines`;
 $("#ledgerIndex").textContent = `${REELS.length} pieces`;
-$("#ledgerClients").textContent = `${CLIENTS.length} clients`;
+$("#ledgerClients").textContent = `${CLIENTS.length} names`;
 $("#ledgerStudio").textContent = "About";
 $("#ledgerDives").textContent = "Deep dives";
 
-/* ---------- slate ---------- */
-function slate(r) {
-  const cells = [
-    ["Client", r.client],
-    ["Role", roleOf(r)],
-    ["Year", r.year],
-    ["Runtime", r.dur],
-  ].filter(([, v]) => v);                        // never render an empty cell
-  if (!cells.length) return "";
-  return `<dl class="slate">${cells.map(([k, v]) =>
-    `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`;
-}
-
 /* ---------- 01 selected work ---------- */
 (function plates() {
-  /* Slots are assigned BY ORIENTATION, not by position. A 9:16 vertical in a
-     7-column slot renders a 1300px-tall card — one piece filling a screen and
-     a half. Landscape pieces take the wide slots; verticals stay narrow. */
-  const nine = curatedNine();
-  const wide = nine.filter((r) => (r.w || 0) >= (r.h || 1));
-  const tall = nine.filter((r) => (r.w || 0) < (r.h || 1));
-  const laid = [];
-  const takeWide = () => wide.shift() || tall.shift();
-  const takeTall = () => tall.shift() || wide.shift();
-
-  // row A: two landscape · row B: three verticals · row C: one landscape spread
-  [["a1", takeWide], ["a2", takeWide],
-   ["", takeTall], ["", takeTall], ["", takeTall],
-   ["c", takeWide],
-   ["", takeTall], ["", takeTall], ["", takeTall]].forEach(([cls, take]) => {
-    const r = take();
-    if (r) laid.push([cls, r]);
-  });
-
-  $("#plates").innerHTML = laid.map(([score, r]) => `
-    <article class="plate ${score}" data-id="${r.id}">
-      <div class="media" style="--ar:${ar(r)}">
-        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-             width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+  /* A masonry of three columns (two on tablets, one on phones). Every piece
+     keeps its true aspect ratio and the columns pack with no holes. The old
+     fixed slot score left big empty gaps beside verticals. */
+  const box = $("#plates");
+  box.innerHTML = curatedNine().map((r, i) => `
+    <article class="plate rv" data-pack="${i}" data-id="${r.id}" data-cat="${r.category}" data-ar="${ar(r)}">
+      <div class="plate-frame">
+        <div class="plate-glow" aria-hidden="true"><img src="assets/posters/${r.id}.jpg" alt="" loading="lazy" decoding="async" /></div>
+        <div class="media" data-ar="${ar(r)}">
+          ${posterImg(r)}
+          <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
+          <span class="play" aria-hidden="true"></span>
+        </div>
       </div>
       <h3 class="plate-t">${esc(r.title)}</h3>
       <p class="plate-b">${esc(r.blurb || "")}</p>
       ${slate(r)}
     </article>`).join("");
+  paintAR(box);
+  pack(box, (w) => (w >= 1100 ? 3 : w >= 600 ? 2 : 1), 0.42);
+  wirePieces(box, ".plate", find);
+  tilt(box, ".plate", 4);
 })();
 
 /* ---------- 02 commission rows ---------- */
@@ -223,7 +183,8 @@ function slate(r) {
     ["needFromYou", "What I need from you"],
   ];
 
-  $("#comm").innerHTML = CAT_ORDER.map((cat, i) => {
+  const box = $("#comm");
+  box.innerHTML = CAT_ORDER.map((cat, i) => {
     const cfg = (SITE.commission && SITE.commission[cat]) || {};
     const strip = REELS.filter((r) => r.category === cat).slice(0, 4);
     const terms = FIELDS.map(([key, label]) => {
@@ -236,7 +197,7 @@ function slate(r) {
     }).filter(Boolean).join("");
 
     return `
-    <details id="c-${cat}">
+    <details id="c-${cat}" class="rv" data-cat="${cat}">
       <summary>
         <span class="comm-n">${String(i + 1).padStart(2, "0")}</span>
         <span class="comm-name">${esc(NAMES[cat])}</span>
@@ -248,15 +209,16 @@ function slate(r) {
         ${terms ? `<dl class="comm-terms">${terms}</dl>` : ""}
         <div class="comm-strip">
           ${strip.map((r) => `
-            <div class="media" style="--ar:${ar(r)}">
-              <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-                   width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+            <div class="tile-lite" data-id="${r.id}">
+              <div class="media" data-ar="${ar(r)}">${posterImg(r)}<span class="play" aria-hidden="true"></span></div>
             </div>`).join("")}
         </div>
         <a class="btn-text" href="#index" data-cat="${cat}">See all ${COUNTS[cat]} in the index →</a>
       </div>
     </details>`;
   }).join("");
+  paintAR(box);
+  $$(".comm-strip", box).forEach((s) => wirePieces(s, ".tile-lite", find));
 
   $$("#comm a[data-cat]").forEach((a) =>
     a.addEventListener("click", () => setFilter(a.dataset.cat)));
@@ -273,8 +235,11 @@ const PAGE = 24;      // tiles per page
 const PAGE_LIST = 60; // rows per page — 259 at once made the page 22 screens
 let filter = "all";
 let query = "";
+/* Grid is the default: thumbnails sell footage better than a table.
+   (New storage key, so visitors who once saw list-by-default get grid.) */
+const VIEW_KEY = "jg.index.view2";
 let view = (() => {
-  try { return localStorage.getItem("jg.index.view") || "list"; } catch (e) { return "list"; }
+  try { return localStorage.getItem(VIEW_KEY) || "grid"; } catch (e) { return "grid"; }
 })();
 let shown = PAGE_LIST;
 
@@ -282,8 +247,20 @@ const idxMain = $("#idxMain");
 const idxSide = $("#idxSide");
 const moreWrap = $("#moreWrap");
 
+/* "All" with no search deals the categories out in turn, so the first page
+   shows the range instead of seven near-identical podcast verticals. */
+const MIX_ORDER = ["motion", "nonprofit", "podcast", "corporate", "social", "interviews"];
+const MIXED = (() => {
+  const lanes = MIX_ORDER.map((c) => REELS.filter((r) => r.category === c));
+  REELS.forEach((r) => { if (!MIX_ORDER.includes(r.category)) lanes.push([r]); });
+  const out = [];
+  for (let i = 0; out.length < REELS.length; i++) lanes.forEach((l) => { if (l[i]) out.push(l[i]); });
+  return out;
+})();
+
 function matching() {
   const q = query.trim().toLowerCase();
+  if (filter === "all" && !q) return MIXED;
   return REELS.filter((r) => {
     if (filter !== "all" && r.category !== filter) return false;
     if (!q) return true;
@@ -295,7 +272,7 @@ function buildChips() {
   const items = [["all", `All ${REELS.length}`]].concat(
     CAT_ORDER.filter((c) => COUNTS[c]).map((c) => [c, `${CAT_LABEL[c]} ${COUNTS[c]}`]));
   $("#chips").innerHTML = items.map(([id, label]) =>
-    `<button type="button" class="chip${id === filter ? " on" : ""}" data-f="${id}"
+    `<button type="button" class="chip${id === filter ? " on" : ""}" data-f="${id}" data-cat="${id}"
        aria-pressed="${id === filter}">${esc(label)}</button>`).join("");
   $$("#chips .chip").forEach((b) =>
     b.addEventListener("click", () => setFilter(b.dataset.f)));
@@ -312,7 +289,7 @@ function setFilter(cat) {
 
 function setView(v) {
   view = v;
-  try { localStorage.setItem("jg.index.view", v); } catch (e) { /* private mode */ }
+  try { localStorage.setItem(VIEW_KEY, v); } catch (e) { /* private mode */ }
   $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === v));
   shown = v === "list" ? PAGE_LIST : PAGE;
   renderIndex();
@@ -320,23 +297,23 @@ function setView(v) {
 
 function rowHTML(r, i) {
   const role = roleOf(r);
-  return `<a class="row" href="#" data-id="${r.id}">
+  return `<a class="row" href="#" data-id="${r.id}" data-cat="${r.category}">
     <span class="row-n">${String(i + 1).padStart(3, "0")}</span>
     <span class="row-c">${esc(r.client)}</span>
     <span class="row-t">${esc(r.title)}</span>
-    <span class="row-d">${esc(CAT_LABEL[r.category] || r.category)}</span>
+    <span class="row-d"><i class="dot"></i>${esc(CAT_LABEL[r.category] || r.category)}</span>
     <span class="row-y">${esc(r.dur || "")}</span>
     ${role ? `<span class="sr-only">${esc(role)}</span>` : ""}
   </a>`;
 }
 
-function tileHTML(r) {
-  return `<article class="tile" data-id="${r.id}">
-    <div class="media" style="--ar:${ar(r)}">
-      <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-           width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+function tileHTML(r, i) {
+  return `<article class="tile" data-pack="${i}" data-ar="${ar(r)}" data-id="${r.id}" data-cat="${r.category}">
+    <div class="media" data-ar="${ar(r)}">
+      ${posterImg(r)}
+      <span class="play" aria-hidden="true"></span>
     </div>
-    <div class="tile-m"><span class="tile-c">${esc(r.client)}</span><span>${esc(r.dur || "")}</span></div>
+    <div class="tile-m"><span class="tile-c"><i class="dot"></i><b>${esc(r.client)}</b></span><span>${esc(r.dur || "")}</span></div>
   </article>`;
 }
 
@@ -345,10 +322,11 @@ function renderIndex() {
   $("#idxCount").textContent = `${list.length} of ${REELS.length}`;
 
   if (view === "list") {
+    unpack(idxMain);
     idxMain.className = "idx-rows";
     idxMain.innerHTML = list.slice(0, shown).map(rowHTML).join("");
     idxSide.setAttribute("aria-hidden", "true");
-    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row</div></div>`;
+    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row<br />to preview it</div></div>`;
     moreWrap.hidden = shown >= list.length;
     if (!moreWrap.hidden) {
       $("#moreBtn").textContent = `Show more (${list.length - shown} left)`;
@@ -356,6 +334,8 @@ function renderIndex() {
   } else {
     idxMain.className = "tiles";
     idxMain.innerHTML = list.slice(0, shown).map(tileHTML).join("");
+    paintAR(idxMain);
+    pack(idxMain, (w) => (w >= 1280 ? 5 : w >= 1000 ? 4 : w >= 700 ? 3 : 2), 0.16);
     idxSide.innerHTML = "";
     moreWrap.hidden = shown >= list.length;
     if (!moreWrap.hidden) {
@@ -369,20 +349,29 @@ idxMain.addEventListener("pointerover", (e) => {
   if (e.pointerType !== "mouse") return;
   const host = e.target.closest(".row, .tile");
   if (!host) return;
-  const r = REELS.find((x) => x.id === host.dataset.id);
+  const r = find(host.dataset.id);
   if (!r) return;
   if (view === "list") {
+    const pin = $(".pin", idxSide);
+    if (pin && pin.dataset.id === r.id) return;
+    releasePreview();
     idxSide.innerHTML = `
-      <div class="pin">
-        <div class="media" style="--ar:${ar(r)}">
+      <div class="pin" data-id="${r.id}" data-cat="${r.category}">
+        <div class="media" data-ar="${ar(r)}">
           <img src="assets/posters/${r.id}.jpg" alt="" decoding="async" />
         </div>
         <p class="pin-meta">${esc(r.client)} — ${esc(r.title)}</p>
       </div>`;
+    paintAR(idxSide);
     armPreview($(".pin", idxSide), r.id);
   } else {
     armPreview(host, r.id);
   }
+});
+idxMain.addEventListener("pointerout", (e) => {
+  if (view !== "grid") return;
+  const host = e.target.closest(".tile");
+  if (host && !host.contains(e.relatedTarget)) releasePreview();
 });
 idxMain.addEventListener("pointerleave", releasePreview);
 
@@ -390,7 +379,7 @@ idxMain.addEventListener("click", (e) => {
   const host = e.target.closest(".row, .tile");
   if (!host) return;
   e.preventDefault();
-  const r = REELS.find((x) => x.id === host.dataset.id);
+  const r = find(host.dataset.id);
   if (r) openLB(r);
 });
 
@@ -415,15 +404,35 @@ shown = view === "list" ? PAGE_LIST : PAGE;   // page size must match the view
 $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
 renderIndex();
 
-/* ---------- 04 client ledger ---------- */
-(function roster() {
+/* ---------- 04 clients: name marquee + roster ---------- */
+(function clients() {
+  const byVolume = REAL_CLIENTS.slice().sort((a, b) => CLIENT_VOLUME[b] - CLIENT_VOLUME[a]);
+  const half = Math.ceil(byVolume.length / 2);
+  const row = (names) => {
+    const one = names.map((n) => `<span>${esc(n)}</span>`).join("");
+    return one + one;
+  };
+  $("#namesA").innerHTML = row(byVolume.slice(0, half));
+  $("#namesB").innerHTML = row(byVolume.slice(half));
+
   $("#roster").innerHTML = CLIENTS.slice().sort((a, b) => a.localeCompare(b)).map((c) => {
     const n = CLIENT_VOLUME[c];
     return `<a href="#index" data-client="${esc(c)}">
       <b>${esc(c)}</b>
-      <span>${n}${n >= 8 ? '<em>Ongoing</em>' : ""}</span>
+      <span>${n >= 8 ? "<em>Ongoing</em>" : ""}<i>${n}</i></span>
     </a>`;
   }).join("");
+  /* 51 pills is two screens on a phone: fold to three rows behind a button */
+  const roster = $("#roster"), more = $("#rosterMore");
+  roster.classList.add("folded");
+  more.hidden = false;
+  more.textContent = `Show all ${CLIENTS.length} clients`;
+  more.addEventListener("click", () => {
+    const folded = roster.classList.toggle("folded");
+    more.textContent = folded ? `Show all ${CLIENTS.length} clients` : "Show fewer";
+    more.setAttribute("aria-expanded", String(!folded));
+  });
+
   $$("#roster a").forEach((a) => a.addEventListener("click", () => {
     filter = "all";
     query = a.dataset.client;
@@ -447,7 +456,7 @@ function blank(el, label, ask) {
     $("#says").hidden = false;
     $("#ledgerSays").textContent = `${qs.length} quote${qs.length > 1 ? "s" : ""}`;
     $("#quotes").innerHTML = qs.map((q) => `
-      <figure class="quote">
+      <figure class="quote rv">
         <blockquote>${esc(q.quote)}</blockquote>
         <figcaption>${esc(q.name)}${q.role ? " · " + esc(q.role) : ""}${q.org ? " · " + esc(q.org) : ""}</figcaption>
       </figure>`).join("");
@@ -459,7 +468,7 @@ function blank(el, label, ask) {
        NRG Podcast, Literacy Coalition, CEO Discovery, Children's Harbor.
        Add to <code>SITE.testimonials</code> in <code>assets/site-config.js</code> as
        <code>{quote, name, role, org}</code>, quote under 240 characters.
-       <b style="color:inherit;display:inline">One quote renders correctly on its own — do not wait for three.</b>`);
+       <strong>One quote renders correctly on its own — do not wait for three.</strong>`);
   }
 
   // terms
@@ -496,12 +505,11 @@ function blank(el, label, ask) {
   if (cs.length) {
     $("#cases").hidden = false;
     $("#ledgerCases").textContent = `${cs.length} stud${cs.length > 1 ? "ies" : "y"}`;
-    const byId = new Map(REELS.map((r) => [r.id, r]));
     $("#caseList").innerHTML = cs.map((c) => {
-      const r = byId.get(c.pieceId);
+      const r = find(c.pieceId);
       return `
       <div class="case-media">${r ? `
-        <div class="media" style="--ar:${ar(r)}">
+        <div class="media" data-ar="${ar(r)}">
           <img src="assets/posters/${r.id}.jpg" alt="${esc(c.client)}" loading="lazy" decoding="async" />
         </div>` : ""}</div>
       <div class="case-body">
@@ -516,11 +524,12 @@ function blank(el, label, ask) {
         ${c.outcome ? `<h4>Outcome</h4><p>${esc(c.outcome)}</p>` : ""}
       </div>`;
     }).join("");
+    paintAR($("#caseList"));
   } else if (DRAFT) {
     $("#cases").hidden = false;
     $("#ledgerCases").textContent = "empty";
     blank($("#blankCases"), "Placeholder — case studies",
-      `Write <b style="color:inherit;display:inline">two, not six</b> — one podcast retainer,
+      `Write <strong>two, not six</strong> — one podcast retainer,
        one nonprofit film. Add to <code>SITE.caseStudies</code>:
        <code>{client, sector, services, duration, challenge, approach, outcome, pieceId}</code>.
        60–90 words each. The outcome needs one real number you collected — if you don't
@@ -556,23 +565,25 @@ function blank(el, label, ask) {
   const sessions = new Set(photos.map((p) => p.client || p.session)).size;
 
   const tiles = (items, dir) => items.map((p) => `
-    <div class="media" style="--ar:${p.w && p.h ? p.w + "/" + p.h : "1/1"}">
-      <img src="assets/${dir}/${p.id}.jpg" alt="" loading="lazy" decoding="async" />
+    <div class="media" data-ar="${dir === "photos" ? "4/5" : ar(p)}">
+      <img src="${dir === "photos" ? photoSrc(p.id) : `assets/posters/${p.id}.jpg`}" alt="" loading="lazy" decoding="async" />
     </div>`).join("");
 
-  $("#diveList").innerHTML = `
-    <a class="dive" href="podcasts.html">
+  const box = $("#diveList");
+  box.innerHTML = `
+    <a class="dive rv" href="podcasts.html" data-cat="podcast">
       <div class="dive-grid">${tiles(pods, "posters")}</div>
       <h3>Podcasts</h3>
       <p>${COUNTS.podcast} pieces across ${shows} shows.</p>
       <span class="btn-text">Open the catalogue →</span>
     </a>
-    <a class="dive" href="photography.html">
+    <a class="dive rv" href="photography.html" data-cat="photo">
       <div class="dive-grid">${tiles(photos.slice(0, 4), "photos")}</div>
       <h3>Photography</h3>
       <p>${photos.length} photographs across ${sessions} sessions.</p>
       <span class="btn-text">Open the gallery →</span>
     </a>`;
+  paintAR(box);
 })();
 
 /* ---------- 10 contact ---------- */
@@ -601,6 +612,8 @@ function blank(el, label, ask) {
     el.addEventListener("input", compose);
     el.addEventListener("change", compose);
   });
+  // Enter in a field must not submit the form (the CSP blocks form posts anyway)
+  $("#brief").addEventListener("submit", (e) => { e.preventDefault(); compose(); send.click(); });
   compose();
 })();
 
@@ -613,48 +626,9 @@ function blank(el, label, ask) {
   $("#otc").innerHTML = bits.join("");
 })();
 
-/* ---------- lightbox — native <dialog> ---------- */
-const lb = $("#lb");
-function openLB(r) {
-  releasePreview();
-  const isPhoto = !r.category;
-  $("#lbMedia").innerHTML = isPhoto
-    ? `<img src="assets/photos/${r.id}.jpg" alt="${esc(r.title)}" />`
-    : `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
-         poster="assets/posters/${r.id}.jpg"></video>`;
-  $("#lbMeta").innerHTML =
-    `<h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p>` + slate(r);
-  lb.showModal();
-}
-function teardown() {
-  const v = $("#lbMedia video");
-  if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
-  $("#lbMedia").innerHTML = "";
-}
-/* Do NOT rely on the "close" event alone — it does not fire in every engine
-   (verified: a bare <dialog> fails to fire it in some Chromium builds), which
-   would leave the video playing with audio over the page after closing.
-   teardown() is idempotent, so calling it from several paths is safe. */
-function closeLB() { teardown(); if (lb.open) lb.close(); }
-lb.addEventListener("close", teardown);
-lb.addEventListener("cancel", teardown);          // Esc
-$("#lbX").addEventListener("click", closeLB);
-lb.addEventListener("click", (e) => { if (e.target === lb) closeLB(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb.open) closeLB(); });
-
-/* plates open the lightbox too */
-$("#plates").addEventListener("click", (e) => {
-  const host = e.target.closest(".plate");
-  if (!host) return;
-  const r = REELS.find((x) => x.id === host.dataset.id);
-  if (r) openLB(r);
-});
-$("#plates").addEventListener("pointerover", (e) => {
-  if (e.pointerType !== "mouse") return;
-  const host = e.target.closest(".plate");
-  if (host) armPreview(host, host.dataset.id);
-});
-$("#plates").addEventListener("pointerleave", releasePreview);
+/* ---------- scroll reveals + count-ups ---------- */
+$$(".sec-head, .contents-in, .idx-bar, .roster, .studio-copy").forEach((el) => el.classList.add("rv"));
+countUp();
 
 /* ---------- draft banner ---------- */
 if (DRAFT) {

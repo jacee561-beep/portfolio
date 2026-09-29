@@ -72,7 +72,9 @@ conversation.
 | `public/podcasts.html` + `podcasts.js` | Podcast catalogue, grouped by show |
 | `public/photography.html` + `photos.js` | Photo sessions, grouped by client |
 | `public/styles.css` | Entire design system (CSS custom properties at the top) |
+| `public/common.js` | Shared by all 3 pages: hover previews, lightbox, masonry, count-up, tilt |
 | `public/script.js` | Homepage behaviour |
+| `public/assets/site-config.js` | **Every editable fact and blank** (availability, testimonials, terms…) |
 | `public/assets/manifest.js` | **Video catalogue — `REELS` + `CATEGORIES` arrays** |
 | `public/assets/photos-manifest.js` | **Photo catalogue — `PHOTOS` array** |
 | `public/assets/video/<id>.mp4` | One file per entry, filename = `id` |
@@ -175,29 +177,39 @@ Source archives live on his external drives (`F:` ~22 TB, `K:` ~3.7 TB) and his 
 
 ---
 
-## Design system
+## Design system — AFTERGLOW (2026-09-29)
 
 Defined as CSS custom properties at the top of `public/styles.css`.
 
-- Background `#08080a`, panels `#131317`, accent **`#22d3ee` (cyan)** — Jacob replaced the original
-  orange `#ff5436`; if you ever change it again, note that two oranges were once hardcoded outside
-  the token (see the 2026-08-11 home-PC log below)
-- Display type: weight 900, tight negative letter-spacing, `clamp()` for fluid sizing
-- Radius `14px`, easing `cubic-bezier(0.22, 1, 0.36, 1)`
+- Dark stage `#07060C`, lit by three slow-drifting pools of light (`.bg .orb`) in **cyan `#22d3ee`,
+  violet `#a78bfa`, pink `#f472b6`**. The same three run through `--grad`: headline accent words,
+  buttons, section numbers, the contact panel.
+- **One neon per discipline** (`--cat-*`, applied through `data-cat="…"` → `--cc`): podcast cyan,
+  motion pink, nonprofit lime, corporate blue, social violet, interviews amber, photo teal.
+- Type: Archivo at weight 900, `font-stretch: 125%` (expanded) for display, JetBrains Mono for labels.
+- Radius 16px cards / 26px panels / pills everywhere else. Easing `cubic-bezier(0.22, 1, 0.36, 1)`.
 
-Motion already implemented: preloader, rotating hero video, staggered headline reveal, client
-marquee, IntersectionObserver scroll reveals, count-up stats, magnetic buttons, scroll-progress
-bar, auto-hiding header, **hover-to-play video previews on cards**, scale-in lightbox, film grain,
-mobile burger menu. All of it is gated behind `prefers-reduced-motion`.
+Motion: drifting colour field, moving film strip + word tape, name marquee, gradient sheen on accent
+words, vaporwave grid floor under the hero, count-up stats, card tilt, **hover-to-play previews**
+(one pooled `<video>`, streams the real file, cancelled on leave), scroll-progress bar,
+scroll-driven reveals. All gated behind `prefers-reduced-motion`.
 
-The homepage grid paginates 18 at a time — rendering all 151 cards at once was too heavy.
+**Jacob asked for each of these to go — never reintroduce:** custom cursor, RGB-split headline
+glitch, preloader/intro screen, hero reel rotation, headline reveal animation, orange accent.
 
 ---
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=2`. If you edit `public/styles.css` or any `.js`,
-  bump it to `?v=3` in every HTML file that references it, or browsers serve a stale copy.
+- **Cache busting.** CSS/JS are referenced with `?v=28` (as of 2026-09-29). If you edit
+  `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
+- **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
+  silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
+  every aspect ratio on the live site until 2026-09-29 (all cards fell back to 9:16). Put per-item
+  values in `data-ar="16/9"` and call `paintAR()` (CSSOM is allowed). Same for inline `onclick`/
+  `onsubmit` — use `addEventListener`. Test locally under the real policy (see session log below).
+- **Replacing a photo in place?** `/assets/*` is cached `immutable` for a year. Bump `PHOTO_REV` in
+  `common.js`, or returning visitors keep the old file.
 - **Local preview caching.** Python's `http.server` plus most browsers cache the HTML *document*
   itself, so `?v=` on sub-resources won't help you see edits. Hard-reload, or load
   `index.html?bust=N` with a new N.
@@ -479,3 +491,44 @@ script.js against a stubbed DOM and asserts group totals and asset refs. Run it 
 
 **Line endings:** the repo files are CRLF. Node patch scripts must normalise to LF, patch, then
 restore CRLF, or every string match silently fails.
+
+## Session log — 2026-09-29 (cloud session): AFTERGLOW redesign
+
+Jacob: *"make it look super cool and awesome… it looks like boring black, it's lame."* The LEDGER
+design (2026-08-31) had deliberately stripped all colour; he didn't like the result. Rebuilt the
+look, kept every section, all content, draft mode and `site-config.js` exactly as they were.
+
+**What changed**
+- New visual system (see *Design system* above). Hero is now a two-column layout: huge expanded
+  name with gradient surname, status pill, stats, and a fanned stack of three pieces
+  (`HERO_STACK` in `script.js`) with a chrome star from `assets/y2k/`.
+- New: moving film strip of 16 posters (`RIBBON` in `script.js`) crossed by a gradient word tape;
+  discipline tiles with count-up; client-name marquee; roster folds to 3 rows behind a button;
+  gradient contact panel; SVG footer wordmark (`textLength` makes it fit whatever font loads).
+- **Selected Work and the index grid are masonry** (`pack()` in `common.js`): true aspect ratios,
+  no holes, no cropping. The old fixed slot score left big gaps beside verticals.
+- **Index defaults to grid** (thumbnails sell footage better than a table). "All" deals the
+  categories out in turn (`MIXED`) so page one isn't seven NRG verticals. List view still there.
+- **Hover previews are ON** (`PREVIEWS = true` in `site-config.js`). They play `assets/video/<id>.mp4`
+  directly — there are no separate preview clips, and none are needed.
+- Podcasts + Photography pages rebuilt on `common.js`. **Their lightbox had been broken since
+  LEDGER** — it used an old `<div class="lb">` that no CSS matched, so clicking a card did nothing
+  visible. Now the same `<dialog>` as the homepage.
+
+**Bugs fixed on the live site**
+- CSP was blocking every inline `--ar` style → all cards were 9:16 crops live. (See Gotchas.)
+- "Starta project" in the nav: a leading space inside a flex item collapses. Now `&nbsp;`.
+- **7 photos were stored sideways** in the files themselves (hormats-3/4/5, wellybay-3/4/5/6).
+  Rotated upright with Pillow; `PHOTOS` entries now carry `w`/`h` like `REELS` do.
+
+**How it was verified** (cloud container, Playwright + Chromium): served `public/` with the exact
+CSP from `_headers` and checked 1440 / 1024 / 880 / 390 widths — no console errors, no CSP
+violations, no horizontal scroll, fonts load, filters/search/view toggle/roster/Load more work,
+lightbox closes by X, Esc and backdrop with teardown, draft mode still shows 4 blanks + 18 chips,
+reduced-motion shows final numbers and stops the marquees. That Chromium has **no H.264**, so hover
+previews were verified by wiring (correct `src` attached on hover, released on leave), not by
+watching playback — worth a real-browser look.
+
+**Open questions for Jacob**
+- Instagram: `SITE.instagram` is the bare `https://www.instagram.com/`; the old sub-pages linked
+  `instagram.com/toast.89` (kept there). Confirm which is his and set it in `site-config.js`.
