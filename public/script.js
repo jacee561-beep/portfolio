@@ -1,6 +1,13 @@
 /* ============================================================
    Jacob Gonzales — jacobgonzales.tv
    Everything editable lives in assets/site-config.js.
+
+   Two ideas drive this file:
+   1. THE WORK PLAYS. Tiles start their preview loop when they enter
+      the viewport, with a hard cap on how many run at once.
+   2. THE PAGE TAKES ITS COLOUR FROM THE WORK. Every piece carries an
+      accent sampled from its own frame (tools/extract_colors.py);
+      hovering or centring a piece moves the page accent toward it.
    ============================================================ */
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -8,279 +15,229 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-/* Reduced motion is read LIVE — a user can change it mid-session. */
 const mq = matchMedia("(prefers-reduced-motion: reduce)");
 let reduced = mq.matches;
-mq.addEventListener("change", (e) => { reduced = e.matches; if (reduced) releasePreview(); });
+mq.addEventListener("change", (e) => { reduced = e.matches; if (reduced) stopAll(); });
 
 if (DRAFT) document.body.dataset.draft = "1";
 
-/* ---------- derived data ---------- */
+/* ---------- data ---------- */
 const CAT_LABEL = {
-  podcast: "Podcast",
-  motion: "Motion",
-  nonprofit: "Nonprofit & Events",
-  corporate: "Corporate",
-  social: "Branded Social",
-  interviews: "Interviews",
+  podcast: "Podcast", motion: "Motion", nonprofit: "Nonprofit & Events",
+  corporate: "Corporate", social: "Branded Social", interviews: "Interviews",
 };
 const CAT_ORDER = ["podcast", "motion", "nonprofit", "corporate", "social", "interviews"];
-
 const COUNTS = REELS.reduce((m, r) => (m[r.category] = (m[r.category] || 0) + 1, m), {});
 const CLIENT_VOLUME = REELS.reduce((m, r) => (m[r.client] = (m[r.client] || 0) + 1, m), {});
 const CLIENTS = Object.keys(CLIENT_VOLUME);
-const clientsIn = (cat) => new Set(REELS.filter((r) => r.category === cat).map((r) => r.client)).size;
+
 const ar = (r) => (r.w && r.h ? `${r.w}/${r.h}` : r.orientation === "landscape" ? "16/9" : "9/16");
+const accentOf = (r) => r.accent || "#b006e4";
 const roleOf = (r) => r.role || (SITE.defaultRoles && SITE.defaultRoles[r.category]) || null;
 
-/* Curated nine: the reel if it exists, the motion/brand-led showcase, then
-   top up so every discipline is represented. Volume-ranking buries the
-   strongest material, which is why this is hand-picked, not sorted. */
 const SHOWCASE = [
   "cryptorubik-orb", "vaporwave-collage", "tht-plane-intro",
   "polo-recap-ae", "cryptorubik-spot", "sparked-logo",
 ];
-function curatedNine() {
+function featured() {
   const byId = new Map(REELS.map((r) => [r.id, r]));
   const out = [];
   if (SITE.reel && SITE.reel.id && byId.has(SITE.reel.id)) out.push(byId.get(SITE.reel.id));
   SHOWCASE.forEach((id) => { const r = byId.get(id); if (r && !out.includes(r)) out.push(r); });
-  ["nonprofit", "corporate", "interviews", "social", "podcast"].forEach((cat) => {
-    if (out.length >= 9) return;
-    const pick = REELS.find((r) => r.category === cat && !out.includes(r));
-    if (pick) out.push(pick);
+  ["nonprofit", "corporate", "interviews"].forEach((c) => {
+    if (out.length >= 5) return;
+    const p = REELS.find((r) => r.category === c && !out.includes(r));
+    if (p) out.push(p);
   });
-  return out.slice(0, 9);
+  return out.slice(0, 5);
 }
 
-/* ---------- the pooled hover preview ----------
-   ONE <video> for the whole page. The old build created a player per card,
-   set preload="auto", and never cancelled the download on mouseleave. */
-const preview = Object.assign(document.createElement("video"), {
-  muted: true, loop: true, playsInline: true, preload: "metadata",
-});
-preview.setAttribute("disableremoteplayback", "");
-preview.setAttribute("disablepictureinpicture", "");
-let armed = null, armTimer = 0;
-
-function releasePreview() {
-  clearTimeout(armTimer);
-  if (!armed) return;
-  armed.classList.remove("playing");
-  armed = null;
-  preview.pause();
-  preview.removeAttribute("src");
-  preview.load();              // cancels any in-flight download
-  if (preview.parentNode) preview.parentNode.removeChild(preview);
+/* ---------- the live accent ----------
+   One CSS custom property on :root. Everything that should pick up the
+   colour of the work reads var(--accent), so this single write repaints
+   the dot, the rules, the glows and the background wash together. */
+let accentTimer = 0;
+function setAccent(hex) {
+  if (!hex) return;
+  clearTimeout(accentTimer);
+  accentTimer = setTimeout(() => {
+    document.documentElement.style.setProperty("--accent", hex);
+  }, 40);
 }
 
-function armPreview(host, id) {
+/* ---------- playback pool ----------
+   259 <video> elements playing at once would melt the page. Tiles ask to
+   play when they enter the viewport; only MAX_LIVE run, oldest retired
+   first. Everything pauses when the tab is hidden. */
+const MAX_LIVE = 8;
+const live = [];          // tiles currently playing, oldest first
+
+function startTile(tile) {
   if (reduced || !PREVIEWS) return;
-  clearTimeout(armTimer);
-  armTimer = setTimeout(() => {
-    releasePreview();
-    const box = $(".media", host) || $(".card-media", host);
-    if (!box) return;
-    preview.src = `assets/preview/${id}.mp4`;
-    box.appendChild(preview);
-    armed = host;
-    preview.play().then(() => host.classList.add("playing")).catch(() => releasePreview());
-  }, 220);
+  if (tile.dataset.live === "1" || tile.dataset.deferred === "1") return;
+  const box = $(".box", tile) || $(".card-media", tile);
+  if (!box) return;
+
+  while (live.length >= MAX_LIVE) stopTile(live[0]);
+
+  const v = document.createElement("video");
+  v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto";
+  v.setAttribute("disableremoteplayback", "");
+  v.setAttribute("disablepictureinpicture", "");
+  v.src = `assets/preview/${tile.dataset.id}.mp4`;
+  box.appendChild(v);
+  tile.dataset.live = "1";
+  live.push(tile);
+  v.play()
+    .then(() => tile.classList.add("live", "playing"))
+    .catch((err) => {
+      /* Chrome pauses muted, video-only media while the page is backgrounded
+         ("paused to save power" AbortError), and some contexts refuse autoplay
+         outright. Neither is an error worth reacting to: drop back to the
+         poster, mark the tile so the sweep stops hammering it, and let the
+         visibilitychange handler retry when the page is actually on screen.
+         The old code destroyed the tile here, so tabbing away and back left
+         dead tiles that never recovered. */
+      stopTile(tile);
+      if (err && (err.name === "AbortError" || err.name === "NotAllowedError")) {
+        tile.dataset.deferred = "1";
+      }
+    });
 }
 
-/* ---------- status strip ---------- */
-(function strip() {
-  const bits = [];
-  if (SITE.available === false && SITE.availableFrom) bits.push(`Booking from ${SITE.availableFrom}`);
-  else if (SITE.availableFrom) bits.push(`Available from ${SITE.availableFrom}`);
-  if (SITE.region) bits.push(SITE.region);
-  if (SITE.turnaround) bits.push(`Typical turnaround ${SITE.turnaround}`);
-
-  const box = $("#stripIn");
-  if (SITE.available === false) box.parentElement.setAttribute("data-booking", "");
-  box.innerHTML =
-    `<i></i>` +
-    bits.map((b) => `<s>${esc(b)}</s>`).join(`<s>·</s>`) +
-    (bits.length ? `<s>·</s>` : "") +
-    `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>`;
-})();
-
-/* ---------- hero frames ---------- */
-(function heroFrames() {
-  /* Two landscape frames side by side. Three stacked made the hero 978px on a
-     900px screen — you could never see the whole thing at once. */
-  const picks = curatedNine().filter((r) => (r.w || 0) >= (r.h || 1)).slice(0, 2);
-  while (picks.length < 2) {
-    const extra = curatedNine().find((r) => !picks.includes(r));
-    if (!extra) break;
-    picks.push(extra);
-  }
-  $("#heroFrames").innerHTML = picks.map((r, i) => `
-    <figure class="frame">
-      <div class="media" style="--ar:${ar(r)}">
-        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-             width="${r.w || 1920}" height="${r.h || 1080}"
-             ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" />
-      </div>
-      <figcaption>${esc(r.client)} · ${esc(CAT_LABEL[r.category] || r.category)}</figcaption>
-    </figure>`).join("");
-
-  if (picks[0]) {
-    const l = document.createElement("link");
-    l.rel = "preload"; l.as = "image";
-    l.href = `assets/posters/${picks[0].id}.jpg`;
-    l.setAttribute("fetchpriority", "high");
-    document.head.appendChild(l);
-  }
-})();
-
-/* ---------- contents band ---------- */
-(function contents() {
-  const cells = CAT_ORDER.map((c) =>
-    `<a href="#index" data-cat="${c}"><span>${esc(CAT_LABEL[c])}</span><b>${COUNTS[c] || 0}</b></a>`);
-  const photos = typeof PHOTOS !== "undefined" ? PHOTOS.length : 0;
-  if (photos) cells.push(`<a href="photography.html"><span>Photography</span><b>${photos}</b></a>`);
-  $("#contents").innerHTML = cells.join("");
-  $$("#contents a[data-cat]").forEach((a) =>
-    a.addEventListener("click", () => setFilter(a.dataset.cat)));
-})();
-
-/* ---------- ledger rules ---------- */
-$("#ledgerWork").textContent = "9 selected";
-$("#ledgerComm").textContent = `${CAT_ORDER.length} disciplines`;
-$("#ledgerIndex").textContent = `${REELS.length} pieces`;
-$("#ledgerClients").textContent = `${CLIENTS.length} clients`;
-$("#ledgerStudio").textContent = "About";
-$("#ledgerDives").textContent = "Deep dives";
-
-/* ---------- slate ---------- */
-function slate(r) {
-  const cells = [
-    ["Client", r.client],
-    ["Role", roleOf(r)],
-    ["Year", r.year],
-    ["Runtime", r.dur],
-  ].filter(([, v]) => v);                        // never render an empty cell
-  if (!cells.length) return "";
-  return `<dl class="slate">${cells.map(([k, v]) =>
-    `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`;
+function stopTile(tile) {
+  if (!tile) return;
+  const i = live.indexOf(tile);
+  if (i >= 0) live.splice(i, 1);
+  tile.dataset.live = "";
+  tile.classList.remove("live", "playing");
+  const v = $("video", tile);
+  if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
 }
+function stopAll() { [...live].forEach(stopTile); }
 
-/* ---------- 01 selected work ---------- */
-(function plates() {
-  /* Slots are assigned BY ORIENTATION, not by position. A 9:16 vertical in a
-     7-column slot renders a 1300px-tall card — one piece filling a screen and
-     a half. Landscape pieces take the wide slots; verticals stay narrow. */
-  const nine = curatedNine();
-  const wide = nine.filter((r) => (r.w || 0) >= (r.h || 1));
-  const tall = nine.filter((r) => (r.w || 0) < (r.h || 1));
-  const laid = [];
-  const takeWide = () => wide.shift() || tall.shift();
-  const takeTall = () => tall.shift() || wide.shift();
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { stopAll(); return; }
+  // back on screen: clear the power-save deferrals and try again
+  $$("[data-deferred]").forEach((t) => { delete t.dataset.deferred; });
+  queueSweep();
+});
 
-  // row A: two landscape · row B: three verticals · row C: one landscape spread
-  [["a1", takeWide], ["a2", takeWide],
-   ["", takeTall], ["", takeTall], ["", takeTall],
-   ["c", takeWide],
-   ["", takeTall], ["", takeTall], ["", takeTall]].forEach(([cls, take]) => {
-    const r = take();
-    if (r) laid.push([cls, r]);
+/* One observer for every tile on the page (cheaper than one each, and
+   unobserve-free so tiles resume when scrolled back to). */
+const seen = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    const t = e.target;
+    if (e.isIntersecting && e.intersectionRatio >= 0.3) startTile(t);
+    else if (!e.isIntersecting) stopTile(t);
   });
+}, { threshold: [0, 0.3, 0.6], rootMargin: "0px 0px -5% 0px" });
 
-  $("#plates").innerHTML = laid.map(([score, r]) => `
-    <article class="plate ${score}" data-id="${r.id}">
-      <div class="media" style="--ar:${ar(r)}">
-        <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-             width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
-      </div>
-      <h3 class="plate-t">${esc(r.title)}</h3>
-      <p class="plate-b">${esc(r.blurb || "")}</p>
-      ${slate(r)}
-    </article>`).join("");
-})();
+/* The piece nearest the middle of the screen owns the page colour. */
+const centred = new IntersectionObserver((entries) => {
+  let best = null, bestRatio = 0;
+  entries.forEach((e) => {
+    if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+      bestRatio = e.intersectionRatio; best = e.target;
+    }
+  });
+  if (best && best.dataset.accent) setAccent(best.dataset.accent);
+}, { threshold: [0.5, 0.9], rootMargin: "-35% 0px -35% 0px" });
 
-/* ---------- 02 commission rows ---------- */
-(function commission() {
-  const NAMES = {
-    podcast: "Podcast package",
-    motion: "Motion graphics & titles",
-    nonprofit: "Nonprofit & event film",
-    corporate: "Corporate & brand film",
-    social: "Branded social / verticals",
-    interviews: "Interviews & panels",
-  };
-  const DESC = {
-    podcast: "Multi-camera recording through to episode and clip delivery.",
-    motion: "Logo animation, title systems, lower thirds and show packaging.",
-    nonprofit: "Event coverage, recap films and testimonial pieces.",
-    corporate: "Brand film, explainers and executive interviews.",
-    social: "Vertical cutdowns with captions, built for the feed.",
-    interviews: "Gala, panel and red-carpet interview coverage.",
-  };
-  const FIELDS = [
-    ["included", "What's included"],
-    ["turnaround", "Turnaround"],
-    ["needFromYou", "What I need from you"],
-  ];
+/* Scroll-driven backstop.
+   IntersectionObserver is the efficient path, but it silently delivers
+   nothing in some embedded/non-compositing contexts (verified: a fresh
+   observer watching a tile plainly on screen fired zero callbacks). A
+   portfolio whose whole idea is "the work plays" cannot depend on a single
+   API behaving. This sweep computes visibility directly, throttled to one
+   animation frame, and drives the same start/stop. */
+const wired = new Set();
+let sweepQueued = false;
 
-  $("#comm").innerHTML = CAT_ORDER.map((cat, i) => {
-    const cfg = (SITE.commission && SITE.commission[cat]) || {};
-    const strip = REELS.filter((r) => r.category === cat).slice(0, 4);
-    const terms = FIELDS.map(([key, label]) => {
-      const val = cfg[key];
-      const body = val
-        ? esc(val)
-        : `<span class="todo">${esc(label)} — one line</span>`;
-      if (!val && !DRAFT) return "";
-      return `<div><dt>${label}</dt><dd>${body}</dd></div>`;
-    }).filter(Boolean).join("");
+function sweep() {
+  sweepQueued = false;
+  const vh = innerHeight;
+  const want = [];
+  wired.forEach((t) => {
+    if (!t.isConnected) { wired.delete(t); return; }
+    const r = t.getBoundingClientRect();
+    if (r.bottom <= 0 || r.top >= vh || !r.height) { stopTile(t); return; }
+    const vis = (Math.min(r.bottom, vh) - Math.max(r.top, 0)) / r.height;
+    if (vis >= 0.3) want.push([Math.abs((r.top + r.bottom) / 2 - vh / 2), t]);
+    else if (vis <= 0.05) stopTile(t);
+  });
+  // nearest the middle of the screen wins the limited player slots
+  want.sort((a, b) => a[0] - b[0]);
+  want.slice(0, MAX_LIVE).forEach(([, t]) => startTile(t));
+  if (want.length) setAccent(want[0][1].dataset.accent);
+}
 
-    return `
-    <details id="c-${cat}">
-      <summary>
-        <span class="comm-n">${String(i + 1).padStart(2, "0")}</span>
-        <span class="comm-name">${esc(NAMES[cat])}</span>
-        <span class="comm-d">${esc(DESC[cat])}</span>
-        <span class="comm-proof">${COUNTS[cat]} pieces · ${clientsIn(cat)} clients</span>
-        <span class="comm-x" aria-hidden="true">+</span>
-      </summary>
-      <div class="comm-body">
-        ${terms ? `<dl class="comm-terms">${terms}</dl>` : ""}
-        <div class="comm-strip">
-          ${strip.map((r) => `
-            <div class="media" style="--ar:${ar(r)}">
-              <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-                   width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
-            </div>`).join("")}
-        </div>
-        <a class="btn-text" href="#index" data-cat="${cat}">See all ${COUNTS[cat]} in the index →</a>
-      </div>
-    </details>`;
-  }).join("");
+function queueSweep() {
+  if (sweepQueued) return;
+  sweepQueued = true;
+  requestAnimationFrame(sweep);
+}
+addEventListener("scroll", queueSweep, { passive: true });
+addEventListener("resize", queueSweep, { passive: true });
 
-  $$("#comm a[data-cat]").forEach((a) =>
-    a.addEventListener("click", () => setFilter(a.dataset.cat)));
+function wire(tile) {
+  tile.style.setProperty("--a", tile.dataset.accent);
+  wired.add(tile);
+  seen.observe(tile);
+  centred.observe(tile);
+  tile.addEventListener("pointerenter", (e) => {
+    if (e.pointerType === "mouse") { setAccent(tile.dataset.accent); startTile(tile); }
+  });
+}
 
-  // deep link: /#c-nonprofit opens that row
-  if (location.hash.startsWith("#c-")) {
-    const d = $(location.hash);
-    if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ block: "center" }), 60); }
+/* ---------- markup ---------- */
+function tileHTML(r, cls = "tile") {
+  return `<article class="${cls}" data-id="${r.id}" data-accent="${accentOf(r)}">
+    <div class="box" style="--ar:${ar(r)}">
+      <span class="playing-dot"></span>
+      <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+           width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
+    </div>
+    <div class="meta">
+      <span class="meta-l">
+        <span class="meta-c">${esc(r.client)}</span>
+        <span class="meta-t">${esc(r.title)}</span>
+      </span>
+      <span class="meta-d">${esc(r.dur || "")}</span>
+    </div>
+  </article>`;
+}
+
+/* ---------- hero ribbon ---------- */
+(function ribbon() {
+  const wide = REELS.filter((r) => (r.w || 0) >= (r.h || 1));
+  const pick = [];
+  for (let i = 0; i < wide.length && pick.length < 14; i += Math.ceil(wide.length / 14)) {
+    pick.push(wide[i]);
   }
+  const one = pick.map((r) => `
+    <a class="rib" data-id="${r.id}" data-accent="${accentOf(r)}" href="#work">
+      <div class="box" style="--ar:16/9">
+        <img src="assets/posters/${r.id}.jpg" alt="" loading="lazy" decoding="async" />
+      </div>
+    </a>`).join("");
+  $("#ribbon").innerHTML = one + one;            // doubled so the loop is seamless
+  $$("#ribbon .rib").forEach((el) => {
+    el.style.setProperty("--a", el.dataset.accent);
+    el.addEventListener("pointerenter", (e) => {
+      if (e.pointerType === "mouse") setAccent(el.dataset.accent);
+    });
+  });
+  const first = pick[0];
+  if (first) setAccent(accentOf(first));
 })();
 
-/* ---------- 03 the index ---------- */
-const PAGE = 24;      // tiles per page
-const PAGE_LIST = 60; // rows per page — 259 at once made the page 22 screens
-let filter = "all";
-let query = "";
-let view = (() => {
-  try { return localStorage.getItem("jg.index.view") || "list"; } catch (e) { return "list"; }
-})();
-let shown = PAGE_LIST;
+/* ---------- the wall ---------- */
+const PAGE = 36;
+let filter = "all", query = "", shown = PAGE;
+const wall = $("#wall"), moreWrap = $("#moreWrap");
 
-const idxMain = $("#idxMain");
-const idxSide = $("#idxSide");
-const moreWrap = $("#moreWrap");
+$("#wallCount").textContent = REELS.length;
 
 function matching() {
   const q = query.trim().toLowerCase();
@@ -291,253 +248,145 @@ function matching() {
   });
 }
 
-function buildChips() {
-  const items = [["all", `All ${REELS.length}`]].concat(
-    CAT_ORDER.filter((c) => COUNTS[c]).map((c) => [c, `${CAT_LABEL[c]} ${COUNTS[c]}`]));
-  $("#chips").innerHTML = items.map(([id, label]) =>
+function chips() {
+  const items = [["all", "All", REELS.length]].concat(
+    CAT_ORDER.filter((c) => COUNTS[c]).map((c) => [c, CAT_LABEL[c], COUNTS[c]]));
+  $("#chips").innerHTML = items.map(([id, label, n]) =>
     `<button type="button" class="chip${id === filter ? " on" : ""}" data-f="${id}"
-       aria-pressed="${id === filter}">${esc(label)}</button>`).join("");
-  $$("#chips .chip").forEach((b) =>
-    b.addEventListener("click", () => setFilter(b.dataset.f)));
+       aria-pressed="${id === filter}">${esc(label)}<b>${n}</b></button>`).join("");
+  $$("#chips .chip").forEach((b) => b.addEventListener("click", () => {
+    filter = b.dataset.f; shown = PAGE; chips(); renderWall();
+  }));
 }
 
-function setFilter(cat) {
-  filter = cat;
-  shown = view === "list" ? PAGE_LIST : PAGE;
-  buildChips();
-  renderIndex();
-  const sec = $("#index");
-  if (sec) sec.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-}
-
-function setView(v) {
-  view = v;
-  try { localStorage.setItem("jg.index.view", v); } catch (e) { /* private mode */ }
-  $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === v));
-  shown = v === "list" ? PAGE_LIST : PAGE;
-  renderIndex();
-}
-
-function rowHTML(r, i) {
-  const role = roleOf(r);
-  return `<a class="row" href="#" data-id="${r.id}">
-    <span class="row-n">${String(i + 1).padStart(3, "0")}</span>
-    <span class="row-c">${esc(r.client)}</span>
-    <span class="row-t">${esc(r.title)}</span>
-    <span class="row-d">${esc(CAT_LABEL[r.category] || r.category)}</span>
-    <span class="row-y">${esc(r.dur || "")}</span>
-    ${role ? `<span class="sr-only">${esc(role)}</span>` : ""}
-  </a>`;
-}
-
-function tileHTML(r) {
-  return `<article class="tile" data-id="${r.id}">
-    <div class="media" style="--ar:${ar(r)}">
-      <img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
-           width="${r.w || 1920}" height="${r.h || 1080}" loading="lazy" decoding="async" />
-    </div>
-    <div class="tile-m"><span class="tile-c">${esc(r.client)}</span><span>${esc(r.dur || "")}</span></div>
-  </article>`;
-}
-
-function renderIndex() {
+function renderWall() {
   const list = matching();
-  $("#idxCount").textContent = `${list.length} of ${REELS.length}`;
-
-  if (view === "list") {
-    idxMain.className = "idx-rows";
-    idxMain.innerHTML = list.slice(0, shown).map(rowHTML).join("");
-    idxSide.setAttribute("aria-hidden", "true");
-    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row</div></div>`;
-    moreWrap.hidden = shown >= list.length;
-    if (!moreWrap.hidden) {
-      $("#moreBtn").textContent = `Show more (${list.length - shown} left)`;
-    }
-  } else {
-    idxMain.className = "tiles";
-    idxMain.innerHTML = list.slice(0, shown).map(tileHTML).join("");
-    idxSide.innerHTML = "";
-    moreWrap.hidden = shown >= list.length;
-    if (!moreWrap.hidden) {
-      $("#moreBtn").textContent = `Load more (${list.length - shown} left)`;
-    }
-  }
+  $("#count").textContent = `${list.length} of ${REELS.length}`;
+  stopAll();
+  wall.innerHTML = list.slice(0, shown).map((r) => tileHTML(r)).join("");
+  $$(".tile", wall).forEach(wire);
+  moreWrap.hidden = shown >= list.length;
+  if (!moreWrap.hidden) $("#more").textContent = `Show more (${list.length - shown} left)`;
+  queueSweep();
 }
 
-/* one delegated listener for the whole index, both views */
-idxMain.addEventListener("pointerover", (e) => {
-  if (e.pointerType !== "mouse") return;
-  const host = e.target.closest(".row, .tile");
-  if (!host) return;
-  const r = REELS.find((x) => x.id === host.dataset.id);
-  if (!r) return;
-  if (view === "list") {
-    idxSide.innerHTML = `
-      <div class="pin">
-        <div class="media" style="--ar:${ar(r)}">
-          <img src="assets/posters/${r.id}.jpg" alt="" decoding="async" />
-        </div>
-        <p class="pin-meta">${esc(r.client)} — ${esc(r.title)}</p>
-      </div>`;
-    armPreview($(".pin", idxSide), r.id);
-  } else {
-    armPreview(host, r.id);
-  }
+$("#more").addEventListener("click", () => {
+  const before = wall.children.length;
+  shown += PAGE;
+  renderWall();
+  const next = wall.children[before];
+  if (next) next.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
 });
-idxMain.addEventListener("pointerleave", releasePreview);
 
-idxMain.addEventListener("click", (e) => {
-  const host = e.target.closest(".row, .tile");
-  if (!host) return;
-  e.preventDefault();
-  const r = REELS.find((x) => x.id === host.dataset.id);
+$("#find").addEventListener("input", (() => {
+  let t = 0;
+  return (e) => { clearTimeout(t); t = setTimeout(() => {
+    query = e.target.value; shown = PAGE; renderWall(); }, 130); };
+})());
+
+wall.addEventListener("click", (e) => {
+  const t = e.target.closest(".tile");
+  if (!t) return;
+  const r = REELS.find((x) => x.id === t.dataset.id);
   if (r) openLB(r);
 });
 
-$("#idxSearch").addEventListener("input", (() => {
-  let t = 0;
-  return (e) => {
-    clearTimeout(t);
-    t = setTimeout(() => { query = e.target.value; shown = view === "list" ? PAGE_LIST : PAGE; renderIndex(); }, 120);
-  };
-})());
+chips();
+renderWall();
 
-$$("#viewToggle button").forEach((b) =>
-  b.addEventListener("click", () => setView(b.dataset.view)));
-$("#moreBtn").addEventListener("click", () => { shown += view === "list" ? PAGE_LIST : PAGE; renderIndex(); });
+/* ---------- featured ---------- */
+(function feat() {
+  $("#feat").innerHTML = featured().map((r, i) => {
+    const role = roleOf(r);
+    return `<div class="feat-row rv">
+      <div class="feat-media">${tileHTML(r)}</div>
+      <div class="feat-body">
+        <p class="feat-n">${String(i + 1).padStart(2, "0")} — ${esc(CAT_LABEL[r.category] || r.category)}</p>
+        <h3 class="feat-t">${esc(r.title)}</h3>
+        <p class="feat-b">${esc(r.blurb || "")}</p>
+        <div class="feat-tags">
+          <span class="tag">${esc(r.client)}</span>
+          ${role ? `<span class="tag">${esc(role)}</span>` : ""}
+          ${r.dur ? `<span class="tag">${esc(r.dur)}</span>` : ""}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  $$("#feat .tile").forEach(wire);
+  queueSweep();
+  $("#feat").addEventListener("click", (e) => {
+    const t = e.target.closest(".tile");
+    if (!t) return;
+    const r = REELS.find((x) => x.id === t.dataset.id);
+    if (r) openLB(r);
+  });
+})();
 
-buildChips();
-/* Force grid on real phones only. innerWidth can be 0 in a hidden/offscreen
-   frame — treating that as mobile would persist "grid" for a desktop user. */
-const narrow = innerWidth > 0 && innerWidth < 760;
-if (narrow) { view = "grid"; }
-shown = view === "list" ? PAGE_LIST : PAGE;   // page size must match the view
-$$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
-renderIndex();
-
-/* ---------- 04 client ledger ---------- */
+/* ---------- clients ---------- */
 (function roster() {
+  $("#clientCount").textContent = CLIENTS.length;
+  $("#clientNote").textContent =
+    `${REELS.length} delivered pieces. The ones marked ongoing came back for eight or more.`;
   $("#roster").innerHTML = CLIENTS.slice().sort((a, b) => a.localeCompare(b)).map((c) => {
     const n = CLIENT_VOLUME[c];
-    return `<a href="#index" data-client="${esc(c)}">
-      <b>${esc(c)}</b>
-      <span>${n}${n >= 8 ? '<em>Ongoing</em>' : ""}</span>
-    </a>`;
+    return `<a href="#work" data-client="${esc(c)}">
+      <b>${esc(c)}</b><span>${n}${n >= 8 ? "<em>●</em>" : ""}</span></a>`;
   }).join("");
   $$("#roster a").forEach((a) => a.addEventListener("click", () => {
-    filter = "all";
-    query = a.dataset.client;
-    $("#idxSearch").value = a.dataset.client;
-    shown = view === "list" ? PAGE_LIST : PAGE;
-    buildChips();
-    renderIndex();
+    filter = "all"; query = a.dataset.client; $("#find").value = a.dataset.client;
+    shown = PAGE; chips(); renderWall();
   }));
 })();
 
-/* ---------- 05/06/07 gated sections ---------- */
-function blank(el, label, ask) {
-  if (!el) return;
-  el.innerHTML = `<b>${esc(label)}</b><p>${ask}</p>`;
-}
+/* ---------- gated sections ---------- */
+function blank(el, label, ask) { if (el) el.innerHTML = `<b>${esc(label)}</b><p>${ask}</p>`; }
 
 (function gated() {
-  // testimonials
   const qs = SITE.testimonials || [];
   if (qs.length) {
     $("#says").hidden = false;
-    $("#ledgerSays").textContent = `${qs.length} quote${qs.length > 1 ? "s" : ""}`;
     $("#quotes").innerHTML = qs.map((q) => `
-      <figure class="quote">
-        <blockquote>${esc(q.quote)}</blockquote>
-        <figcaption>${esc(q.name)}${q.role ? " · " + esc(q.role) : ""}${q.org ? " · " + esc(q.org) : ""}</figcaption>
-      </figure>`).join("");
+      <figure class="feat-row"><div class="feat-body" style="grid-column:1/-1">
+        <p class="feat-t" style="font-weight:600">“${esc(q.quote)}”</p>
+        <p class="feat-n">${esc(q.name)}${q.role ? " · " + esc(q.role) : ""}${q.org ? " · " + esc(q.org) : ""}</p>
+      </div></figure>`).join("");
   } else if (DRAFT) {
     $("#says").hidden = false;
-    $("#ledgerSays").textContent = "empty";
     blank($("#blankQuotes"), "Placeholder — testimonials",
-      `The single highest-value thing on this page. Four emails would fill it:
+      `The highest-value thing missing from this page. Four emails would fill it:
        NRG Podcast, Literacy Coalition, CEO Discovery, Children's Harbor.
        Add to <code>SITE.testimonials</code> in <code>assets/site-config.js</code> as
-       <code>{quote, name, role, org}</code>, quote under 240 characters.
-       <b style="color:inherit;display:inline">One quote renders correctly on its own — do not wait for three.</b>`);
+       <code>{quote, name, role, org}</code>. One quote renders fine on its own.`);
   }
 
-  // terms
   const t = SITE.terms || {};
   const LABELS = {
-    process: "How a project runs", turnaround: "Turnaround",
-    revisions: "Revisions included", usage: "Usage & licensing",
-    payment: "Payment terms", backup: "Backup & redundancy",
+    process: "How a project runs", turnaround: "Turnaround", revisions: "Revisions included",
+    usage: "Usage & licensing", payment: "Payment terms", backup: "Backup & redundancy",
     insurance: "Insurance & travel",
   };
   const filled = Object.keys(LABELS).filter((k) => t[k]);
   if (filled.length) {
     $("#terms").hidden = false;
-    $("#ledgerTerms").textContent = `${filled.length} of 7`;
     $("#termsList").innerHTML = filled.map((k) =>
-      `<div><dt>${LABELS[k]}</dt><dd>${esc(t[k])}</dd></div>`).join("");
-    if (SITE.budgetLine) {
-      $("#budgetLine").hidden = false;
-      $("#budgetLine").textContent = SITE.budgetLine;
-    }
+      `<div class="fact"><dt>${LABELS[k]}</dt><dd>${esc(t[k])}</dd></div>`).join("");
   } else if (DRAFT) {
     $("#terms").hidden = false;
-    $("#ledgerTerms").textContent = "empty";
     blank($("#blankTerms"), "Placeholder — working with me",
       `Seven plain answers in <code>SITE.terms</code>: process, turnaround, revisions,
-       usage, payment, backup, insurance. Each row appears on its own, so filling in
-       three of seven still looks deliberate. <code>SITE.budgetLine</code> is one honest
-       sentence with your number — a stated floor filters out people who were never
-       going to pay. Leave it null rather than guess.`);
+       usage, payment, backup, insurance. Each appears on its own, so three of seven is fine.`);
   }
 
-  // case studies
-  const cs = SITE.caseStudies || [];
-  if (cs.length) {
-    $("#cases").hidden = false;
-    $("#ledgerCases").textContent = `${cs.length} stud${cs.length > 1 ? "ies" : "y"}`;
-    const byId = new Map(REELS.map((r) => [r.id, r]));
-    $("#caseList").innerHTML = cs.map((c) => {
-      const r = byId.get(c.pieceId);
-      return `
-      <div class="case-media">${r ? `
-        <div class="media" style="--ar:${ar(r)}">
-          <img src="assets/posters/${r.id}.jpg" alt="${esc(c.client)}" loading="lazy" decoding="async" />
-        </div>` : ""}</div>
-      <div class="case-body">
-        <dl class="case-meta">
-          <div><dt>Client</dt><dd>${esc(c.client)}</dd></div>
-          <div><dt>Sector</dt><dd>${esc(c.sector)}</dd></div>
-          <div><dt>Services</dt><dd>${esc(c.services)}</dd></div>
-          <div><dt>Duration</dt><dd>${esc(c.duration)}</dd></div>
-        </dl>
-        <h4>Challenge</h4><p>${esc(c.challenge)}</p>
-        <h4>Approach</h4><p>${esc(c.approach)}</p>
-        ${c.outcome ? `<h4>Outcome</h4><p>${esc(c.outcome)}</p>` : ""}
-      </div>`;
-    }).join("");
-  } else if (DRAFT) {
-    $("#cases").hidden = false;
-    $("#ledgerCases").textContent = "empty";
-    blank($("#blankCases"), "Placeholder — case studies",
-      `Write <b style="color:inherit;display:inline">two, not six</b> — one podcast retainer,
-       one nonprofit film. Add to <code>SITE.caseStudies</code>:
-       <code>{client, sector, services, duration, challenge, approach, outcome, pieceId}</code>.
-       60–90 words each. The outcome needs one real number you collected — if you don't
-       have one, leave the field out rather than inventing it.`);
-  }
-
-  // reel
   if (!(SITE.reel && SITE.reel.id) && DRAFT) {
     blank($("#blankReel"), "Placeholder — showreel",
       `60–90 seconds, strongest shot first, no build-up and no title card.
        Drop <code>assets/video/reel.mp4</code> and <code>assets/posters/reel.jpg</code>,
-       then set <code>SITE.reel.id = "reel"</code>. It becomes the first piece here —
-       inside the grid, click to play. It is never an autoplaying hero.`);
+       then set <code>SITE.reel.id = "reel"</code>. It becomes the first featured piece —
+       never an autoplaying hero.`);
   }
 })();
 
-/* ---------- 08 fact box ---------- */
+/* ---------- studio facts ---------- */
 (function facts() {
   const f = SITE.facts || {};
   const rows = [
@@ -545,85 +394,43 @@ function blank(el, label, ask) {
     ["Edit", f.edit], ["Delivers", f.delivers], ["Turnaround", SITE.turnaround],
   ].filter(([, v]) => v);
   $("#facts").innerHTML = rows.map(([k, v]) =>
-    `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
+    `<div class="fact"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
 })();
 
-/* ---------- 09 deep dives ---------- */
-(function dives() {
-  const shows = new Set(REELS.filter((r) => r.category === "podcast").map((r) => r.client)).size;
-  const pods = REELS.filter((r) => r.category === "podcast").slice(0, 4);
-  const photos = typeof PHOTOS !== "undefined" ? PHOTOS : [];
-  const sessions = new Set(photos.map((p) => p.client || p.session)).size;
-
-  const tiles = (items, dir) => items.map((p) => `
-    <div class="media" style="--ar:${p.w && p.h ? p.w + "/" + p.h : "1/1"}">
-      <img src="assets/${dir}/${p.id}.jpg" alt="" loading="lazy" decoding="async" />
-    </div>`).join("");
-
-  $("#diveList").innerHTML = `
-    <a class="dive" href="podcasts.html">
-      <div class="dive-grid">${tiles(pods, "posters")}</div>
-      <h3>Podcasts</h3>
-      <p>${COUNTS.podcast} pieces across ${shows} shows.</p>
-      <span class="btn-text">Open the catalogue →</span>
-    </a>
-    <a class="dive" href="photography.html">
-      <div class="dive-grid">${tiles(photos.slice(0, 4), "photos")}</div>
-      <h3>Photography</h3>
-      <p>${photos.length} photographs across ${sessions} sessions.</p>
-      <span class="btn-text">Open the gallery →</span>
-    </a>`;
-})();
-
-/* ---------- 10 contact ---------- */
+/* ---------- contact ---------- */
 (function contact() {
-  $("#mailtoPlain").href = `mailto:${SITE.email}`;
-  $("#mailtoPlain").textContent = SITE.email;
+  $("#mailto").href = `mailto:${SITE.email}`;
+  $("#mailto").textContent = SITE.email;
   if (SITE.replyTime) { $("#replyTime").hidden = false; $("#replyTime").textContent = SITE.replyTime; }
-
+  if (SITE.availableFrom) {
+    $("#kicker").textContent = `${SITE.region} · Available from ${SITE.availableFrom}`;
+  } else if (SITE.region) {
+    $("#kicker").textContent = `${SITE.region} · Available for work`;
+  }
   $("#ftrContact").innerHTML =
     `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>` +
     (SITE.instagram ? `<a href="${esc(SITE.instagram)}" rel="noopener">Instagram</a>` : "") +
-    `<span class="mono">© ${new Date().getFullYear()}</span>`;
-
-  const send = $("#briefSend");
-  const compose = () => {
-    const what = $("#bWhat").value, when = $("#bWhen").value, budget = $("#bBudget").value;
-    const lines = [
-      `What: ${what}`, `When: ${when}`, `Budget: ${budget}`,
-      `From: ${$("#bName").value || "(name)"}`, "",
-      $("#bMsg").value || "",
-    ];
-    const body = encodeURIComponent(lines.join("\n").slice(0, 1200));
-    send.href = `mailto:${SITE.email}?subject=${encodeURIComponent("New project — " + what)}&body=${body}`;
-  };
-  $$("#brief select, #brief input, #brief textarea").forEach((el) => {
-    el.addEventListener("input", compose);
-    el.addEventListener("change", compose);
-  });
-  compose();
+    `<span>© ${new Date().getFullYear()}</span>`;
 })();
 
-/* ---------- 11 off the clock ---------- */
-(function otc() {
-  const bits = [`<span class="mono">Off the clock</span>`];
-  if (SITE.instagram) bits.push(`<a class="btn-text" href="${esc(SITE.instagram)}" rel="noopener">Instagram →</a>`);
-  if (SITE.music) bits.push(`<a class="btn-text" href="${esc(SITE.music)}" rel="noopener">Music →</a>`);
-  bits.push(`<p>Shooting, editing and producing music when nobody is paying me to.</p>`);
-  $("#otc").innerHTML = bits.join("");
-})();
-
-/* ---------- lightbox — native <dialog> ---------- */
+/* ---------- lightbox ----------
+   teardown does NOT rely on the dialog "close" event — verified that it
+   does not fire in every engine, which would leave audio playing. */
 const lb = $("#lb");
 function openLB(r) {
-  releasePreview();
-  const isPhoto = !r.category;
-  $("#lbMedia").innerHTML = isPhoto
-    ? `<img src="assets/photos/${r.id}.jpg" alt="${esc(r.title)}" />`
-    : `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
-         poster="assets/posters/${r.id}.jpg"></video>`;
-  $("#lbMeta").innerHTML =
-    `<h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p>` + slate(r);
+  stopAll();
+  setAccent(accentOf(r));
+  const role = roleOf(r);
+  $("#lbMedia").innerHTML =
+    `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
+       poster="assets/posters/${r.id}.jpg"></video>`;
+  $("#lbMeta").innerHTML = `
+    <div><h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p></div>
+    <div class="lb-tags">
+      <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
+      ${role ? `<span class="tag">${esc(role)}</span>` : ""}
+      ${r.dur ? `<span class="tag">${esc(r.dur)}</span>` : ""}
+    </div>`;
   lb.showModal();
 }
 function teardown() {
@@ -631,30 +438,12 @@ function teardown() {
   if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
   $("#lbMedia").innerHTML = "";
 }
-/* Do NOT rely on the "close" event alone — it does not fire in every engine
-   (verified: a bare <dialog> fails to fire it in some Chromium builds), which
-   would leave the video playing with audio over the page after closing.
-   teardown() is idempotent, so calling it from several paths is safe. */
 function closeLB() { teardown(); if (lb.open) lb.close(); }
 lb.addEventListener("close", teardown);
-lb.addEventListener("cancel", teardown);          // Esc
+lb.addEventListener("cancel", teardown);
 $("#lbX").addEventListener("click", closeLB);
 lb.addEventListener("click", (e) => { if (e.target === lb) closeLB(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && lb.open) closeLB(); });
-
-/* plates open the lightbox too */
-$("#plates").addEventListener("click", (e) => {
-  const host = e.target.closest(".plate");
-  if (!host) return;
-  const r = REELS.find((x) => x.id === host.dataset.id);
-  if (r) openLB(r);
-});
-$("#plates").addEventListener("pointerover", (e) => {
-  if (e.pointerType !== "mouse") return;
-  const host = e.target.closest(".plate");
-  if (host) armPreview(host, host.dataset.id);
-});
-$("#plates").addEventListener("pointerleave", releasePreview);
 
 /* ---------- draft banner ---------- */
 if (DRAFT) {
@@ -663,14 +452,13 @@ if (DRAFT) {
   if (!(SITE.testimonials || []).length) missing.push("testimonials");
   if (!(SITE.caseStudies || []).length) missing.push("case studies");
   if (!Object.values(SITE.terms || {}).some(Boolean)) missing.push("terms");
-  if (!SITE.budgetLine) missing.push("budget line");
   if (!SITE.availableFrom) missing.push("availability");
+  if (!(SITE.facts || {}).cameras) missing.push("camera list");
   const noRole = REELS.filter((r) => !roleOf(r)).length;
-
   const bar = document.createElement("div");
   bar.className = "draft-bar";
   bar.textContent = `DRAFT — still to fill: ${missing.join(", ")}`
-    + (noRole ? ` · role missing on ${noRole}/${REELS.length} pieces` : "")
+    + (noRole ? ` · role missing on ${noRole}/${REELS.length}` : "")
     + " · edit assets/site-config.js";
   document.body.appendChild(bar);
 }

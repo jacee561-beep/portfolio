@@ -142,7 +142,7 @@ const SITE = {
 
 /* Short silent hover-preview clips. Off until tools/make_previews.py
    has been run; the site is designed to look correct without them. */
-const PREVIEWS = false;
+const PREVIEWS = true;
 
 /* Draft mode: ?draft=1 in the URL, or run  localStorage.jgDraft = 1
    in the browser console to keep it on. */
