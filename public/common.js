@@ -50,7 +50,8 @@ function posterImg(r, extra = 'loading="lazy"') {
 }
 
 /* ---------- the pooled hover preview ----------
-   ONE <video> for the whole page, playing the piece itself, muted.
+   ONE <video> for the whole page, playing a 5 s silent loop of the piece
+   from assets/preview/ (built by tools/make_previews.py, ~70-350 KB each).
    Setting a new src cancels the previous download, and release() clears
    it outright, so sweeping the mouse across a grid never stacks up
    parallel downloads. Files are +faststart, so playback starts on the
@@ -86,7 +87,7 @@ function armPreview(host, id) {
     releasePreview();
     const box = $(".media", host);
     if (!box) return;
-    preview.src = `assets/video/${id}.mp4`;
+    preview.src = `assets/preview/${id}.mp4`;
     box.appendChild(preview);
     armed = host;
     preview.play().then(() => { if (armed === host) host.classList.add("playing"); })

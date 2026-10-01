@@ -141,8 +141,8 @@ const SITE = {
    ------------------------------------------------------------ */
 
 /* Hover previews: pointing at any piece plays it, muted, in place.
-   It streams the real video file and stops the download the moment the
-   pointer leaves. Set to false to turn previews off everywhere. */
+   It plays a short silent loop from assets/preview/ (tools/make_previews.py
+   builds them) and stops the moment the pointer leaves. Set to false to turn previews off everywhere. */
 const PREVIEWS = true;
 
 /* Draft mode: ?draft=1 in the URL, or run  localStorage.jgDraft = 1

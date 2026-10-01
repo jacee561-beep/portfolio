@@ -201,7 +201,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=29` (as of 2026-10-01). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=30` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
@@ -492,6 +492,15 @@ script.js against a stubbed DOM and asserts group totals and asset refs. Run it 
 **Line endings:** the repo files are CRLF. Node patch scripts must normalise to LF, patch, then
 restore CRLF, or every string match silently fails.
 
+## Two redesigns collided — 2026-10-01
+
+A parallel session pushed **THE WALL** (59df79d: autoplaying tile wall, colour sampled from each
+poster, Bricolage Grotesque) to `main` while AFTERGLOW was being built on a branch. Jacob saw both
+and chose **AFTERGLOW**. It was merged with `-s ours`, so THE WALL stays in history (revertable),
+and two of its parts were kept: the 259 preview loops in `assets/preview/` (+ `tools/make_previews.py`)
+and the per-piece `accent` colours in `manifest.js` (+ `tools/extract_colors.py`).
+**Before any redesign, `git fetch` and check `main` hasn't moved.**
+
 ## Session log — 2026-09-29 (cloud session): AFTERGLOW redesign
 
 Jacob: *"make it look super cool and awesome… it looks like boring black, it's lame."* The LEDGER
@@ -509,8 +518,9 @@ look, kept every section, all content, draft mode and `site-config.js` exactly a
   no holes, no cropping. The old fixed slot score left big gaps beside verticals.
 - **Index defaults to grid** (thumbnails sell footage better than a table). "All" deals the
   categories out in turn (`MIXED`) so page one isn't seven NRG verticals. List view still there.
-- **Hover previews are ON** (`PREVIEWS = true` in `site-config.js`). They play `assets/video/<id>.mp4`
-  directly — there are no separate preview clips, and none are needed.
+- **Hover previews are ON** (`PREVIEWS = true` in `site-config.js`). They play the 5 s silent loops in
+  `assets/preview/<id>.mp4`. **New work needs one too:** run `tools/make_previews.py` (fix its
+  hardcoded ffmpeg path for your machine) after adding a video.
 - Podcasts + Photography pages rebuilt on `common.js`. **Their lightbox had been broken since
   LEDGER** — it used an old `<div class="lb">` that no CSS matched, so clicking a card did nothing
   visible. Now the same `<dialog>` as the homepage.
