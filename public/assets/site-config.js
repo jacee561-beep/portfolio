@@ -20,7 +20,7 @@ const SITE = {
   studio: "Khanna House Studios",
   region: "South Florida + travel",
   email: "jacee561@gmail.com",
-  instagram: "https://www.instagram.com/",
+  instagram: "https://www.instagram.com/toast.89",
 
   /* ---------- the status strip under the header ----------
      Each of these is one segment of the strip. A null value removes

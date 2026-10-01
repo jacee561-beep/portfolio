@@ -594,7 +594,7 @@ function blank(el, label, ask) {
 
   $("#ftrContact").innerHTML =
     `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>` +
-    (SITE.instagram ? `<a href="${esc(SITE.instagram)}" rel="noopener">Instagram</a>` : "") +
+    (SITE.instagram ? `<a href="${esc(SITE.instagram)}" target="_blank" rel="noopener">Instagram</a>` : "") +
     `<span class="mono">© ${new Date().getFullYear()}</span>`;
 
   const send = $("#briefSend");
@@ -620,7 +620,7 @@ function blank(el, label, ask) {
 /* ---------- 11 off the clock ---------- */
 (function otc() {
   const bits = [`<span class="mono">Off the clock</span>`];
-  if (SITE.instagram) bits.push(`<a class="btn-text" href="${esc(SITE.instagram)}" rel="noopener">Instagram →</a>`);
+  if (SITE.instagram) bits.push(`<a class="btn-text" href="${esc(SITE.instagram)}" target="_blank" rel="noopener">Instagram →</a>`);
   if (SITE.music) bits.push(`<a class="btn-text" href="${esc(SITE.music)}" rel="noopener">Music →</a>`);
   bits.push(`<p>Shooting, editing and producing music when nobody is paying me to.</p>`);
   $("#otc").innerHTML = bits.join("");

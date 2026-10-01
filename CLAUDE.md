@@ -201,7 +201,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=28` (as of 2026-09-29). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=29` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
@@ -529,6 +529,5 @@ reduced-motion shows final numbers and stops the marquees. That Chromium has **n
 previews were verified by wiring (correct `src` attached on hover, released on leave), not by
 watching playback — worth a real-browser look.
 
-**Open questions for Jacob**
-- Instagram: `SITE.instagram` is the bare `https://www.instagram.com/`; the old sub-pages linked
-  `instagram.com/toast.89` (kept there). Confirm which is his and set it in `site-config.js`.
+**Instagram confirmed (2026-10-01):** Jacob's handle is **@toast.89** —
+`SITE.instagram` now points to `https://www.instagram.com/toast.89`, matching the sub-pages.
