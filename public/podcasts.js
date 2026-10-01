@@ -27,9 +27,11 @@ wrap.innerHTML = ordered.map(([client, list]) => `
         <article class="tile" data-pack="${i}" data-ar="${ar(r)}" data-id="${r.id}" data-cat="podcast">
           <div class="media" data-ar="${ar(r)}">
             ${posterImg(r)}
+            <span class="safe" aria-hidden="true"></span>
+            ${r.dur ? `<span class="burn">${esc(durTC(r.dur))}</span>` : ""}
             <span class="play" aria-hidden="true"></span>
           </div>
-          <div class="tile-m"><span class="tile-c"><b>${esc(r.title)}</b></span><span>${esc(r.dur || "")}</span></div>
+          <div class="tile-m"><span class="tile-c"><b>${esc(r.title)}</b></span></div>
         </article>`).join("")}
     </div>
   </div>`).join("");

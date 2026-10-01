@@ -177,22 +177,26 @@ Source archives live on his external drives (`F:` ~22 TB, `K:` ~3.7 TB) and his 
 
 ---
 
-## Design system — AFTERGLOW (2026-09-29)
+## Design system — EDIT BAY (2026-10-01)
 
-Defined as CSS custom properties at the top of `public/styles.css`.
+Jacob: *"make it look less AI, add unique things."* The site is now dressed like the room the work is
+made in. Every colour is either a **SMPTE colour bar** or **sampled from the footage** (manifest
+`accent`, applied to `--tint` when you point at a piece). No invented gradients, glass, glow orbs,
+chrome objects or vaporwave grid — those were the "AI" tells and were all removed.
 
-- Dark stage `#07060C`, lit by three slow-drifting pools of light (`.bg .orb`) in **cyan `#22d3ee`,
-  violet `#a78bfa`, pink `#f472b6`**. The same three run through `--grad`: headline accent words,
-  buttons, section numbers, the contact panel.
-- **One neon per discipline** (`--cat-*`, applied through `data-cat="…"` → `--cc`): podcast cyan,
-  motion pink, nonprofit lime, corporate blue, social violet, interviews amber, photo teal.
-- Type: Archivo at weight 900, `font-stretch: 125%` (expanded) for display, JetBrains Mono for labels.
-- Radius 16px cards / 26px panels / pills everywhere else. Easing `cubic-bezier(0.22, 1, 0.36, 1)`.
-
-Motion: drifting colour field, moving film strip + word tape, name marquee, gradient sheen on accent
-words, vaporwave grid floor under the hero, count-up stats, card tilt, **hover-to-play previews**
-(one pooled `<video>`, streams the real file, cancelled on leave), scroll-progress bar,
-scroll-driven reveals. All gated behind `prefers-reduced-motion`.
+- Palette tokens at the top of `styles.css`: `--bar-white/yellow/cyan/green/magenta/red/blue`,
+  `--tally` (REC red). One bar per discipline: photo white, social yellow, podcast cyan, nonprofit
+  green, motion magenta, interviews red, corporate blue. The contents band is literally the bars,
+  in true SMPTE order, with the PLUGE row under them.
+- Type: Archivo **condensed** (`font-stretch: 66–75%`, weight 800, uppercase) for display — a
+  broadcast lower-third feel — and JetBrains Mono for timecode and labels.
+- Unique pieces: header **timecode** that scrubs through the total runtime of all 259 pieces as you
+  scroll; hero **program monitor** with a 5-clip bin (`MONITOR_BIN`), burn-in TC off the preview;
+  **35mm strip** with sprocket holes and amber edge codes; title-safe guides + TC burn-in on every
+  thumbnail on hover; commission rows as **timeline tracks** (V1–V6); clients as an **end-credits
+  roll**; contact form as a **clapperboard slate** (dated today); footer "End of reel".
+- The About photo is the **real** retouched headshot (`jacob-headshot-RETOUCHED-real.jpg`), not the
+  AI-generated one (`jacob-headshot.jpg`) — swap the `src` in `index.html` to go back.
 
 **Jacob asked for each of these to go — never reintroduce:** custom cursor, RGB-split headline
 glitch, preloader/intro screen, hero reel rotation, headline reveal animation, orange accent.
@@ -201,7 +205,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=30` (as of 2026-10-01). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=31` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke

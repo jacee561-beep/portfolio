@@ -8,24 +8,26 @@
 <meta property="og:title" content="Jacob Gonzales — Videographer, Editor &amp; Motion Designer" />
 <meta property="og:description" content="Podcast packages, nonprofit and corporate film, event coverage, motion graphics and photography. South Florida." />
 <meta property="og:type" content="website" />
-<meta name="theme-color" content="#07060C" />
+<meta name="theme-color" content="#0B0B0C" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" />
-<link rel="stylesheet" href="styles.css?v=30" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='71' font-family='Arial,sans-serif' font-size='62' font-weight='900' fill='%2307060C' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css?v=31" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 100'%3E%3Crect x='0' width='10' height='100' fill='%23c8c8c8'/%3E%3Crect x='10' width='10' height='100' fill='%23d6d000'/%3E%3Crect x='20' width='10' height='100' fill='%2300c8d6'/%3E%3Crect x='30' width='10' height='100' fill='%232fcf3a'/%3E%3Crect x='40' width='10' height='100' fill='%23d22fd2'/%3E%3Crect x='50' width='10' height='100' fill='%23e0262f'/%3E%3Crect x='60' width='10' height='100' fill='%232a3fe0'/%3E%3C/svg%3E" />
 </head>
 <body>
 
-<!-- the colour field behind everything: three drifting light pools + grain -->
-<div class="bg" aria-hidden="true">
-  <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
-  <i class="grain"></i>
-</div>
-<div class="progress" aria-hidden="true"></div>
+<!-- film grain, and a soft wash that takes its colour from whatever piece you point at -->
+<div class="bg" aria-hidden="true"><i class="wash"></i><i class="grain"></i></div>
+<div class="progress" aria-hidden="true"><i></i></div>
 
 <header class="hdr">
   <div class="wrap hdr-in">
-    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">J</span><b>JACOB GONZALES</b></a>
+    <a class="brand" href="#top"><b>JACOB GONZALES</b></a>
+    <div class="hdr-tc" aria-hidden="true" title="Scroll position, as a timecode across every delivered piece">
+      <span class="rec"><i></i>REC</span>
+      <span class="tc" id="hdrTc">00:00:00:00</span>
+      <span class="tc-of" id="hdrTcOf"></span>
+    </div>
     <nav class="nav">
       <a href="#work">Work</a>
       <a href="#index" data-keep>Index</a>
@@ -39,17 +41,11 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="hero-floor" aria-hidden="true"><i></i></div>
     <div class="wrap hero-in">
       <div class="hero-copy">
         <p class="status" id="status"></p>
-        <h1 class="hero-h">
-          <span class="l1">Jacob</span>
-          <span class="l2"><em class="grad">Gonzales</em></span>
-        </h1>
-        <p class="hero-role">
-          <span>Videographer</span><i></i><span>Editor</span><i></i><span>Motion designer</span><i></i><span>Photographer</span>
-        </p>
+        <h1 class="hero-h">Jacob<br />Gonzales</h1>
+        <p class="hero-role">Videographer / Editor / Motion designer / Photographer</p>
         <p class="hero-lede">
           Podcast packages, nonprofit and corporate film, event and interview coverage,
           motion graphics and portraits — for teams in South Florida and remote.
@@ -60,21 +56,35 @@
         </div>
         <dl class="hero-stats" id="heroStats"></dl>
       </div>
-      <div class="hero-stack" id="heroStack">
-        <img class="chrome chrome-star" src="assets/y2k/obj-star.png" alt="" aria-hidden="true" decoding="async" />
+
+      <!-- a program monitor: pick a clip from the bin, point at the screen to play it -->
+      <div class="monitor" id="monitor">
+        <div class="mon-top">
+          <span class="mon-pgm">PGM</span>
+          <span class="mon-name" id="monName"></span>
+          <span class="mon-tc" id="monTc">00:00:00:00</span>
+        </div>
+        <button type="button" class="mon-screen" id="monScreen">
+          <span class="media" id="monMedia"></span>
+          <span class="safe" aria-hidden="true"></span>
+          <span class="mon-hint" aria-hidden="true">Point to play · click to watch</span>
+        </button>
+        <div class="mon-bin" id="monBin" role="group" aria-label="Load a clip into the monitor"></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ TAPE: a moving strip of the work ============ -->
-  <section class="tape" aria-label="Highlights from the archive">
-    <div class="tape-reel"><div class="tape-track" id="ribbon"></div></div>
-    <div class="tape-words" aria-hidden="true"><div class="tape-track" id="words"></div></div>
+  <!-- ============ FILM STRIP ============ -->
+  <section class="strip35" aria-label="Frames from the archive">
+    <div class="strip35-in"><div class="tape-track" id="ribbon"></div></div>
   </section>
 
-  <!-- ============ CONTENTS BAND ============ -->
-  <nav class="contents" aria-label="Jump to a discipline">
-    <div class="wrap"><div class="contents-in" id="contents"></div></div>
+  <!-- ============ CONTENTS: SMPTE colour bars, one bar per discipline ============ -->
+  <nav class="bars" aria-label="Jump to a discipline">
+    <div class="wrap">
+      <div class="bars-in" id="contents"></div>
+      <div class="pluge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
   </nav>
 
   <!-- ============ 01 SELECTED WORK ============ -->
@@ -82,7 +92,7 @@
     <div class="wrap">
       <div class="ledger"><span>01</span><span id="ledgerWork"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">Selected <em class="grad">work.</em></h2>
+        <h2 class="sec-h">Selected work.</h2>
         <p class="sec-note">Nine pieces across every discipline. Hover to preview, click to watch. The full archive is below.</p>
       </div>
       <div class="blank" id="blankReel"></div>
@@ -95,7 +105,7 @@
     <div class="wrap">
       <div class="ledger"><span>02</span><span id="ledgerComm"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">What you can <em class="grad">commission.</em></h2>
+        <h2 class="sec-h">What you can commission.</h2>
         <p class="sec-note">Every count below is real delivered work, not a capability list.</p>
       </div>
       <div class="comm" id="comm"></div>
@@ -107,7 +117,7 @@
     <div class="wrap">
       <div class="ledger"><span>03</span><span id="ledgerIndex"></span></div>
       <div class="sec-head">
-        <h2 class="sec-h">The <em class="grad">index.</em></h2>
+        <h2 class="sec-h">The index.</h2>
         <p class="sec-note">Everything delivered, in one list.</p>
       </div>
 
@@ -134,20 +144,17 @@
     </div>
   </section>
 
-  <!-- ============ 04 CLIENT LEDGER ============ -->
+  <!-- ============ 04 CLIENTS: end credits ============ -->
   <section class="sec" id="clients">
     <div class="wrap">
       <div class="ledger"><span>04</span><span id="ledgerClients"></span></div>
-      <div class="sec-head">
-        <h2 class="sec-h">Trusted <em class="grad">by.</em></h2>
+      <div class="credits-wrap">
+        <div class="sec-head">
+          <h2 class="sec-h">With thanks to.</h2>
+          <p class="sec-note">Everyone I've cut, shot or animated for, rolling like the end of a film. Pick a name below to see their work.</p>
+        </div>
+        <div class="credits" aria-hidden="true"><div class="credits-roll" id="credits"></div></div>
       </div>
-    </div>
-    <div class="names" aria-hidden="true">
-      <div class="names-row"><div class="tape-track" id="namesA"></div></div>
-      <div class="names-row rev"><div class="tape-track" id="namesB"></div></div>
-    </div>
-    <div class="wrap">
-      <p class="roster-note">Tap a name to see their work in the index.</p>
       <div class="roster" id="roster"></div>
       <button class="more-btn roster-more" id="rosterMore" type="button" aria-expanded="false" aria-controls="roster" hidden></button>
     </div>
@@ -157,7 +164,7 @@
   <section class="sec" id="says" hidden>
     <div class="wrap">
       <div class="ledger"><span>05</span><span id="ledgerSays"></span></div>
-      <div class="sec-head"><h2 class="sec-h">What clients <em class="grad">say.</em></h2></div>
+      <div class="sec-head"><h2 class="sec-h">What clients say.</h2></div>
       <div class="g quotes" id="quotes"></div>
       <div class="blank" id="blankQuotes"></div>
     </div>
@@ -167,7 +174,7 @@
   <section class="sec" id="terms" hidden>
     <div class="wrap">
       <div class="ledger"><span>06</span><span id="ledgerTerms"></span></div>
-      <div class="sec-head"><h2 class="sec-h">Working <em class="grad">with me.</em></h2></div>
+      <div class="sec-head"><h2 class="sec-h">Working with me.</h2></div>
       <div class="terms" id="termsList"></div>
       <p class="sec-note budget-line" id="budgetLine" hidden></p>
       <div class="blank" id="blankTerms"></div>
@@ -178,7 +185,7 @@
   <section class="sec" id="cases" hidden>
     <div class="wrap">
       <div class="ledger"><span>07</span><span id="ledgerCases"></span></div>
-      <div class="sec-head"><h2 class="sec-h">Case <em class="grad">studies.</em></h2></div>
+      <div class="sec-head"><h2 class="sec-h">Case studies.</h2></div>
       <div class="g case" id="caseList"></div>
       <div class="blank" id="blankCases"></div>
     </div>
@@ -190,15 +197,16 @@
       <div class="ledger"><span>08</span><span id="ledgerStudio"></span></div>
       <div class="g">
         <div class="studio-photo">
-          <div class="ring">
+          <figure class="frame-cam">
             <div class="media">
-              <img src="assets/jacob-headshot.jpg" alt="Jacob Gonzales" loading="lazy" decoding="async" />
+              <img src="assets/jacob-headshot-RETOUCHED-real.jpg" alt="Jacob Gonzales" loading="lazy" decoding="async" />
+              <span class="safe" aria-hidden="true"></span>
             </div>
-          </div>
-          <img class="chrome chrome-ring" src="assets/y2k/obj-ring.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+            <figcaption><span>CAM A</span><span>Jacob Gonzales</span><span>Take 1</span></figcaption>
+          </figure>
         </div>
         <div class="studio-copy">
-          <h2 class="sec-h">Jacob <em class="grad">Gonzales.</em></h2>
+          <h2 class="sec-h">Jacob Gonzales.</h2>
           <p>
             I shoot, edit, animate and deliver. Multi-camera podcast production, nonprofit and
             corporate film, event and interview coverage, motion graphics and logo animation,
@@ -233,20 +241,26 @@
   <!-- ============ 10 CONTACT ============ -->
   <section class="sec contact" id="contact">
     <div class="wrap">
+      <div class="ledger"><span>10</span><span>Contact</span></div>
       <div class="contact-panel">
         <div class="g">
           <div class="contact-l">
-            <p class="contact-k">10 — Contact</p>
             <h2>Start a project.</h2>
             <a class="mailto" id="mailtoPlain" href="#">—</a>
             <p>South Florida — available for travel.</p>
             <p id="replyTime" hidden></p>
           </div>
           <div class="contact-r">
-            <form class="brief" id="brief">
+            <form class="brief slate-form" id="brief">
+              <div class="clapper" aria-hidden="true"><i></i></div>
+              <div class="slate-head">
+                <span><b>Prod.</b>New project</span>
+                <span><b>Date</b><em id="slateDate"></em></span>
+                <span><b>Take</b>1</span>
+              </div>
               <div class="brief-row">
                 <div>
-                  <label for="bWhat">What</label>
+                  <label for="bWhat">Production</label>
                   <select id="bWhat">
                     <option>Podcast package</option>
                     <option>Event or recap film</option>
@@ -258,7 +272,7 @@
                   </select>
                 </div>
                 <div>
-                  <label for="bWhen">When</label>
+                  <label for="bWhen">Shoot</label>
                   <select id="bWhen">
                     <option>This month</option>
                     <option>Next 1–2 months</option>
@@ -277,11 +291,11 @@
                 </div>
               </div>
               <div class="brief-field">
-                <label for="bName">Name &amp; organisation</label>
+                <label for="bName">Client — name &amp; organisation</label>
                 <input id="bName" type="text" autocomplete="organization" />
               </div>
               <div>
-                <label for="bMsg">Anything else</label>
+                <label for="bMsg">Notes</label>
                 <textarea id="bMsg" rows="3"></textarea>
               </div>
               <a class="btn" id="briefSend" href="#">Send this brief <span aria-hidden="true">→</span></a>
@@ -301,15 +315,10 @@
 
 <footer class="ftr">
   <div class="wrap">
-    <svg class="ftr-mark" viewBox="0 0 1000 96" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="ftrGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#F6F4FF" stop-opacity="0.26" />
-          <stop offset="1" stop-color="#F6F4FF" stop-opacity="0.02" />
-        </linearGradient>
-      </defs>
-      <text x="0" y="86" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="url(#ftrGrad)">JACOB GONZALES</text>
-    </svg>
+    <div class="ftr-end" aria-hidden="true">
+      <div class="pluge"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p>End of reel</p>
+    </div>
     <div class="ftr-in">
       <div>
         <p><b>Jacob Gonzales</b></p>
@@ -336,10 +345,10 @@
   </div>
 </dialog>
 
-<script src="assets/site-config.js?v=30"></script>
-<script src="assets/manifest.js?v=30"></script>
-<script src="assets/photos-manifest.js?v=30"></script>
-<script src="common.js?v=30"></script>
-<script src="script.js?v=30"></script>
+<script src="assets/site-config.js?v=31"></script>
+<script src="assets/manifest.js?v=31"></script>
+<script src="assets/photos-manifest.js?v=31"></script>
+<script src="common.js?v=31"></script>
+<script src="script.js?v=31"></script>
 </body>
 </html>

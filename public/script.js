@@ -1,7 +1,7 @@
 /* ============================================================
    Jacob Gonzales — jacobgonzales.tv
    Everything editable lives in assets/site-config.js.
-   Shared helpers ($, esc, previews, lightbox, count-up, tilt) are in
+   Shared helpers ($, esc, previews, lightbox, count-up, timecode, masonry) are in
    common.js, which loads first.
    ============================================================ */
 
@@ -69,25 +69,53 @@ function curatedNine() {
     `<div><dt>${k}</dt><dd data-count="${n}" data-suffix="${suf}">${n}${suf}</dd></div>`).join("");
 })();
 
-/* ---------- hero: the fanned stack ---------- */
-const HERO_STACK = ["hona-open", "cryptorubik-spot", "cryptorubik-orb"];
-(function heroStack() {
-  const picks = HERO_STACK.map(find).filter(Boolean);
-  curatedNine().forEach((r) => { if (picks.length < 3 && !picks.includes(r)) picks.push(r); });
-  const box = $("#heroStack");
-  box.insertAdjacentHTML("afterbegin", picks.map((r, i) => `
-    <button type="button" class="hcard hc${i + 1}" data-id="${r.id}" data-cat="${r.category}"
-            aria-label="Play ${esc(r.title)} — ${esc(r.client)}">
-      <span class="media" data-ar="${ar(r)}">
-        ${posterImg(r, i === 2 ? 'fetchpriority="high"' : "")}
-        <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
-      </span>
-    </button>`).join(""));
-  paintAR(box);
-  wirePieces(box, ".hcard", find);
+/* ---------- hero: the program monitor ----------
+   A bin of five clips under a viewer. Pick one and it loads into the
+   viewer; point at the viewer and it plays (the pooled preview), with the
+   timecode running off the video itself. Nothing plays on its own. */
+const MONITOR_BIN = ["cryptorubik-orb", "hona-open", "tht-plane-intro", "patricia-heaton", "vaporwave-collage"];
+(function monitor() {
+  const picks = MONITOR_BIN.map(find).filter(Boolean);
+  curatedNine().forEach((r) => { if (picks.length < 5 && !picks.includes(r)) picks.push(r); });
+  const screen = $("#monScreen"), media = $("#monMedia"), name = $("#monName"), tcEl = $("#monTc");
+  const bin = $("#monBin");
+
+  bin.innerHTML = picks.map((r, i) => `
+    <button type="button" data-id="${r.id}" data-cat="${r.category}" data-n="${String(i + 1).padStart(2, "0")}"
+            aria-label="Load ${esc(r.title)} — ${esc(r.client)}">
+      <span class="media">${posterImg(r)}</span>
+    </button>`).join("");
+
+  function load(r, first) {
+    releasePreview();
+    screen.dataset.id = r.id;
+    screen.setAttribute("aria-label", `Watch ${r.title} — ${r.client}`);
+    media.innerHTML = posterImg(r, first ? 'fetchpriority="high"' : "");
+    name.textContent = `${r.client} — ${r.title}`;
+    tcEl.textContent = "00:00:00:00";
+    $$("button", bin).forEach((b) => b.classList.toggle("on", b.dataset.id === r.id));
+    setTint(r);
+  }
+  load(picks[0], true);
+  if (!finePointer) $(".mon-hint").textContent = "Tap to watch";
+  bin.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b) load(find(b.dataset.id));
+  });
+  bin.addEventListener("pointerover", (e) => {
+    const b = e.target.closest("button");
+    if (b && e.pointerType === "mouse") load(find(b.dataset.id));
+  });
+  screen.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") armPreview(screen, screen.dataset.id); });
+  screen.addEventListener("pointerleave", releasePreview);
+  screen.addEventListener("click", () => { const r = find(screen.dataset.id); if (r) openLB(r); });
+  // burn the preview's own timecode into the monitor while it plays
+  preview.addEventListener("timeupdate", () => {
+    if (armed === screen) tcEl.textContent = timecode(preview.currentTime);
+  });
 })();
 
-/* ---------- tape: the moving strip of work ---------- */
+/* ---------- 35mm strip ---------- */
 const RIBBON = [
   "cryptorubik-orb", "hona-open", "promisefund-event", "tht-plane-intro",
   "vaporwave-collage", "dk-intro", "super-fit-champs-energy-up-fun-up",
@@ -95,31 +123,32 @@ const RIBBON = [
   "wellness-lt-text", "patricia-heaton", "tennis-with-ema-podcast-outro",
   "khanna-house-studios-studio-welcome", "cryptorubik-market", "promisefund-c433",
 ];
-(function tape() {
+(function strip35() {
   const items = RIBBON.map(find).filter(Boolean);
-  const one = items.map((r) => `
+  // edge numbers like real stock: a key code that counts up frame by frame
+  const one = items.map((r, i) => `
     <div class="tape-item" data-id="${r.id}" title="${esc(r.client)} — ${esc(r.title)}">
       <div class="media" data-ar="${ar(r)}">${posterImg(r)}</div>
+      <span class="edge" aria-hidden="true">KJ 26 ${String(4410 + i * 16).padStart(4, "0")} ▸ ${i + 1}</span>
     </div>`).join("");
   const track = $("#ribbon");
   track.innerHTML = one + one;                 // twice, so the loop is seamless
-  // the second copy is decoration only
   $$(".tape-item", track).slice(items.length).forEach((el) => el.setAttribute("aria-hidden", "true"));
   paintAR(track);
   wirePieces(track, ".tape-item", find);
-
-  const words = ["Videography", "Motion design", "Editing", "Photography",
-    "Podcasts", "Brand film", "Events", "Logo animation"];
-  const w = words.map((x) => `<span>${esc(x)}</span>`).join("");
-  $("#words").innerHTML = w + w;
 })();
 
-/* ---------- contents band ---------- */
-(function contents() {
-  const cells = CAT_ORDER.map((c) =>
-    `<a href="#index" data-cat="${c}"><span><i class="dot"></i>${esc(CAT_LABEL[c])}</span><b data-count="${COUNTS[c] || 0}">${COUNTS[c] || 0}</b></a>`);
-  if (PHOTO_COUNT) cells.push(`<a href="photography.html" data-cat="photo"><span><i class="dot"></i>Photography</span><b data-count="${PHOTO_COUNT}">${PHOTO_COUNT}</b></a>`);
-  $("#contents").innerHTML = cells.join("");
+/* ---------- colour bars ----------
+   Real SMPTE order, left to right: white, yellow, cyan, green, magenta,
+   red, blue. Each discipline owns one bar. */
+const BAR_ORDER = ["photo", "social", "podcast", "nonprofit", "motion", "interviews", "corporate"];
+(function bars() {
+  const cell = (c) => {
+    if (c === "photo") return PHOTO_COUNT
+      ? `<a href="photography.html" data-cat="photo"><span>Photography</span><b data-count="${PHOTO_COUNT}">${PHOTO_COUNT}</b></a>` : "";
+    return `<a href="#index" data-cat="${c}"><span>${esc(CAT_LABEL[c])}</span><b data-count="${COUNTS[c] || 0}">${COUNTS[c] || 0}</b></a>`;
+  };
+  $("#contents").innerHTML = BAR_ORDER.map(cell).join("");
   $$("#contents a[data-cat]").forEach((a) => {
     if (a.dataset.cat !== "photo") a.addEventListener("click", () => setFilter(a.dataset.cat));
   });
@@ -141,13 +170,12 @@ $("#ledgerDives").textContent = "Deep dives";
   const box = $("#plates");
   box.innerHTML = curatedNine().map((r, i) => `
     <article class="plate rv" data-pack="${i}" data-id="${r.id}" data-cat="${r.category}" data-ar="${ar(r)}">
-      <div class="plate-frame">
-        <div class="plate-glow" aria-hidden="true"><img src="assets/posters/${r.id}.jpg" alt="" loading="lazy" decoding="async" /></div>
-        <div class="media" data-ar="${ar(r)}">
-          ${posterImg(r)}
-          <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
-          <span class="play" aria-hidden="true"></span>
-        </div>
+      <div class="media" data-ar="${ar(r)}">
+        ${posterImg(r)}
+        <span class="safe" aria-hidden="true"></span>
+        <span class="tag">${esc(CAT_LABEL[r.category] || r.category)}</span>
+        ${r.dur ? `<span class="burn">${esc(durTC(r.dur))}</span>` : ""}
+        <span class="play" aria-hidden="true"></span>
       </div>
       <h3 class="plate-t">${esc(r.title)}</h3>
       <p class="plate-b">${esc(r.blurb || "")}</p>
@@ -156,7 +184,6 @@ $("#ledgerDives").textContent = "Deep dives";
   paintAR(box);
   pack(box, (w) => (w >= 1100 ? 3 : w >= 600 ? 2 : 1), 0.42);
   wirePieces(box, ".plate", find);
-  tilt(box, ".plate", 4);
 })();
 
 /* ---------- 02 commission rows ---------- */
@@ -210,7 +237,7 @@ $("#ledgerDives").textContent = "Deep dives";
         <div class="comm-strip">
           ${strip.map((r) => `
             <div class="tile-lite" data-id="${r.id}">
-              <div class="media" data-ar="${ar(r)}">${posterImg(r)}<span class="play" aria-hidden="true"></span></div>
+              <div class="media" data-ar="${ar(r)}">${posterImg(r)}<span class="safe" aria-hidden="true"></span><span class="play" aria-hidden="true"></span></div>
             </div>`).join("")}
         </div>
         <a class="btn-text" href="#index" data-cat="${cat}">See all ${COUNTS[cat]} in the index →</a>
@@ -311,9 +338,11 @@ function tileHTML(r, i) {
   return `<article class="tile" data-pack="${i}" data-ar="${ar(r)}" data-id="${r.id}" data-cat="${r.category}">
     <div class="media" data-ar="${ar(r)}">
       ${posterImg(r)}
+      <span class="safe" aria-hidden="true"></span>
+      ${r.dur ? `<span class="burn">${esc(durTC(r.dur))}</span>` : ""}
       <span class="play" aria-hidden="true"></span>
     </div>
-    <div class="tile-m"><span class="tile-c"><i class="dot"></i><b>${esc(r.client)}</b></span><span>${esc(r.dur || "")}</span></div>
+    <div class="tile-m"><span class="tile-c"><i class="dot"></i><b>${esc(r.client)}</b></span><span>${esc(CAT_LABEL[r.category] || "")}</span></div>
   </article>`;
 }
 
@@ -326,7 +355,7 @@ function renderIndex() {
     idxMain.className = "idx-rows";
     idxMain.innerHTML = list.slice(0, shown).map(rowHTML).join("");
     idxSide.setAttribute("aria-hidden", "true");
-    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">Hover a row<br />to preview it</div></div>`;
+    idxSide.innerHTML = `<div class="pin"><div class="pin-empty">No signal<br />Point at a row</div></div>`;
     moreWrap.hidden = shown >= list.length;
     if (!moreWrap.hidden) {
       $("#moreBtn").textContent = `Show more (${list.length - shown} left)`;
@@ -404,16 +433,27 @@ shown = view === "list" ? PAGE_LIST : PAGE;   // page size must match the view
 $$("#viewToggle button").forEach((b) => b.classList.toggle("on", b.dataset.view === view));
 renderIndex();
 
-/* ---------- 04 clients: name marquee + roster ---------- */
+/* ---------- 04 clients: end credits + roster ---------- */
 (function clients() {
-  const byVolume = REAL_CLIENTS.slice().sort((a, b) => CLIENT_VOLUME[b] - CLIENT_VOLUME[a]);
-  const half = Math.ceil(byVolume.length / 2);
-  const row = (names) => {
-    const one = names.map((n) => `<span>${esc(n)}</span>`).join("");
-    return one + one;
+  /* Credits are grouped by what was made for them, biggest first,
+     the way a real crawl groups departments. */
+  const HEAD = {
+    podcast: "Podcast production", motion: "Motion graphics", nonprofit: "Nonprofit & event film",
+    corporate: "Corporate & brand film", social: "Branded social", interviews: "Interviews",
   };
-  $("#namesA").innerHTML = row(byVolume.slice(0, half));
-  $("#namesB").innerHTML = row(byVolume.slice(half));
+  const mainCat = (c) => {
+    const n = {};
+    REELS.filter((r) => r.client === c).forEach((r) => { n[r.category] = (n[r.category] || 0) + 1; });
+    return Object.keys(n).sort((a, b) => n[b] - n[a])[0];
+  };
+  const groups = {};
+  REAL_CLIENTS.forEach((c) => { (groups[mainCat(c)] = groups[mainCat(c)] || []).push(c); });
+  const crawl = CAT_ORDER.filter((c) => groups[c]).map((c) => `
+    <p class="cr-head">${esc(HEAD[c])}</p>
+    <dl>${groups[c].sort((a, b) => CLIENT_VOLUME[b] - CLIENT_VOLUME[a]).map((name) => `
+      <div><dt>${CLIENT_VOLUME[name]} piece${CLIENT_VOLUME[name] === 1 ? "" : "s"}</dt><dd>${esc(name)}</dd></div>`).join("")}
+    </dl>`).join("");
+  $("#credits").innerHTML = crawl + crawl;     // twice, so the roll loops
 
   $("#roster").innerHTML = CLIENTS.slice().sort((a, b) => a.localeCompare(b)).map((c) => {
     const n = CLIENT_VOLUME[c];
@@ -615,6 +655,28 @@ function blank(el, label, ask) {
   // Enter in a field must not submit the form (the CSP blocks form posts anyway)
   $("#brief").addEventListener("submit", (e) => { e.preventDefault(); compose(); send.click(); });
   compose();
+
+  // the slate is dated today, like a real one
+  const d = new Date();
+  $("#slateDate").textContent = `${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}.${String(d.getFullYear()).slice(2)}`;
+})();
+
+/* ---------- header timecode ----------
+   The page is treated as one long timeline the length of everything
+   delivered. Scrolling scrubs through it. */
+(function headerTC() {
+  const total = REELS.reduce((t, r) => t + durSec(r.dur), 0);
+  const el = $("#hdrTc"), of = $("#hdrTcOf");
+  if (!el) return;
+  of.textContent = `/ ${timecode(total)} delivered`;
+  let ticking = false;
+  const draw = () => {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    el.textContent = timecode(total * (max > 0 ? Math.min(1, scrollY / max) : 0));
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(draw); } }, { passive: true });
+  draw();
 })();
 
 /* ---------- 11 off the clock ---------- */

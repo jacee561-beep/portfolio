@@ -189,28 +189,29 @@ function countUp(root = document) {
   els.forEach((el) => { el.textContent = "0" + (el.dataset.suffix || ""); io.observe(el); });
 }
 
-/* ---------- tilt: cards lean toward the pointer ---------- */
-function tilt(container, sel, max = 5) {
-  if (!container || !finePointer) return;
-  container.addEventListener("pointermove", (e) => {
-    if (reduced) return;
-    const host = e.target.closest(sel);
-    if (!host) return;
-    const b = host.getBoundingClientRect();
-    const x = (e.clientX - b.left) / b.width - 0.5;
-    const y = (e.clientY - b.top) / b.height - 0.5;
-    host.classList.add("tilting");
-    host.style.setProperty("--ry", (x * max * 2).toFixed(2) + "deg");
-    host.style.setProperty("--rx", (-y * max * 2).toFixed(2) + "deg");
-  });
-  container.addEventListener("pointerout", (e) => {
-    const host = e.target.closest(sel);
-    if (!host || host.contains(e.relatedTarget)) return;
-    host.classList.remove("tilting");
-    host.style.setProperty("--rx", "0deg");
-    host.style.setProperty("--ry", "0deg");
-  });
+/* ---------- timecode ---------- */
+const FPS = 30;
+const pad2 = (n) => String(n).padStart(2, "0");
+function timecode(sec) {
+  const f = Math.floor(sec * FPS);
+  return `${pad2(Math.floor(f / (3600 * FPS)))}:${pad2(Math.floor(f / (60 * FPS)) % 60)}:${pad2(Math.floor(f / FPS) % 60)}:${pad2(f % FPS)}`;
 }
+const durSec = (d) => String(d || "0").split(":").reduce((t, x) => t * 60 + (+x || 0), 0);
+const durTC = (d) => timecode(durSec(d));
+
+/* ---------- the room takes its colour from the footage ----------
+   Every piece carries `accent` (sampled from its poster by
+   tools/extract_colors.py). Pointing at a piece tints the page wash. */
+const ACCENTS = new Map(typeof REELS !== "undefined" ? REELS.map((r) => [r.id, r.accent]) : []);
+function setTint(r) {
+  const c = r && (r.accent || ACCENTS.get(r.id));
+  if (c) document.documentElement.style.setProperty("--tint", c);
+}
+document.addEventListener("pointerover", (e) => {
+  if (e.pointerType !== "mouse") return;
+  const host = e.target.closest && e.target.closest("[data-id]");
+  if (host && ACCENTS.get(host.dataset.id)) setTint({ id: host.dataset.id });
+});
 
 /* ---------- masonry ----------
    Deals items into N columns, shortest column first. Mixed aspect ratios
