@@ -139,7 +139,7 @@ const REELS = [
     client: "Literacy Coalition",
     title: "Author Talk Series — Recap",
     blurb: "Event recap for a nonprofit speaker series.",
-    orientation: "portrait", accent: "#3544b6", w: 1080, h: 1920, dur: "1:00"
+    orientation: "portrait", accent: "#3544b6", w: 720, h: 1280, dur: "1:00"
   },
   {
     id: "od2a-webinar-titles",
@@ -195,6 +195,7 @@ const REELS = [
   },
   {
     id: "wellness-lower-third",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — Consulting",
@@ -265,7 +266,7 @@ const REELS = [
     client: "365 Wellness",
     title: "Branded Reel",
     blurb: "Vertical social reel for a medical wellness brand.",
-    orientation: "portrait", accent: "#56cffb", w: 1080, h: 1920, dur: "1:07"
+    orientation: "portrait", accent: "#56cffb", w: 720, h: 1280, dur: "1:07"
   },
   {
     id: "vertical-caption-reel",
@@ -755,7 +756,7 @@ const REELS = [
     client: "Sojourners",
     title: "Testimonial Reel — One Thing",
     blurb: "Personal-story testimonial cut for a nonprofit fundraising campaign.",
-    orientation: "portrait", accent: "#fb56bc", w: 1080, h: 1920, dur: "2:09"
+    orientation: "portrait", accent: "#fb56bc", w: 720, h: 1280, dur: "2:09"
   },
   {
     id: "childrens-harbor-reel2",
@@ -827,7 +828,7 @@ const REELS = [
     client: "Clinics Can Help",
     title: "Hot Day Crib Drive",
     blurb: "Nonprofit event-coverage video.",
-    orientation: "landscape", accent: "#fbfb56", w: 1920, h: 1080, dur: "0:56"
+    orientation: "landscape", accent: "#fbfb56", w: 1280, h: 720, dur: "0:56"
   },
   {
     id: "sixtysecs-teresa",
@@ -1058,6 +1059,7 @@ const REELS = [
   // ==== Animation / motion graphics (round 3) ====
   {
     id: "ceod-logo",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "CEO Discovery",
     title: "Logo Animation",
@@ -1070,7 +1072,7 @@ const REELS = [
     client: "Children's Services Council",
     title: "Show Outro Package",
     blurb: "Animated outro graphic for an episodic series.",
-    orientation: "landscape", accent: "#fb56ae", w: 1920, h: 1080, dur: "0:09"
+    orientation: "landscape", accent: "#fb56ae", w: 1280, h: 720, dur: "0:09"
   },
   {
     id: "dk-intro",
@@ -1098,6 +1100,7 @@ const REELS = [
   },
   {
     id: "eqb2b-comp",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "EQB2B",
     title: "Title Comp Render",
@@ -1118,7 +1121,7 @@ const REELS = [
     client: "Insight",
     title: "ITE Program Intro",
     blurb: "Animated title sequence for a nonprofit program.",
-    orientation: "landscape", accent: "#b63535", w: 1920, h: 1080, dur: "0:25"
+    orientation: "landscape", accent: "#b63535", w: 1280, h: 720, dur: "0:25"
   },
   {
     id: "ite-brand-intro-prerender",
@@ -1126,10 +1129,11 @@ const REELS = [
     client: "inSIGHT Education",
     title: "Brand Intro Animation",
     blurb: "After Effects intro animation for a nonprofit brand.",
-    orientation: "landscape", accent: "#d87979", w: 1920, h: 1080, dur: "0:08"
+    orientation: "landscape", accent: "#d87979", w: 1280, h: 720, dur: "0:08"
   },
   {
     id: "polo-recap-ae-2",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "Polo Media Day",
     title: "Recap Graphic II",
@@ -1142,10 +1146,11 @@ const REELS = [
     client: "RTDB",
     title: "Logo Intro Animation",
     blurb: "Animated logo intro for a podcast.",
-    orientation: "landscape", accent: "#fb566f", w: 1920, h: 1080, dur: "0:09"
+    orientation: "landscape", accent: "#fb566f", w: 1280, h: 720, dur: "0:09"
   },
   {
     id: "sparked-notification",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "Sparked",
     title: "Notification Animation",
@@ -1154,6 +1159,7 @@ const REELS = [
   },
   {
     id: "sparked-spark-mark",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "Sparked",
     title: "Spark Mark Animation",
@@ -1166,7 +1172,7 @@ const REELS = [
     client: "Sparked",
     title: "Logo Sting",
     blurb: "Short animated logo sting.",
-    orientation: "landscape", accent: "#b63535", w: 1920, h: 1080, dur: "0:04"
+    orientation: "landscape", accent: "#b63535", w: 1280, h: 720, dur: "0:04"
   },
   {
     id: "sparked-outro",
@@ -1190,7 +1196,7 @@ const REELS = [
     client: "Travel Hacker Teddy",
     title: "Logo Intro",
     blurb: "Animated logo intro.",
-    orientation: "landscape", accent: "#56fbfb", w: 1920, h: 1080, dur: "0:04"
+    orientation: "landscape", accent: "#56fbfb", w: 1280, h: 720, dur: "0:04"
   },
   {
     id: "tht-plane-intro",
@@ -1226,6 +1232,7 @@ const REELS = [
   },
   {
     id: "wellness-lt-vitals",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — Vitals",
@@ -1234,6 +1241,7 @@ const REELS = [
   },
   {
     id: "wellness-lt-xray",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — X-Ray",
@@ -1242,6 +1250,7 @@ const REELS = [
   },
   {
     id: "wellness-lt-ecg",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — ECG",
@@ -1250,6 +1259,7 @@ const REELS = [
   },
   {
     id: "wellness-lt-bloodwork",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — Bloodwork",
@@ -1258,6 +1268,7 @@ const REELS = [
   },
   {
     id: "wellness-lt-physical",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Lower Third — Physical Exam",
@@ -1274,6 +1285,7 @@ const REELS = [
   },
   {
     id: "wellness-walkin-outro",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "motion",
     client: "365 Wellness",
     title: "Walkthrough Outro",
@@ -1484,6 +1496,7 @@ const REELS = [
   },
   {
     id: "virtual-card-demo",
+    hide: true,  // weak on its own — kept on disk, hidden from the site
     category: "corporate",
     client: "Khanna House Studios",
     title: "Virtual Business Card — Demo",

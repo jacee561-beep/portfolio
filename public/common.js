@@ -9,6 +9,12 @@
    CSSOM, which the policy allows.
    ============================================================ */
 
+/* Pieces marked `hide: true` in manifest.js stay on disk but never reach
+   the page. Done once, here, so every count and grid agrees. */
+if (typeof REELS !== "undefined") {
+  for (let i = REELS.length - 1; i >= 0; i--) if (REELS[i].hide) REELS.splice(i, 1);
+}
+
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g,
@@ -42,10 +48,13 @@ function paintAR(root = document) {
    is replaced in place, or returning visitors keep the old copy. */
 const PHOTO_REV = 2;
 const photoSrc = (id) => `assets/photos/${id}.jpg?r=${PHOTO_REV}`;
+/* Same for posters — bump when a poster is re-grabbed in place. */
+const POSTER_REV = 2;
+const posterSrc = (id) => `assets/posters/${id}.jpg?r=${POSTER_REV}`;
 
 /* poster <img> with honest intrinsic size, so layout never jumps */
 function posterImg(r, extra = 'loading="lazy"') {
-  return `<img src="assets/posters/${r.id}.jpg" alt="${esc(r.title)}"
+  return `<img src="${posterSrc(r.id)}" alt="${esc(r.title)}"
     width="${r.w || 1920}" height="${r.h || 1080}" ${extra} decoding="async" />`;
 }
 
@@ -140,7 +149,7 @@ function openLB(r) {
   $("#lbMedia").innerHTML = isPhoto
     ? `<img src="${photoSrc(r.id)}" alt="${esc(r.title)}" />`
     : `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
-         poster="assets/posters/${r.id}.jpg"></video>`;
+         poster="${posterSrc(r.id)}"></video>`;
   $("#lbMeta").innerHTML =
     `<h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p>` +
     (isPhoto ? "" : slate(r));

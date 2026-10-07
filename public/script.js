@@ -186,6 +186,23 @@ $("#ledgerDives").textContent = "Deep dives";
   wirePieces(box, ".plate", find);
 })();
 
+/* ---------- device mockups ----------
+   Each loop loads and plays only while it's on screen, and pauses when
+   it scrolls away. Reduced motion: posters only. Click opens the piece. */
+(function screens() {
+  const figs = $$(".scr");
+  figs.forEach((f) => f.addEventListener("click", () => { const r = find(f.dataset.id); if (r) openLB(r); }));
+  if (reduced || !("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    const v = $("video", e.target);
+    if (e.isIntersecting) {
+      if (!v.src) v.src = v.dataset.src;
+      v.play().catch(() => {});
+    } else v.pause();
+  }), { threshold: 0.35 });
+  figs.forEach((f) => io.observe(f));
+})();
+
 /* ---------- 02 commission rows ---------- */
 (function commission() {
   const NAMES = {
@@ -387,7 +404,7 @@ idxMain.addEventListener("pointerover", (e) => {
     idxSide.innerHTML = `
       <div class="pin" data-id="${r.id}" data-cat="${r.category}">
         <div class="media" data-ar="${ar(r)}">
-          <img src="assets/posters/${r.id}.jpg" alt="" decoding="async" />
+          <img src="${posterSrc(r.id)}" alt="" decoding="async" />
         </div>
         <p class="pin-meta">${esc(r.client)} — ${esc(r.title)}</p>
       </div>`;
@@ -550,7 +567,7 @@ function blank(el, label, ask) {
       return `
       <div class="case-media">${r ? `
         <div class="media" data-ar="${ar(r)}">
-          <img src="assets/posters/${r.id}.jpg" alt="${esc(c.client)}" loading="lazy" decoding="async" />
+          <img src="${posterSrc(r.id)}" alt="${esc(c.client)}" loading="lazy" decoding="async" />
         </div>` : ""}</div>
       <div class="case-body">
         <dl class="case-meta">
@@ -606,7 +623,7 @@ function blank(el, label, ask) {
 
   const tiles = (items, dir) => items.map((p) => `
     <div class="media" data-ar="${dir === "photos" ? "4/5" : ar(p)}">
-      <img src="${dir === "photos" ? photoSrc(p.id) : `assets/posters/${p.id}.jpg`}" alt="" loading="lazy" decoding="async" />
+      <img src="${dir === "photos" ? photoSrc(p.id) : posterSrc(p.id)}" alt="" loading="lazy" decoding="async" />
     </div>`).join("");
 
   const box = $("#diveList");

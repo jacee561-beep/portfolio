@@ -1,10 +1,4 @@
 const PHOTOS = [
-  { id: "hormats-1", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 1600, h: 900 },
-  { id: "hormats-2", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 1600, h: 900 },
-  { id: "hormats-3", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 900, h: 1600 },
-  { id: "hormats-4", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 900, h: 1600 },
-  { id: "hormats-5", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 900, h: 1600 },
-  { id: "hormats-6", client: "Catherine Hormats", title: "Equestrian Portrait Session", w: 1600, h: 900 },
   { id: "pace-1", client: "Pace Center for Girls", title: "Nonprofit Photography", w: 1600, h: 1066 },
   { id: "pace-2", client: "Pace Center for Girls", title: "Nonprofit Photography", w: 1600, h: 1066 },
   { id: "pace-3", client: "Pace Center for Girls", title: "Nonprofit Photography", w: 1600, h: 1066 },

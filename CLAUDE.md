@@ -82,7 +82,7 @@ conversation.
 | `public/assets/photos/<id>.jpg` | Photos |
 | `public/assets/jacob-headshot.jpg` | About-section portrait |
 
-Current scale: **259 videos across 6 categories, 34 photos across 7 sessions.**
+Current scale: **259 videos in the manifest, 246 shown (13 marked `hide: true`), 28 photos across 6 sessions.**
 
 ### Full-drive audit — the numbers, so nobody re-scans blind
 
@@ -205,7 +205,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=31` (as of 2026-10-01). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=32` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
@@ -545,3 +545,30 @@ watching playback — worth a real-browser look.
 
 **Instagram confirmed (2026-10-01):** Jacob's handle is **@toast.89** —
 `SITE.instagram` now points to `https://www.instagram.com/toast.89`, matching the sub-pages.
+
+## Session log — 2026-10-07 (cloud session): cleanup, horse photos out, device mockups
+
+**Cleanup ("organize the garbage").** Nothing was deleted from the video library.
+- **15 weak posters re-grabbed** from a better frame (blank white/black/green first frames on fine
+  videos): picked automatically as the frame with the most contrast + colour out of 11 samples, then
+  checked by eye. Posters now load with `?r=POSTER_REV` (`common.js`) because `/assets/*` is cached
+  immutable — **bump `POSTER_REV` whenever a poster is replaced in place.**
+- **13 pieces hidden** with `hide: true` in `manifest.js`: the five 365 Wellness lower-thirds on
+  black (`wellness-lt-*`, not `-text`), the green-screen `wellness-lower-third`, `sparked-notification`,
+  `sparked-spark-mark`, `ceod-logo`, `wellness-walkin-outro`, and duplicates `polo-recap-ae-2`,
+  `eqb2b-comp`, `virtual-card-demo`. `common.js` drops hidden entries before anything renders, so
+  every count agrees (246). Delete the `hide: true` line to bring one back.
+
+**Horse photos removed** at Jacob's request: the whole Catherine Hormats equestrian session
+(`hormats-1…6`) is gone from `photos-manifest.js` and the repo. Don't re-add it.
+
+**Device mockups ("On screen", under Selected Work).** Three 10 s silent loops of his real work in
+device frames, `public/assets/mockups/{reels,studio,monitor}.mp4` + posters. Two made in **Remotion**
+(three phones; laptop + phone), one in **HyperFrames** (broadcast monitor with an animated lower
+third). Sources and render steps in `tools/mockups/`. They load and play only while on screen, pause
+off screen, and are posters only under reduced motion. Click opens the original piece.
+
+**Tooling in a cloud session** (gone when the container is reclaimed — reinstall each time):
+`apt-get install ffmpeg blender` (Blender 4.0.2), `npm i remotion @remotion/cli hyperframes gsap`.
+Remotion's own Chrome download (remotion.media) is blocked by the sandbox network policy; use
+`npx hyperframes browser ensure` and pass that binary to Remotion with `--browser-executable`.
