@@ -89,15 +89,16 @@ const MONITOR_BIN = ["cryptorubik-orb", "hona-open", "tht-plane-intro", "patrici
   function load(r, first) {
     releasePreview();
     screen.dataset.id = r.id;
-    screen.setAttribute("aria-label", `Watch ${r.title} — ${r.client}`);
+    // the accessible name must contain the visible hint text
+    screen.setAttribute("aria-label", `${$(".mon-hint").textContent}: ${r.title} — ${r.client}`);
     media.innerHTML = posterImg(r, first ? 'fetchpriority="high"' : "", "full");
     name.textContent = `${r.client} — ${r.title}`;
     tcEl.textContent = "00:00:00:00";
     $$("button", bin).forEach((b) => b.classList.toggle("on", b.dataset.id === r.id));
     setTint(r);
   }
-  load(picks[0], true);
   if (!finePointer) $(".mon-hint").textContent = "Tap to watch";
+  load(picks[0], true);
   bin.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) load(find(b.dataset.id));
