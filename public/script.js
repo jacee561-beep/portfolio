@@ -83,14 +83,14 @@ const MONITOR_BIN = ["cryptorubik-orb", "hona-open", "tht-plane-intro", "patrici
   bin.innerHTML = picks.map((r, i) => `
     <button type="button" data-id="${r.id}" data-cat="${r.category}" data-n="${String(i + 1).padStart(2, "0")}"
             aria-label="Load ${esc(r.title)} — ${esc(r.client)}">
-      <span class="media">${posterImg(r)}</span>
+      <span class="media">${posterImg(r, 'loading="lazy"', "thumb")}</span>
     </button>`).join("");
 
   function load(r, first) {
     releasePreview();
     screen.dataset.id = r.id;
     screen.setAttribute("aria-label", `Watch ${r.title} — ${r.client}`);
-    media.innerHTML = posterImg(r, first ? 'fetchpriority="high"' : "");
+    media.innerHTML = posterImg(r, first ? 'fetchpriority="high"' : "", "full");
     name.textContent = `${r.client} — ${r.title}`;
     tcEl.textContent = "00:00:00:00";
     $$("button", bin).forEach((b) => b.classList.toggle("on", b.dataset.id === r.id));
@@ -128,7 +128,7 @@ const RIBBON = [
   // edge numbers like real stock: a key code that counts up frame by frame
   const one = items.map((r, i) => `
     <div class="tape-item" data-id="${r.id}" title="${esc(r.client)} — ${esc(r.title)}">
-      <div class="media" data-ar="${ar(r)}">${posterImg(r)}</div>
+      <div class="media" data-ar="${ar(r)}">${posterImg(r, 'loading="lazy"', "thumb")}</div>
       <span class="edge" aria-hidden="true">KJ 26 ${String(4410 + i * 16).padStart(4, "0")} ▸ ${i + 1}</span>
     </div>`).join("");
   const track = $("#ribbon");

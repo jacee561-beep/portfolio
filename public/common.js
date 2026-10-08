@@ -53,10 +53,26 @@ const POSTER_REV = 2;
 const posterSrc = (id) => `assets/posters/${id}.jpg?r=${POSTER_REV}`;
 
 /* poster <img> with honest intrinsic size, so layout never jumps */
-function posterImg(r, extra = 'loading="lazy"') {
-  return `<img src="${posterSrc(r.id)}" alt="${esc(r.title)}"
-    width="${r.w || 1920}" height="${r.h || 1080}" ${extra} decoding="async" />`;
+/* Grids use the light WebP in assets/thumbs/ (640 px landscape / 480 px
+   portrait, ~16 KB) and only pull the full poster on large or sharp screens.
+   mode: "auto" (srcset), "thumb" (small slots), "full" (the hero monitor). */
+const thumbSrc = (id) => `assets/thumbs/${id}.webp?r=${POSTER_REV}`;
+function posterImg(r, extra = 'loading="lazy"', mode = "auto") {
+  const w = r.w || 1920, h = r.h || 1080;
+  const tw = Math.min(w, w > h ? 640 : 480);
+  const src = mode === "full" ? posterSrc(r.id) : thumbSrc(r.id);
+  const set = mode === "auto" && w > tw
+    ? ` srcset="${thumbSrc(r.id)} ${tw}w, ${posterSrc(r.id)} ${w}w" sizes="(max-width: 760px) 50vw, 24vw"` : "";
+  return `<img src="${src}"${set} data-poster="${r.id}" alt="${esc(r.title)}"
+    width="${w}" height="${h}" ${extra} decoding="async" />`;
 }
+/* New work may not have a thumbnail yet — fall back to the full poster. */
+document.addEventListener("error", (e) => {
+  const img = e.target;
+  if (img.tagName === "IMG" && img.dataset.poster && img.src.includes("/thumbs/")) {
+    img.removeAttribute("srcset"); img.src = posterSrc(img.dataset.poster);
+  }
+}, true);
 
 /* ---------- the pooled hover preview ----------
    ONE <video> for the whole page, playing a 5 s silent loop of the piece

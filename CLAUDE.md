@@ -78,7 +78,8 @@ conversation.
 | `public/assets/manifest.js` | **Video catalogue — `REELS` + `CATEGORIES` arrays** |
 | `public/assets/photos-manifest.js` | **Photo catalogue — `PHOTOS` array** |
 | `public/assets/video/<id>.mp4` | One file per entry, filename = `id` |
-| `public/assets/posters/<id>.jpg` | Thumbnail per video, filename = `id` |
+| `public/assets/posters/<id>.jpg` | Full poster per video, filename = `id` |
+| `public/assets/thumbs/<id>.webp` | Light grid thumbnail (640 px landscape / 480 px portrait). Optional — falls back to the poster |
 | `public/assets/photos/<id>.jpg` | Photos |
 | `public/assets/jacob-headshot.jpg` | About-section portrait |
 
@@ -205,7 +206,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=33` (as of 2026-10-01). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=34` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
@@ -572,3 +573,10 @@ off screen, and are posters only under reduced motion. Click opens the original 
 `apt-get install ffmpeg blender` (Blender 4.0.2), `npm i remotion @remotion/cli hyperframes gsap`.
 Remotion's own Chrome download (remotion.media) is blocked by the sandbox network policy; use
 `npx hyperframes browser ensure` and pass that binary to Remotion with `--browser-executable`.
+
+**2026-10-08 additions:** grid thumbnails in `assets/thumbs/` (25 MB of posters → 4 MB of WebP; desktop
+homepage image weight 563 KB → 130 KB). `posterImg()` serves them with a `srcset` that still pulls the
+full poster on sharp screens, and swaps to the poster if a thumb is missing — so new work works without
+one, but make one for speed: PIL resize to 640 wide (landscape) / 480 wide (portrait), WebP q74.
+Social link preview: `assets/share.jpg` (1200x630) via og:image on all three pages.
+Podcasts page: each show opens on one row with a "Show all" button.
