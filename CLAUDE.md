@@ -580,3 +580,17 @@ full poster on sharp screens, and swaps to the poster if a thumb is missing — 
 one, but make one for speed: PIL resize to 640 wide (landscape) / 480 wide (portrait), WebP q74.
 Social link preview: `assets/share.jpg` (1200x630) via og:image on all three pages.
 Podcasts page: each show opens on one row with a "Show all" button.
+
+**2026-10-08, later (all live):** SEO — `sitemap.xml`, robots.txt points to it, schema.org
+`ProfessionalService` JSON-LD in `index.html`, canonical URLs. Accessibility — axe-core reports **0
+violations** on all three pages (fixed PGM label contrast, interviews colour-bar text, monitor
+button name). CSP now allows Cloudflare Web Analytics (`static.cloudflareinsights.com` script +
+`cloudflareinsights.com` connect) — it was silently blocked before, so the dashboard was empty.
+`public/404.html` ("No signal" test card) is served for unknown URLs with a real 404 via
+`"not_found_handling": "404-page"` in `wrangler.jsonc`. `apple-touch-icon.png` / `icon-512.png` added.
+Contact email stays **jacee561@gmail.com** (Jacob's call, 2026-10-08) even though his Gmail login is
+jacob@khannahousestudios.com.
+
+**Résumé is NOT linked on purpose:** `assets/files/Jacob_Gonzales_Resume.docx` still has placeholders —
+"[portfolio link — add after deploy]", "In-House Editor — [Studio name]", "[Start year]". Fill those
+(ask Jacob) before linking it from the contact section.
