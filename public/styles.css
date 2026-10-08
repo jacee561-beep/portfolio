@@ -1411,6 +1411,7 @@ dialog.lb::backdrop { background: rgba(0, 0, 0, 0.9); }
 .shelf .tiles { gap: 12px; }
 .shelf .tile { grid-column: span 3; }
 .tile.photo { cursor: zoom-in; }
+.shelf-more { margin-top: var(--s5); }
 
 /* ============================================================
    Masonry columns (pack() in common.js). Late + doubled so it beats

@@ -205,7 +205,7 @@ glitch, preloader/intro screen, hero reel rotation, headline reveal animation, o
 
 ## Gotchas
 
-- **Cache busting.** CSS/JS are referenced with `?v=32` (as of 2026-10-01). If you edit
+- **Cache busting.** CSS/JS are referenced with `?v=33` (as of 2026-10-01). If you edit
   `public/styles.css` or any `.js`, bump it in **all three** HTML files, or browsers serve a stale copy.
 - **No inline `style=""` — the live CSP blocks it.** `public/_headers` sets `style-src 'self'`, which
   silently drops every inline style attribute, *including ones written via `innerHTML`*. That broke
