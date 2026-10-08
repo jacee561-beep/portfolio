@@ -34,3 +34,7 @@ public/assets/y2k/raw-loop.mp4
 
 # showreel build scratch
 public/assets/.reelbuild/
+
+# downloaded 3D assets (re-fetch with tools/ads/ph_get.py)
+tools/ads/assets/
+tools/ads/*/frames_*/
