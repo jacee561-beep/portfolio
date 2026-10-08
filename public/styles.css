@@ -1487,3 +1487,19 @@ dialog.lb::backdrop { background: rgba(0, 0, 0, 0.9); }
   .credits { height: 300px; }
   .credits-roll dd { font-size: 16px; }
 }
+
+/* ============================================================
+   404 — "No signal" test card
+   ============================================================ */
+.nosig { min-height: 100vh; display: flex; flex-direction: column; }
+.nosig-bars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); height: 42vh; }
+.nosig-bars i:nth-child(1) { background: var(--bar-white); }
+.nosig-bars i:nth-child(2) { background: var(--bar-yellow); }
+.nosig-bars i:nth-child(3) { background: var(--bar-cyan); }
+.nosig-bars i:nth-child(4) { background: var(--bar-green); }
+.nosig-bars i:nth-child(5) { background: var(--bar-magenta); }
+.nosig-bars i:nth-child(6) { background: var(--bar-red); }
+.nosig-bars i:nth-child(7) { background: var(--bar-blue); }
+.nosig-in { padding-top: var(--s8); padding-bottom: var(--s8); }
+.nosig h1 { font-size: clamp(64px, 11vw, 160px); font-weight: 800; font-stretch: 66%; line-height: 0.85; text-transform: uppercase; margin-bottom: var(--s5); }
+.nosig p:not(.eyebrow) { color: var(--fg-dim); font-size: var(--fs-lede); margin-bottom: var(--s6); }

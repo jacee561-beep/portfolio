@@ -6,7 +6,9 @@
   "name": "portfolio",
   "compatibility_date": "2026-08-10",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    // unknown URLs get public/404.html (a "No signal" test card) with a real 404 status
+    "not_found_handling": "404-page"
   },
   // Keep the *.workers.dev URL alive alongside the custom domain. Defining
   // "routes" disables it by default, which left portfolio.jacee561.workers.dev
