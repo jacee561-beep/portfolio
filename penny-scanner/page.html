@@ -1,0 +1,263 @@
+<title>Penny Scout</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one phone-width column. Ranked store list on top, then the chosen store's
+   shelf-tag cards grouped Go look / Maybe / Skip. Accent = clearance-tag yellow. */
+:root {
+  --bg: #f3f1ea;
+  --surface: #ffffff;
+  --ink: #1d1f1c;
+  --muted: #62655d;
+  --line: #d9d6cb;
+  --tag: #ffd60a;
+  --tag-ink: #1d1f1c;
+  --go: #1f7a3a;
+  --go-bg: #e3f3e6;
+  --maybe: #8a5a00;
+  --maybe-bg: #fbefd2;
+  --skip: #7a7d76;
+  --skip-bg: #ecebe5;
+  --focus: #2457c5;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151613; --surface: #1f211d; --ink: #ecebe4; --muted: #a3a69c; --line: #34372f;
+    --tag: #ffd60a; --tag-ink: #151613; --go: #6fd08a; --go-bg: #173322; --maybe: #f0bf57;
+    --maybe-bg: #3a2d10; --skip: #9a9d94; --skip-bg: #2a2c27; --focus: #8fb0ff; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151613; --surface: #1f211d; --ink: #ecebe4; --muted: #a3a69c; --line: #34372f;
+  --tag: #ffd60a; --tag-ink: #151613; --go: #6fd08a; --go-bg: #173322; --maybe: #f0bf57;
+  --maybe-bg: #3a2d10; --skip: #9a9d94; --skip-bg: #2a2c27; --focus: #8fb0ff; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.45 var(--body); }
+.wrap {
+  max-width: 760px; margin: 0 auto;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px;
+}
+.wrap > *, section.group > * { min-width: 0; }
+section.group { grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: .01em; line-height: 1; text-transform: uppercase; }
+h1 .cent { background: var(--tag); color: var(--tag-ink); padding: 0 .2em; border-radius: 3px; }
+h2 { font-size: 1.45rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.sub { color: var(--muted); margin: 6px 0 0; font-size: .95rem; }
+.label { font: 600 .72rem/1 var(--body); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+
+/* store ranking */
+.stores { display: grid; gap: 6px; }
+.store {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+}
+.store:hover { border-color: var(--muted); }
+.store:focus-visible, .sku:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.store[aria-pressed="true"] { border: 2px solid var(--ink); padding: 9px 11px; }
+.store-name { font-weight: 600; min-width: 0; }
+.store-meta { color: var(--muted); font-size: .85rem; }
+.hits { font: 700 1.5rem/1 var(--display); font-variant-numeric: tabular-nums; text-align: right; }
+.hits small { display: block; font: 500 .7rem/1.2 var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.hits.zero { color: var(--skip); }
+
+/* selected store banner */
+.here { background: var(--tag); color: var(--tag-ink); border-radius: 8px; padding: 14px 16px; display: grid; gap: 2px; }
+.here h2 { font-size: 1.7rem; }
+.here p { margin: 0; font-size: .92rem; }
+.here .label { color: var(--tag-ink); opacity: .7; }
+
+section.group { display: grid; gap: 10px; }
+.group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.group-head p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+/* shelf-tag card */
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  display: grid; grid-template-columns: 84px 1fr; gap: 12px; padding: 12px;
+}
+.card img, .noimg { width: 84px; height: 84px; object-fit: contain; border-radius: 6px; background: #fff; }
+.noimg { display: grid; place-items: center; font: 600 .7rem/1.2 var(--body); color: #62655d; text-align: center; padding: 6px; border: 1px dashed var(--line); }
+.info { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.brand { font: 600 .72rem/1 var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.name { font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.sku {
+  font: 700 1.05rem/1 var(--mono); letter-spacing: .02em; font-variant-numeric: tabular-nums;
+  background: var(--tag); color: var(--tag-ink); border: 0; border-radius: 4px; padding: 8px 10px; cursor: pointer;
+}
+.sku .hint { font: 600 .62rem/1 var(--body); text-transform: uppercase; letter-spacing: .08em; margin-left: 6px; opacity: .75; }
+.pill { font: 600 .78rem/1 var(--body); padding: 5px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.go { background: var(--go-bg); color: var(--go); }
+.pill.maybe, .pill.watch { background: var(--maybe-bg); color: var(--maybe); }
+.pill.skip, .pill.gone, .pill.unknown { background: var(--skip-bg); color: var(--skip); }
+.facts { font-size: .88rem; color: var(--muted); display: grid; gap: 2px; }
+.facts b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.also { font-size: .85rem; }
+.also b { color: var(--go); }
+a { color: var(--focus); }
+details.skip-list { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+details.skip-list summary { cursor: pointer; font-weight: 600; }
+.skip-row { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; padding: 8px 0; border-top: 1px solid var(--line); font-size: .9rem; }
+.skip-row:first-of-type { margin-top: 8px; }
+.skip-row code { font: 600 .85rem var(--mono); }
+.sku.small { font-size: .82rem; padding: 6px 7px; align-self: start; }
+.skip-row span { min-width: 0; overflow-wrap: anywhere; }
+.how { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.how ol { margin: 8px 0 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.empty { color: var(--muted); margin: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 6px; font-weight: 600; font-size: .9rem; }
+@media (max-width: 420px) {
+  h1 { font-size: 2.1rem; }
+  .card { grid-template-columns: 64px 1fr; gap: 10px; }
+  .card img, .noimg { width: 64px; height: 64px; }
+}
+@media (prefers-reduced-motion: no-preference) { .store { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Penny Scout <span class="cent">1¢</span></h1>
+    <p class="sub" id="stamp"></p>
+  </header>
+
+  <section class="group" aria-labelledby="stores-h">
+    <div class="group-head">
+      <h2 id="stores-h">Stores near you</h2>
+      <p>Tap a store. The number is how many best bets it has today.</p>
+    </div>
+    <div class="stores" id="stores"></div>
+  </section>
+
+  <div class="here" id="here"></div>
+
+  <section class="group" aria-labelledby="go-h">
+    <div class="group-head"><h2 id="go-h">Best bets</h2><p>In clearance at this store and reported as a penny by a lot of shoppers lately.</p></div>
+    <div id="go" class="group"></div>
+    <div id="more"></div>
+  </section>
+
+  <section class="group" aria-labelledby="maybe-h">
+    <div class="group-head"><h2 id="maybe-h">Maybe</h2><p>Hidden online, inactive here, or marked down but not clearance yet.</p></div>
+    <div id="maybe" class="group"></div>
+  </section>
+
+  <div id="skip"></div>
+
+  <section class="how">
+    <h2>In the store</h2>
+    <ol>
+      <li>Tap a yellow SKU to copy it, then paste it into the Home Depot app search. The orange bar shows the aisle and bay.</li>
+      <li>Not in its bay? Check the endcaps, bottom shelves, the clearance area and the returns cart.</li>
+      <li>Scan it at self-checkout. Only the register shows $0.01. If it rings up higher, remove it.</li>
+      <li>Staff are told to pull penny items and can refuse the sale. If they say no, let it go.</li>
+    </ol>
+    <p class="sub">Store status, price and pickup stock come from Home Depot's product system at the time shown at the top. Reports come from Penny Recon and PennyCentral.</p>
+  </section>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = (n) => (n == null ? "" : "$" + Number(n).toFixed(2));
+const fmtSku = (s) => (s.length === 10 ? `${s.slice(0, 4)}-${s.slice(4, 7)}-${s.slice(7)}` : s);
+
+function ago(ts) {
+  if (!ts) return "unknown";
+  const d = Math.floor((DATA.generated - ts) / 86400);
+  if (d <= 0) return "today";
+  if (d === 1) return "yesterday";
+  if (d < 14) return d + " days ago";
+  return Math.round(d / 7) + " weeks ago";
+}
+
+const storeById = Object.fromEntries(DATA.stores.map((s) => [s.id, s]));
+const goCount = (sid) => DATA.items.filter((it) => it.stores[sid]?.best).length;
+
+let current = DATA.homeStore in storeById ? DATA.homeStore : DATA.stores[0].id;
+try { const saved = localStorage.getItem("pennyScoutStore"); if (saved && storeById[saved]) current = saved; } catch (e) {}
+
+function renderStores() {
+  const ranked = [...DATA.stores].sort((a, b) => goCount(b.id) - goCount(a.id) || a.miles - b.miles);
+  $("stores").innerHTML = ranked.map((s) => {
+    const n = goCount(s.id);
+    return `<button type="button" class="store" data-id="${s.id}" aria-pressed="${s.id === current}">
+      <span class="store-name">${esc(s.name)} <span class="store-meta">#${esc(s.id)} · ${s.miles} mi</span><br>
+      <span class="store-meta">${esc(s.street)}, ${esc(s.city)}</span></span>
+      <span class="hits ${n ? "" : "zero"}">${n}<small>best bets</small></span></button>`;
+  }).join("");
+  $("stores").querySelectorAll(".store").forEach((b) => b.addEventListener("click", () => {
+    current = b.dataset.id;
+    try { localStorage.setItem("pennyScoutStore", current); } catch (e) {}
+    render();
+  }));
+}
+
+function card(it) {
+  const st = it.stores[current];
+  const img = it.image ? `<img src="${it.image}" alt="" loading="lazy">` : `<div class="noimg">No photo</div>`;
+  const facts = [];
+  if (st.price) facts.push(`Price here: <b>${money(st.price)}</b>${it.retail && st.price < it.retail ? ` (was ${money(it.retail)})` : ""}`);
+  else if (it.retail) facts.push(`Regular price: <b>${money(it.retail)}</b>`);
+  if (st.qty != null) facts.push(`Pickup stock here: <b>${st.qty}</b>`);
+  let rep = `<b>${it.reports}</b> penny reports in <b>${it.stateCount}</b> states, last seen <b>${ago(it.lastSeen)}</b>`;
+  if (it.fl) rep += ` · <b>${it.fl}</b> in Florida${it.flCities.length ? " (" + esc(it.flCities.join(", ")) + ")" : ""}`;
+  facts.push(rep);
+  if (it.discontinued) facts.push("<b>Discontinued</b> by Home Depot");
+  const others = DATA.stores.filter((s) => s.id !== current && it.stores[s.id]?.verdict === "go");
+  let also = "";
+  if (others.length >= DATA.stores.length - 2) also = `<div class="also">Clearance at <b>${others.length + 1} of ${DATA.stores.length}</b> stores near you</div>`;
+  else if (others.length) also = `<div class="also">Also clearance at: <b>${others.map((s) => esc(s.name)).join(", ")}</b></div>`;
+  return `<article class="card">${img}<div class="info">
+    <div class="brand">${esc(it.brand)}</div>
+    <div class="name">${esc(it.name)}</div>
+    <div class="row"><button type="button" class="sku" data-sku="${esc(it.sku)}" aria-label="Copy SKU ${esc(fmtSku(it.sku))}">${esc(fmtSku(it.sku))}<span class="hint">copy</span></button>
+      <span class="pill ${st.verdict}">${esc(st.label)}</span></div>
+    <div class="facts">${facts.map((f) => `<span>${f}</span>`).join("")}</div>${also}
+    <a href="https://www.homedepot.com/p/${esc(it.itemId)}" target="_blank" rel="noopener">Open on homedepot.com</a>
+  </div></article>`;
+}
+
+function render() {
+  renderStores();
+  const s = storeById[current];
+  const rows = DATA.items.map((it) => ({ it, st: it.stores[current] })).filter((r) => r.st);
+  const by = (keys) => rows.filter((r) => keys.includes(r.st.verdict)).sort((a, b) => b.st.score - a.st.score);
+  const all = by(["go"]), go = all.filter((r) => r.st.best), more = all.filter((r) => !r.st.best);
+  const maybe = by(["maybe", "watch"]), skip = by(["skip", "gone"]);
+  $("here").innerHTML = `<span class="label">Showing</span><h2>${esc(s.name)} #${esc(s.id)}</h2>
+    <p>${esc(s.street)}, ${esc(s.city)} · ${esc(s.phone)} · ${s.miles} mi from ${esc(DATA.zip)}</p>
+    <p><b>${go.length}</b> best bets · <b>${more.length}</b> more in clearance · <b>${maybe.length}</b> maybe · <b>${skip.length}</b> to skip</p>`;
+  $("go").innerHTML = go.length ? go.map((r) => card(r.it)).join("") : `<p class="empty">No strong picks here right now. Try the store at the top of the list.</p>`;
+  $("more").innerHTML = more.length ? `<details class="skip-list"><summary>${more.length} more in clearance here, with fewer reports</summary>
+    ${more.map((r) => `<div class="skip-row"><button type="button" class="sku small" data-sku="${esc(r.it.sku)}" aria-label="Copy SKU ${esc(fmtSku(r.it.sku))}">${esc(fmtSku(r.it.sku))}</button><span>${esc(r.it.name)}${r.st.price ? " · " + money(r.st.price) : ""} · ${r.it.reports} reports, last ${ago(r.it.lastSeen)}</span></div>`).join("")}</details>` : "";
+  $("maybe").innerHTML = maybe.length ? maybe.map((r) => card(r.it)).join("") : `<p class="empty">Nothing here.</p>`;
+  $("skip").innerHTML = skip.length ? `<details class="skip-list"><summary>Skip these ${skip.length} at this store (full price or deleted)</summary>
+    ${skip.map((r) => `<div class="skip-row"><code>${esc(fmtSku(r.it.sku))}</code><span>${esc(r.it.name)} · ${esc(r.st.label)}${r.st.price ? " · " + money(r.st.price) : ""}</span></div>`).join("")}</details>` : "";
+  document.querySelectorAll(".sku").forEach((b) => b.addEventListener("click", () => copy(b.dataset.sku)));
+}
+
+function toast(msg) {
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
+  document.body.appendChild(t); setTimeout(() => t.remove(), 1800);
+}
+function copy(sku) {
+  const done = () => toast("Copied " + fmtSku(sku) + ". Paste it into the app.");
+  try { navigator.clipboard.writeText(sku).then(done, () => toast("SKU " + fmtSku(sku))); } catch (e) { toast("SKU " + fmtSku(sku)); }
+}
+
+const when = new Date(DATA.generated * 1000);
+$("stamp").textContent = `Checked ${when.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} · ${DATA.itemsChecked} reported penny items × ${DATA.stores.length} stores near ${DATA.zip}`;
+render();
+</script>
