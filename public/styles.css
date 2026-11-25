@@ -1597,3 +1597,8 @@ dialog.lb::backdrop { background: rgba(0, 0, 0, 0.9); }
 .nosig-in { padding-top: var(--s8); padding-bottom: var(--s8); }
 .nosig h1 { font-size: clamp(64px, 11vw, 160px); font-weight: 800; font-stretch: 66%; line-height: 0.85; text-transform: uppercase; margin-bottom: var(--s5); }
 .nosig p:not(.eyebrow) { color: var(--fg-dim); font-size: var(--fs-lede); margin-bottom: var(--s6); }
+
+/* Client pages (clients.html): one fact line + the kinds of work under each client name */
+.case-line { margin: -6px 0 10px; font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-meta); }
+.case-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.case-cats .chip { pointer-events: none; }
