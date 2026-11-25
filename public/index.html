@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Jacob Gonzales — Videographer, Editor &amp; Motion Designer</title>
-<meta name="description" content="Jacob Gonzales — videographer, editor, motion designer and photographer in South Florida. Podcast packages, nonprofit and corporate film, event and interview coverage, motion graphics and portraits." />
-<meta property="og:title" content="Jacob Gonzales — Videographer, Editor &amp; Motion Designer" />
-<meta property="og:description" content="Podcast packages, nonprofit and corporate film, event coverage, motion graphics and photography. South Florida." />
+<title>Jacob Gonzales — Video Editor, Motion Designer &amp; 3D · Palm Beach County</title>
+<meta name="description" content="Jacob Gonzales — video editor, videographer, motion designer and 3D artist in Palm Beach County, FL. Short-form reels, product video, 3D product renders from CAD, motion graphics, VFX and event recaps for local businesses." />
+<meta property="og:title" content="Jacob Gonzales — Video Editor, Motion Designer &amp; 3D" />
+<meta property="og:description" content="Reels, product video, 3D product renders, motion graphics and event recaps for businesses in Palm Beach County, FL." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://jacobgonzales.tv/assets/share.jpg" />
 <meta property="og:image:width" content="1200" />
@@ -15,18 +15,21 @@
 <meta name="theme-color" content="#0B0B0C" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" />
-<link rel="stylesheet" href="styles.css?v=36" />
+<link rel="stylesheet" href="styles.css?v=37" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 100'%3E%3Crect x='0' width='10' height='100' fill='%23c8c8c8'/%3E%3Crect x='10' width='10' height='100' fill='%23d6d000'/%3E%3Crect x='20' width='10' height='100' fill='%2300c8d6'/%3E%3Crect x='30' width='10' height='100' fill='%232fcf3a'/%3E%3Crect x='40' width='10' height='100' fill='%23d22fd2'/%3E%3Crect x='50' width='10' height='100' fill='%23e0262f'/%3E%3Crect x='60' width='10' height='100' fill='%232a3fe0'/%3E%3C/svg%3E" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
-  "name": "Jacob Gonzales — Videographer, Editor & Motion Designer",
+  "name": "Jacob Gonzales — Video Editor, Motion Designer & 3D",
   "url": "https://jacobgonzales.tv/",
   "image": "https://jacobgonzales.tv/assets/share.jpg",
   "email": "jacee561@gmail.com",
-  "areaServed": "South Florida",
+  "areaServed": {
+    "@type": "AdministrativeArea",
+    "name": "Palm Beach County, Florida"
+  },
   "address": {
     "@type": "PostalAddress",
     "addressRegion": "FL",
@@ -38,14 +41,18 @@
   "founder": {
     "@type": "Person",
     "name": "Jacob Gonzales",
-    "jobTitle": "Videographer, Editor, Motion Designer, Photographer"
+    "jobTitle": "Video Editor, Videographer, Motion Designer, 3D Artist"
   },
   "knowsAbout": [
-    "Videography",
     "Video editing",
+    "Short-form video",
+    "Product video",
+    "3D product rendering",
     "Motion graphics",
-    "Podcast production",
+    "Logo animation",
+    "Visual effects",
     "Event video",
+    "Podcast production",
     "Photography"
   ]
 }
@@ -68,8 +75,9 @@
     </div>
     <nav class="nav">
       <a href="#work">Work</a>
-      <a href="#index" data-keep>Index</a>
-      <a href="#studio">Studio</a>
+      <a href="#product">3D</a>
+      <a href="#local" data-keep>Services</a>
+      <a href="#index">Index</a>
       <a class="nav-cta" href="#contact"><span>Start</span><span class="long">&nbsp;a project</span></a>
     </nav>
   </div>
@@ -83,10 +91,11 @@
       <div class="hero-copy">
         <p class="status" id="status"></p>
         <h1 class="hero-h">Jacob<br />Gonzales</h1>
-        <p class="hero-role">Videographer / Editor / Motion designer / Photographer</p>
+        <p class="hero-role">Video editor / Motion designer / VFX / 3D product visuals</p>
         <p class="hero-lede">
-          Podcast packages, nonprofit and corporate film, event and interview coverage,
-          motion graphics and portraits — for teams in South Florida and remote.
+          Short-form reels, product videos, 3D product renders, motion graphics and event
+          recaps for businesses in Palm Beach County. I shoot on location or cut the
+          footage you already have.
         </p>
         <div class="hero-act">
           <a class="btn" href="#contact">Start a project <span aria-hidden="true">→</span></a>
@@ -157,10 +166,118 @@
     </div>
   </section>
 
-  <!-- ============ 02 WHAT YOU CAN COMMISSION ============ -->
+  <!-- ============ 02 PRODUCT & 3D ============
+       Real, finished work for my own product line. Renders come from the
+       CAD files; photos are real photos of the printed horn. Reels and
+       stills are built by script.js (PRODUCT_REELS / PRODUCT_STILLS). -->
+  <section class="sec" id="product">
+    <div class="wrap">
+      <div class="ledger"><span>02</span><span id="ledgerProduct"></span></div>
+      <div class="sec-head">
+        <h2 class="sec-h">Product &amp; 3D.</h2>
+        <p class="sec-note">
+          Renders made from the CAD files, product photos and launch reels for The Unordinary
+          Depot, my own line of 3D-printed train horns, built in Lake Worth. For your product,
+          send the STEP or STL file, or the product itself.
+        </p>
+      </div>
+      <div class="prod">
+        <div class="prod-reels" id="prodReels"></div>
+        <div class="prod-stills" id="prodStills"></div>
+      </div>
+      <p class="prod-link">
+        <a class="btn-text" href="https://unordinarydepot.com" target="_blank" rel="noopener">The renders and photos live on unordinarydepot.com →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 03 FOR LOCAL BUSINESSES ============ -->
+  <section class="sec" id="local">
+    <div class="wrap">
+      <div class="ledger"><span>03</span><span id="ledgerLocal"></span></div>
+      <div class="sec-head">
+        <h2 class="sec-h">For local businesses.</h2>
+        <p class="sec-note">
+          Video and graphics for businesses across Palm Beach County. One person shoots,
+          edits and delivers, so you deal with the same person from the first call to the
+          final file.
+        </p>
+      </div>
+
+      <ul class="who" aria-label="Who I work with">
+        <li>Restaurants &amp; bars</li>
+        <li>Auto &amp; detail shops</li>
+        <li>Gyms &amp; trainers</li>
+        <li>Real estate</li>
+        <li>Salons &amp; barbers</li>
+        <li>Product makers</li>
+      </ul>
+
+      <div class="svc">
+        <div class="svc-row" data-cat="social">
+          <span class="svc-n">01</span>
+          <h3 class="svc-name">Short-form reels</h3>
+          <p class="svc-d">Vertical cuts with captions for Instagram, TikTok, Facebook and YouTube Shorts.</p>
+          <button type="button" class="btn-text svc-ex" data-ex="vertical-caption-reel">See an example →</button>
+        </div>
+        <div class="svc-row" data-cat="social">
+          <span class="svc-n">02</span>
+          <h3 class="svc-name">Product videos</h3>
+          <p class="svc-d">Short product spots and listing videos, from a shoot or from the photos and clips you have.</p>
+          <button type="button" class="btn-text svc-ex" data-ex="depot-reel-t1">See an example →</button>
+        </div>
+        <div class="svc-row" data-cat="motion">
+          <span class="svc-n">03</span>
+          <h3 class="svc-name">3D product renders &amp; animation</h3>
+          <p class="svc-d">Studio renders, turntables and animation built from your CAD files (STEP or STL).</p>
+          <a class="btn-text svc-ex" href="#product">See the renders →</a>
+        </div>
+        <div class="svc-row" data-cat="motion">
+          <span class="svc-n">04</span>
+          <h3 class="svc-name">Motion graphics &amp; logo animation</h3>
+          <p class="svc-d">Logo reveals, titles, lower thirds, animated menus and promo graphics.</p>
+          <button type="button" class="btn-text svc-ex" data-ex="sparked-logo">See an example →</button>
+        </div>
+        <div class="svc-row" data-cat="motion">
+          <span class="svc-n">05</span>
+          <h3 class="svc-name">VFX &amp; cleanup</h3>
+          <p class="svc-d">Compositing, screen inserts, cleanup, colour and stylised effects.</p>
+          <button type="button" class="btn-text svc-ex" data-ex="cryptorubik-orb">See an example →</button>
+        </div>
+        <div class="svc-row" data-cat="nonprofit">
+          <span class="svc-n">06</span>
+          <h3 class="svc-name">Event recaps</h3>
+          <p class="svc-d">Openings, launches, galas and parties, cut into a recap film plus vertical clips.</p>
+          <button type="button" class="btn-text svc-ex" data-ex="promisefund-event">See an example →</button>
+        </div>
+      </div>
+
+      <h3 class="how-h">How it works.</h3>
+      <ol class="how">
+        <li>
+          <span class="how-n">01</span>
+          <b>Shoot or send</b>
+          <p>I film at your location, or you send the footage, photos or CAD files you already have.</p>
+        </li>
+        <li>
+          <span class="how-n">02</span>
+          <b>Edit</b>
+          <p>I cut, animate and colour it, then send you a first version to watch.</p>
+        </li>
+        <li>
+          <span class="how-n">03</span>
+          <b>Two rounds of changes</b>
+          <p>Two revision rounds are included. You get final files sized for every platform you post on.</p>
+        </li>
+      </ol>
+      <p class="how-cta"><a class="btn" href="#contact">Start a project <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <!-- ============ 04 WHAT YOU CAN COMMISSION ============ -->
   <section class="sec" id="commission">
     <div class="wrap">
-      <div class="ledger"><span>02</span><span id="ledgerComm"></span></div>
+      <div class="ledger"><span>04</span><span id="ledgerComm"></span></div>
       <div class="sec-head">
         <h2 class="sec-h">What you can commission.</h2>
         <p class="sec-note">Every count below is real delivered work, not a capability list.</p>
@@ -169,10 +286,10 @@
     </div>
   </section>
 
-  <!-- ============ 03 THE INDEX ============ -->
+  <!-- ============ 05 THE INDEX ============ -->
   <section class="sec" id="index">
     <div class="wrap">
-      <div class="ledger"><span>03</span><span id="ledgerIndex"></span></div>
+      <div class="ledger"><span>05</span><span id="ledgerIndex"></span></div>
       <div class="sec-head">
         <h2 class="sec-h">The index.</h2>
         <p class="sec-note">Everything delivered, in one list.</p>
@@ -201,10 +318,10 @@
     </div>
   </section>
 
-  <!-- ============ 04 CLIENTS: end credits ============ -->
+  <!-- ============ 06 CLIENTS: end credits ============ -->
   <section class="sec" id="clients">
     <div class="wrap">
-      <div class="ledger"><span>04</span><span id="ledgerClients"></span></div>
+      <div class="ledger"><span>06</span><span id="ledgerClients"></span></div>
       <div class="credits-wrap">
         <div class="sec-head">
           <h2 class="sec-h">With thanks to.</h2>
@@ -217,20 +334,20 @@
     </div>
   </section>
 
-  <!-- ============ 05 TESTIMONIALS (gated) ============ -->
+  <!-- ============ 07 TESTIMONIALS (gated) ============ -->
   <section class="sec" id="says" hidden>
     <div class="wrap">
-      <div class="ledger"><span>05</span><span id="ledgerSays"></span></div>
+      <div class="ledger"><span>07</span><span id="ledgerSays"></span></div>
       <div class="sec-head"><h2 class="sec-h">What clients say.</h2></div>
       <div class="g quotes" id="quotes"></div>
       <div class="blank" id="blankQuotes"></div>
     </div>
   </section>
 
-  <!-- ============ 06 WORKING WITH ME (gated) ============ -->
+  <!-- ============ 08 WORKING WITH ME (gated) ============ -->
   <section class="sec" id="terms" hidden>
     <div class="wrap">
-      <div class="ledger"><span>06</span><span id="ledgerTerms"></span></div>
+      <div class="ledger"><span>08</span><span id="ledgerTerms"></span></div>
       <div class="sec-head"><h2 class="sec-h">Working with me.</h2></div>
       <div class="terms" id="termsList"></div>
       <p class="sec-note budget-line" id="budgetLine" hidden></p>
@@ -238,20 +355,20 @@
     </div>
   </section>
 
-  <!-- ============ 07 CASE STUDIES (gated) ============ -->
+  <!-- ============ 09 CASE STUDIES (gated) ============ -->
   <section class="sec" id="cases" hidden>
     <div class="wrap">
-      <div class="ledger"><span>07</span><span id="ledgerCases"></span></div>
+      <div class="ledger"><span>09</span><span id="ledgerCases"></span></div>
       <div class="sec-head"><h2 class="sec-h">Case studies.</h2></div>
       <div class="g case" id="caseList"></div>
       <div class="blank" id="blankCases"></div>
     </div>
   </section>
 
-  <!-- ============ 08 THE STUDIO ============ -->
+  <!-- ============ 10 THE STUDIO ============ -->
   <section class="sec" id="studio">
     <div class="wrap">
-      <div class="ledger"><span>08</span><span id="ledgerStudio"></span></div>
+      <div class="ledger"><span>10</span><span id="ledgerStudio"></span></div>
       <div class="g">
         <div class="studio-photo">
           <figure class="frame-cam">
@@ -265,9 +382,10 @@
         <div class="studio-copy">
           <h2 class="sec-h">Jacob Gonzales.</h2>
           <p>
-            I shoot, edit, animate and deliver. Multi-camera podcast production, nonprofit and
-            corporate film, event and interview coverage, motion graphics and logo animation,
-            and portrait and event photography.
+            I shoot, edit, animate and deliver. Short-form reels and product videos for local
+            businesses, multi-camera podcast production, nonprofit and corporate film, event
+            and interview coverage, motion graphics and logo animation, 3D product renders from
+            CAD files, and portrait and event photography.
           </p>
           <p>
             <strong>You talk to the person who does the work.</strong> There is no account
@@ -281,30 +399,36 @@
             Clinics Can Help and the Literacy Coalition; corporate film for CEO Discovery;
             plus gala interviews, motion graphics and branded social.
           </p>
+          <p>
+            I also run my own product line, The Unordinary Depot: 3D-printed train horns made in
+            Lake Worth. Its renders, product photos and reels are made in-house, from the same
+            CAD files the horns are printed from.
+          </p>
           <dl class="facts" id="facts"></dl>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ 09 DEEP DIVES ============ -->
+  <!-- ============ 11 DEEP DIVES ============ -->
   <section class="sec" id="dives">
     <div class="wrap">
-      <div class="ledger"><span>09</span><span id="ledgerDives"></span></div>
+      <div class="ledger"><span>11</span><span id="ledgerDives"></span></div>
       <div class="g dives" id="diveList"></div>
     </div>
   </section>
 
-  <!-- ============ 10 CONTACT ============ -->
+  <!-- ============ 12 CONTACT ============ -->
   <section class="sec contact" id="contact">
     <div class="wrap">
-      <div class="ledger"><span>10</span><span>Contact</span></div>
+      <div class="ledger"><span>12</span><span>Contact</span></div>
       <div class="contact-panel">
         <div class="g">
           <div class="contact-l">
             <h2>Start a project.</h2>
             <a class="mailto" id="mailtoPlain" href="#">—</a>
-            <p>South Florida — available for travel.</p>
+            <a class="mailto tel" id="telPlain" href="#" hidden></a>
+            <p>Palm Beach County, FL. On location, or send the footage.</p>
             <p id="replyTime" hidden></p>
           </div>
           <div class="contact-r">
@@ -319,11 +443,15 @@
                 <div>
                   <label for="bWhat">Production</label>
                   <select id="bWhat">
+                    <option>Short-form reels</option>
+                    <option>Product video</option>
+                    <option>3D product renders / animation</option>
+                    <option>Motion graphics / logo animation</option>
+                    <option>VFX / cleanup</option>
+                    <option>Event recap</option>
                     <option>Podcast package</option>
-                    <option>Event or recap film</option>
                     <option>Nonprofit or brand film</option>
                     <option>Interviews / panels</option>
-                    <option>Motion graphics</option>
                     <option>Photography</option>
                     <option selected>Not sure yet</option>
                   </select>
@@ -339,7 +467,9 @@
                 <div>
                   <label for="bBudget">Budget</label>
                   <select id="bBudget">
-                    <option>Under $2k</option>
+                    <option>Under $500</option>
+                    <option>$500–1k</option>
+                    <option>$1–2k</option>
                     <option>$2–5k</option>
                     <option>$5–10k</option>
                     <option>$10k+</option>
@@ -348,7 +478,7 @@
                 </div>
               </div>
               <div class="brief-field">
-                <label for="bName">Client — name &amp; organisation</label>
+                <label for="bName">Your name &amp; business</label>
                 <input id="bName" type="text" autocomplete="organization" />
               </div>
               <div>
@@ -363,7 +493,7 @@
     </div>
   </section>
 
-  <!-- ============ 11 OFF THE CLOCK ============ -->
+  <!-- ============ 13 OFF THE CLOCK ============ -->
   <div class="wrap">
     <div class="otc" id="otc"></div>
   </div>
@@ -383,6 +513,8 @@
       </div>
       <nav class="ftr-links" aria-label="Footer">
         <a href="#work">Work</a>
+        <a href="#product">Product &amp; 3D</a>
+        <a href="#local">Services</a>
         <a href="#index">Index</a>
         <a href="podcasts.html">Podcasts</a>
         <a href="photography.html">Photography</a>
@@ -402,10 +534,10 @@
   </div>
 </dialog>
 
-<script src="assets/site-config.js?v=36"></script>
-<script src="assets/manifest.js?v=36"></script>
-<script src="assets/photos-manifest.js?v=36"></script>
-<script src="common.js?v=36"></script>
-<script src="script.js?v=36"></script>
+<script src="assets/site-config.js?v=37"></script>
+<script src="assets/manifest.js?v=37"></script>
+<script src="assets/photos-manifest.js?v=37"></script>
+<script src="common.js?v=37"></script>
+<script src="script.js?v=37"></script>
 </body>
 </html>

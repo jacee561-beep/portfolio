@@ -16,8 +16,9 @@ const CLIENTS = Object.keys(CLIENT_VOLUME);
 const clientsIn = (cat) => new Set(REELS.filter((r) => r.category === cat).map((r) => r.client)).size;
 const BY_ID = new Map(REELS.map((r) => [r.id, r]));
 const find = (id) => BY_ID.get(id);
-/* Not clients: his own spec work, his own studio, and an unnamed one-off. */
-const NOT_CLIENTS = new Set(["Self-Directed", "Khanna House Studios", "Private Client"]);
+/* Not clients: his own spec work, his own studio, his own product line
+   (The Unordinary Depot), and an unnamed one-off. */
+const NOT_CLIENTS = new Set(["Self-Directed", "Khanna House Studios", "Private Client", "The Unordinary Depot"]);
 const REAL_CLIENTS = CLIENTS.filter((c) => !NOT_CLIENTS.has(c));
 const PHOTO_COUNT = typeof PHOTOS !== "undefined" ? PHOTOS.length : 0;
 
@@ -157,6 +158,8 @@ const BAR_ORDER = ["photo", "social", "podcast", "nonprofit", "motion", "intervi
 
 /* ---------- ledger rules ---------- */
 $("#ledgerWork").textContent = "9 selected";
+$("#ledgerProduct").textContent = "The Unordinary Depot";
+$("#ledgerLocal").textContent = "Palm Beach County";
 $("#ledgerComm").textContent = `${CAT_ORDER.length} disciplines`;
 $("#ledgerIndex").textContent = `${REELS.length} pieces`;
 $("#ledgerClients").textContent = `${CLIENTS.length} names`;
@@ -204,7 +207,73 @@ $("#ledgerDives").textContent = "Deep dives";
   figs.forEach((f) => io.observe(f));
 })();
 
-/* ---------- 02 commission rows ---------- */
+/* ---------- 02 product & 3D ----------
+   Three product reels (real manifest entries, so they also sit in the
+   index) and six stills: renders made from the CAD files and real product
+   photos. Stills open in the same lightbox as photographs. */
+const PRODUCT_REELS = ["depot-reel-t1", "depot-reel-bells", "depot-reel-brand"];
+const PRODUCT_STILLS = [
+  { id: "depot-t5-render", ar: "1/1", kind: "3D render from CAD", title: "T5 five-chime horn" },
+  { id: "depot-t1-photo", ar: "1/1", kind: "Product photo", title: "T1 single-chime horn" },
+  { id: "depot-bell-render", ar: "1/1", kind: "3D render from CAD", title: "Bell 1" },
+  { id: "depot-t1-mouth", ar: "1/1", kind: "Product photo", title: "T1, bell mouth" },
+  { id: "depot-t3-render", ar: "1/1", kind: "3D render from CAD", title: "T3 three-chime horn" },
+  { id: "depot-t1-ports", ar: "1/1", kind: "Product photo", title: "T1, base and ports" },
+];
+(function product() {
+  const reels = PRODUCT_REELS.map(find).filter(Boolean);
+  const rbox = $("#prodReels");
+  if (rbox) {
+    rbox.innerHTML = reels.map((r) => `
+      <article class="prod-reel" data-id="${r.id}" data-cat="${r.category}">
+        <div class="media" data-ar="${ar(r)}">
+          ${posterImg(r, 'loading="lazy"', "thumb")}
+          <span class="safe" aria-hidden="true"></span>
+          ${r.dur ? `<span class="burn">${esc(durTC(r.dur))}</span>` : ""}
+          <span class="play" aria-hidden="true"></span>
+        </div>
+        <h3 class="prod-t">${esc(r.title)}</h3>
+        <p class="prod-b">${esc(r.role || "")}</p>
+      </article>`).join("");
+    paintAR(rbox);
+    wirePieces(rbox, ".prod-reel", find);
+  }
+  const sbox = $("#prodStills");
+  if (sbox) {
+    const byId = new Map(PRODUCT_STILLS.map((s) => [s.id, s]));
+    sbox.innerHTML = PRODUCT_STILLS.map((s) => `
+      <figure class="prod-still" data-still="${s.id}" tabindex="0" role="button"
+              aria-label="${esc(s.title)}, ${esc(s.kind)}: open larger">
+        <div class="media" data-ar="${s.ar}">
+          <img src="assets/thumbs/${s.id}.webp" alt="${esc(s.title)}, ${esc(s.kind.toLowerCase())}"
+               loading="lazy" decoding="async" />
+        </div>
+        <figcaption><span>${esc(s.title)}</span><span>${esc(s.kind)}</span></figcaption>
+      </figure>`).join("");
+    paintAR(sbox);
+    const open = (el) => {
+      const s = byId.get(el.dataset.still);
+      // no `category` = the lightbox shows it as a photograph (assets/photos/<id>.jpg)
+      if (s) openLB({ id: s.id, title: s.title, client: "The Unordinary Depot", blurb: s.kind });
+    };
+    sbox.addEventListener("click", (e) => { const f = e.target.closest(".prod-still"); if (f) open(f); });
+    sbox.addEventListener("keydown", (e) => {
+      const f = e.target.closest(".prod-still");
+      if (f && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(f); }
+    });
+  }
+})();
+
+/* ---------- 03 for local businesses: "see an example" buttons ---------- */
+(function local() {
+  $$("#local [data-ex]").forEach((b) => {
+    const r = find(b.dataset.ex);
+    if (!r) { b.remove(); return; }           // never a dead button
+    b.addEventListener("click", () => openLB(r));
+  });
+})();
+
+/* ---------- 04 commission rows ---------- */
 (function commission() {
   const NAMES = {
     podcast: "Podcast package",
@@ -609,7 +678,7 @@ function blank(el, label, ask) {
   const f = SITE.facts || {};
   const rows = [
     ["Based", f.based], ["Works as", f.worksAs], ["Cameras", f.cameras],
-    ["Edit", f.edit], ["Delivers", f.delivers], ["Turnaround", SITE.turnaround],
+    ["Edit", f.edit], ["3D", f.threeD], ["Delivers", f.delivers], ["Turnaround", SITE.turnaround],
   ].filter(([, v]) => v);
   $("#facts").innerHTML = rows.map(([k, v]) =>
     `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
@@ -650,8 +719,22 @@ function blank(el, label, ask) {
   $("#mailtoPlain").textContent = SITE.email;
   if (SITE.replyTime) { $("#replyTime").hidden = false; $("#replyTime").textContent = SITE.replyTime; }
 
+  /* Phone / text line: shown only once SITE.phone is filled in. */
+  const tel = $("#telPlain");
+  const digits = String(SITE.phone || "").replace(/[^\d+]/g, "");
+  if (tel && digits.length >= 10) {
+    tel.href = `tel:${digits.startsWith("+") ? digits : "+1" + digits.replace(/^1(?=\d{10}$)/, "")}`;
+    tel.textContent = SITE.phone;
+    tel.hidden = false;
+  } else if (tel && DRAFT) {
+    tel.hidden = false;
+    tel.removeAttribute("href");
+    tel.innerHTML = `<span class="todo">Phone / text number: set SITE.phone in site-config.js</span>`;
+  }
+
   $("#ftrContact").innerHTML =
     `<a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>` +
+    (digits.length >= 10 ? `<a href="${esc(tel.href)}">${esc(SITE.phone)}</a>` : "") +
     (SITE.instagram ? `<a href="${esc(SITE.instagram)}" target="_blank" rel="noopener">Instagram</a>` : "") +
     `<span class="mono">© ${new Date().getFullYear()}</span>`;
 
@@ -719,6 +802,7 @@ if (DRAFT) {
   if (!Object.values(SITE.terms || {}).some(Boolean)) missing.push("terms");
   if (!SITE.budgetLine) missing.push("budget line");
   if (!SITE.availableFrom) missing.push("availability");
+  if (!SITE.phone) missing.push("phone");
   const noRole = REELS.filter((r) => !roleOf(r)).length;
 
   const bar = document.createElement("div");

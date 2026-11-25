@@ -18,9 +18,20 @@ const SITE = {
   /* ---------- the basics (already filled in) ---------- */
   name: "Jacob Gonzales",
   studio: "Khanna House Studios",
-  region: "South Florida + travel",
-  email: "jacee561@gmail.com",
+  region: "Palm Beach County + travel",
+  email: "jacee561@gmail.com",   // your call, Oct 8 2026: keep the personal Gmail
   instagram: "https://www.instagram.com/toast.89",
+
+  /* ---------- phone / text line (EMPTY ON PURPOSE - your call) ----------
+     Local businesses call or text before they email. Put the number here
+     and it appears in the contact block and the footer, e.g. "(561) 555-0123".
+     null = nothing shows (the email still works).
+     Options:
+       - your own cell
+       - a free Google Voice number just for video work (keeps your cell private)
+       - NOT the horn shop line (561) 507-0280 unless you decide it should
+         answer for both businesses.                                       */
+  phone: null,
 
   /* ---------- the status strip under the header ----------
      Each of these is one segment of the strip. A null value removes
@@ -108,10 +119,11 @@ const SITE = {
 
   /* ---------- the fact box in the About section ---------- */
   facts: {
-    based: "South Florida",
+    based: "Palm Beach County, FL",
     worksAs: "Solo - shoot, edit, animate, deliver",
     cameras: null,   // e.g. "Sony FX3 / a7S III, DJI"
     edit: "Premiere Pro, After Effects, DaVinci Resolve",
+    threeD: "Blender - renders and animation from STEP / STL files",
     delivers: "4K, vertical cutdowns, captions, colour and audio master",
   },
 

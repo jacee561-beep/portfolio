@@ -50,18 +50,24 @@ const PHOTO_REV = 2;
 const photoSrc = (id) => `assets/photos/${id}.jpg?r=${PHOTO_REV}`;
 /* Same for posters — bump when a poster is re-grabbed in place. */
 const POSTER_REV = 2;
-const posterSrc = (id) => `assets/posters/${id}.jpg?r=${POSTER_REV}`;
+/* Nov 25, 2026: pieces whose id starts "m-" live on Cloudflare R2 (bucket portfolio-video), not in assets/:
+   video  https://media.jacobgonzales.tv/v/<name>.mp4, poster  .../p/<name>.jpg (no WebP thumb, no hover preview). */
+const MEDIA = "https://media.jacobgonzales.tv";
+const isRemote = (id) => typeof id === "string" && id.startsWith("m-");
+const remoteName = (id) => encodeURIComponent(id.slice(2));
+const videoSrc = (id) => isRemote(id) ? `${MEDIA}/v/${remoteName(id)}.mp4` : `assets/video/${id}.mp4`;
+const posterSrc = (id) => isRemote(id) ? `${MEDIA}/p/${remoteName(id)}.jpg` : `assets/posters/${id}.jpg?r=${POSTER_REV}`;
 
 /* poster <img> with honest intrinsic size, so layout never jumps */
 /* Grids use the light WebP in assets/thumbs/ (640 px landscape / 480 px
    portrait, ~16 KB) and only pull the full poster on large or sharp screens.
    mode: "auto" (srcset), "thumb" (small slots), "full" (the hero monitor). */
-const thumbSrc = (id) => `assets/thumbs/${id}.webp?r=${POSTER_REV}`;
+const thumbSrc = (id) => isRemote(id) ? posterSrc(id) : `assets/thumbs/${id}.webp?r=${POSTER_REV}`;
 function posterImg(r, extra = 'loading="lazy"', mode = "auto") {
   const w = r.w || 1920, h = r.h || 1080;
   const tw = Math.min(w, w > h ? 640 : 480);
   const src = mode === "full" ? posterSrc(r.id) : thumbSrc(r.id);
-  const set = mode === "auto" && w > tw
+  const set = mode === "auto" && w > tw && !isRemote(r.id)
     ? ` srcset="${thumbSrc(r.id)} ${tw}w, ${posterSrc(r.id)} ${w}w" sizes="(max-width: 760px) 50vw, 24vw"` : "";
   return `<img src="${src}"${set} data-poster="${r.id}" alt="${esc(r.title)}"
     width="${w}" height="${h}" ${extra} decoding="async" />`;
@@ -104,7 +110,7 @@ function releasePreview() {
 }
 
 function armPreview(host, id) {
-  if (reduced || !PREVIEW_ON || !finePointer) return;
+  if (reduced || !PREVIEW_ON || !finePointer || isRemote(id)) return;
   if (armed === host || pending === host) return;
   clearTimeout(armTimer);
   pending = host;
@@ -164,7 +170,7 @@ function openLB(r) {
   const isPhoto = !r.category;
   $("#lbMedia").innerHTML = isPhoto
     ? `<img src="${photoSrc(r.id)}" alt="${esc(r.title)}" />`
-    : `<video src="assets/video/${r.id}.mp4" controls autoplay playsinline
+    : `<video src="${videoSrc(r.id)}" controls autoplay playsinline
          poster="${posterSrc(r.id)}"></video>`;
   $("#lbMeta").innerHTML =
     `<h3>${esc(r.title)}</h3><p>${esc(r.client)}${r.blurb ? " — " + esc(r.blurb) : ""}</p>` +

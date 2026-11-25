@@ -729,6 +729,100 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 @media (max-width: 759px) { .screens-in { grid-template-columns: 1fr; } .scr figcaption { flex-direction: column; gap: 2px; } }
 
 /* ============================================================
+   Product & 3D — three vertical reels beside six stills
+   (renders from CAD + real product photos). Built by script.js.
+   ============================================================ */
+.prod { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); align-items: start; }
+.prod-reels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+.prod-reel { position: relative; cursor: pointer; }
+.prod-reel .media { border: 1px solid var(--line); }
+.prod-reel:hover .media img { transform: scale(1.03); }
+.prod-reel:hover .safe { opacity: 1; }
+.prod-reel:hover .play { opacity: 1; transform: scale(1); }
+.prod-reel .play { width: 46px; height: 46px; margin: -23px 0 0 -23px; }
+.prod-reel .play::before { border-width: 8px 0 8px 13px; }
+.prod-t { font-size: 14px; font-weight: 700; font-stretch: 85%; line-height: 1.2; margin: var(--s3) 0 2px; }
+.prod-b {
+  font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--fg-meta); line-height: 1.5;
+}
+.prod-stills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+.prod-still { cursor: pointer; }
+.prod-still .media { aspect-ratio: 1 / 1; border: 1px solid var(--line); }
+.prod-still:hover .media img, .prod-still:focus-visible .media img { transform: scale(1.04); }
+.prod-still figcaption {
+  display: flex; flex-direction: column; gap: 1px; margin-top: 6px;
+  font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-meta);
+}
+.prod-still figcaption span:first-child { color: var(--fg); }
+.prod-link { margin-top: var(--s6); }
+/* phones and tablets have no hover: show the play mark so a reel reads as a video */
+@media (hover: none) { .prod-reel .play { opacity: 1; transform: scale(1); } }
+@media (max-width: 1099px) { .prod { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 759px) {
+  /* reels become a sideways row you swipe; the next one peeks in */
+  .prod-reels {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 58%;
+    overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--s2);
+    overscroll-behavior-x: contain; scrollbar-width: thin;
+  }
+  .prod-reel { scroll-snap-align: start; }
+  .prod-stills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   For local businesses — who it's for, services, how it works
+   ============================================================ */
+.who { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s7); }
+.who li {
+  padding: 7px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  font-family: var(--mono); font-size: var(--fs-meta); font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg);
+}
+.svc { border-top: 1px solid var(--line); }
+.svc-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 4fr) minmax(0, 6fr) max-content;
+  align-items: center;
+  column-gap: var(--s5);
+  padding: var(--s5) 0;
+  border-bottom: 1px solid var(--line);
+}
+.svc-n {
+  align-self: center;
+  display: grid; place-items: center;
+  width: 36px; height: 36px;
+  background: var(--cc, var(--fg));
+  color: #000;
+  font-family: var(--mono); font-size: var(--fs-meta); font-weight: 700;
+}
+.svc-name { font-size: clamp(19px, 1.7vw, 24px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; line-height: 1.05; }
+.svc-d { font-size: var(--fs-small); color: var(--fg-dim); max-width: 56ch; }
+.svc-ex { justify-self: end; white-space: nowrap; cursor: pointer; }
+.how-h { font-size: clamp(28px, 3vw, 44px); font-weight: 800; font-stretch: 70%; text-transform: uppercase; margin: var(--s8) 0 var(--s5); }
+.how { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); }
+.how li { padding-top: var(--s4); border-top: 3px solid var(--fg); }
+.how-n { display: block; font-family: var(--mono); font-size: var(--fs-meta); color: var(--fg-meta); letter-spacing: 0.1em; margin-bottom: var(--s2); }
+.how b { display: block; font-size: var(--fs-h3); font-weight: 800; font-stretch: 80%; text-transform: uppercase; line-height: 1.1; margin-bottom: var(--s2); }
+.how p { font-size: var(--fs-small); color: var(--fg-dim); max-width: 40ch; }
+.how-cta { margin-top: var(--s7); }
+@media (max-width: 899px) {
+  .svc-row { grid-template-columns: 52px minmax(0, 1fr); row-gap: var(--s2); }
+  .svc-d, .svc-ex { grid-column: 2; }
+  .svc-ex { justify-self: start; }
+  .how { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* phone / text line under the email in the contact block (only when set) */
+.mailto.tel { display: table; background: var(--fg); margin-top: calc(-1 * var(--s3)); }
+.mailto.tel:hover { background: var(--bar-yellow); }
+.mailto.tel[hidden] { display: none; }
+.mailto.tel:not([href]) { background: transparent; padding: 0; }   /* draft-mode placeholder */
+
+/* ============================================================
    Commission rows — laid out like timeline tracks
    ============================================================ */
 .comm { border-top: 1px solid var(--line); }
