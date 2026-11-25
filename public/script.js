@@ -74,7 +74,7 @@ function curatedNine() {
    A bin of five clips under a viewer. Pick one and it loads into the
    viewer; point at the viewer and it plays (the pooled preview), with the
    timecode running off the video itself. Nothing plays on its own. */
-const MONITOR_BIN = ["cryptorubik-orb", "hona-open", "tht-plane-intro", "patricia-heaton", "vaporwave-collage"];
+const MONITOR_BIN = ["jacob-gonzales-sting", "cryptorubik-orb", "hona-open", "tht-plane-intro", "patricia-heaton"];
 (function monitor() {
   const picks = MONITOR_BIN.map(find).filter(Boolean);
   curatedNine().forEach((r) => { if (picks.length < 5 && !picks.includes(r)) picks.push(r); });

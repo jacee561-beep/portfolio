@@ -203,6 +203,14 @@ const REELS = [
     orientation: "landscape", accent: "#1af928", w: 1920, h: 1080, dur: "0:12"
   },
   {
+    id: "jacob-gonzales-sting",
+    category: "motion",
+    client: "Self-Directed",
+    title: "Jacob Gonzales — Logo Sting",
+    blurb: "My own ident: SMPTE bars rise, fold into one line and the 3D wordmark flips up off it. Built and animated in Blender.",
+    orientation: "landscape", accent: "#00C2D1", w: 1920, h: 1080, dur: "0:03"
+  },
+  {
     id: "cryptorubik-orb",
     category: "motion",
     client: "Self-Directed",
